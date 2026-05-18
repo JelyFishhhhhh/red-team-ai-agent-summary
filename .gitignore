@@ -18,6 +18,18 @@ editor/dist/
 # brainstorm artifacts
 .superpowers/
 
+# test coverage
+app/coverage/
+editor/coverage/
+
+# TypeScript incremental build
+*.tsbuildinfo
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
 # macOS
 .DS_Store
 *.DS_Store
