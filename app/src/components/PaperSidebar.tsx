@@ -13,7 +13,6 @@ export function PaperSidebar({ agent, attack }: Props) {
     tactic.techniques.some((t) => coveredIds.has(t.id))
   )
 
-  const totalCount = agent.techniques.filter((t) => t.coverage !== 'not-covered').length
   const coveredFull = agent.techniques.filter((t) => t.coverage === 'covered').length
   const partial = agent.techniques.filter((t) => t.coverage === 'partial').length
   const toolDep = agent.techniques.filter((t) => t.coverage === 'tool-dep').length
