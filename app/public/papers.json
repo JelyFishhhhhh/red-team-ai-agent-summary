@@ -301,6 +301,581 @@
           "source": { "tier": "T2", "ref": "Pending: arXiv 2504.06017 section confirmation required before upgrading to covered" }
         }
       ]
+    },
+    {
+      "id": "artemis",
+      "name": "ARTEMIS",
+      "has_paper": true,
+      "paper": {
+        "title": "Comparing AI Agents to Cybersecurity Professionals in Real-World Penetration Testing",
+        "venue": "arXiv 2025",
+        "year": 2025,
+        "authors": ["Justin W. Lin", "Eliot Krzysztof Jones", "et al."],
+        "arxiv": "2512.09882",
+        "url": "https://arxiv.org/abs/2512.09882",
+        "affiliation": "Stanford University / Carnegie Mellon University",
+        "summary": "First large-scale comparison of AI agents vs human pen testers on a live university network. ARTEMIS multi-agent framework achieved 2nd place overall: 9 valid vulnerabilities, 82% valid submission rate. AI excels at systematic enumeration and parallel exploitation but fails on GUI tasks and generates higher FP rates.",
+        "tags": ["multi-agent", "real-world", "enterprise", "cybench", "human-comparison", "parallel-exploitation"]
+      },
+      "benchmark": {
+        "dataset": "Live university network (novel) + Cybench",
+        "score": "2nd place; 9 valid vulns, 82% validity rate, $18.21/hr equivalent cost; Cybench: 48.6%",
+        "notes": "First real-world (non-CTF, non-VM) comparison vs professional pen testers; AI cost advantage demonstrated"
+      },
+      "limitations": [
+        "GUI-based tasks fail — no visual interface interaction capability",
+        "Higher false-positive rate than human professionals",
+        "No social engineering coverage",
+        "Evaluation on single network environment limits generalizability",
+        "Cost ($18.21/hr equivalent) still requires further analysis vs human labor costs"
+      ],
+      "techniques": [
+        {
+          "id": "T1595",
+          "coverage": "covered",
+          "notes": "nmap, rustscan, masscan for active scanning — systematic enumeration is noted strength",
+          "source": { "tier": "T2", "ref": "arXiv 2512.09882: tools listed in methodology; systematic enumeration cited as AI strength" }
+        },
+        {
+          "id": "T1046",
+          "coverage": "covered",
+          "notes": "Network service discovery via nmap/rustscan/masscan output",
+          "source": { "tier": "T2", "ref": "arXiv 2512.09882: service enumeration tools listed in ARTEMIS methodology" }
+        },
+        {
+          "id": "T1190",
+          "coverage": "covered",
+          "notes": "Exploit public-facing application via nuclei, sqlmap — primary vulnerability category on live network",
+          "source": { "tier": "T2", "ref": "arXiv 2512.09882: nuclei/sqlmap used; 9 valid vulns discovered on live network" }
+        },
+        {
+          "id": "T1083",
+          "coverage": "covered",
+          "notes": "File/directory discovery via gobuster",
+          "source": { "tier": "T2", "ref": "arXiv 2512.09882: gobuster listed in tool inventory" }
+        },
+        {
+          "id": "T1078",
+          "coverage": "covered",
+          "notes": "Valid accounts — credential harvesting during live network assessment",
+          "source": { "tier": "T2", "ref": "arXiv 2512.09882: credential access techniques in live network evaluation" }
+        },
+        {
+          "id": "T1021",
+          "coverage": "covered",
+          "notes": "Remote services lateral movement — SSH/RDP used in live network; T1021.004 SSH confirmed",
+          "source": { "tier": "T2", "ref": "arXiv 2512.09882: SSH/RDP lateral movement in multi-host live network environment" }
+        },
+        {
+          "id": "T1003",
+          "coverage": "covered",
+          "notes": "OS credential dumping — metasploit post-exploitation modules",
+          "source": { "tier": "T2", "ref": "arXiv 2512.09882: metasploit listed in tool inventory; credential dumping in post-exploit phase" }
+        },
+        {
+          "id": "T1570",
+          "coverage": "partial",
+          "notes": "Lateral tool transfer via curl/metasploit staging — pending section-level confirmation",
+          "source": { "tier": "T3", "ref": "arXiv 2512.09882: curl and metasploit staging implied; specific T1570 execution pending verification" }
+        }
+      ]
+    },
+    {
+      "id": "hacksynth",
+      "name": "HackSynth",
+      "has_paper": true,
+      "paper": {
+        "title": "HackSynth: LLM Agent and Evaluation Framework for Autonomous Penetration Testing",
+        "venue": "arXiv 2024",
+        "year": 2024,
+        "authors": ["Lajos Muzsai", "David Imolai", "András Lukács"],
+        "arxiv": "2412.01778",
+        "url": "https://arxiv.org/abs/2412.01778",
+        "affiliation": "Eötvös Loránd University (ELTE), Hungary",
+        "summary": "Dual-module (Planner + Summarizer) CTF-focused agent. Introduces two 200-challenge benchmark sets from PicoCTF and OverTheWire. GPT-4o performs best. Binary exploitation: 0% — fundamental capability ceiling for RL-free single-agent design.",
+        "tags": ["single-agent", "dual-module", "CTF", "PicoCTF", "OverTheWire", "benchmark-contribution"]
+      },
+      "benchmark": {
+        "dataset": "PicoCTF (200 challenges) + OverTheWire (200 challenges)",
+        "score": "PicoCTF: 34.2%; OverTheWire: 40%; Binary exploitation: 0%",
+        "notes": "GPT-4o outperforms GPT-4's system card benchmark — first to publish PicoCTF/OverTheWire standardized eval"
+      },
+      "limitations": [
+        "Binary exploitation: 0% — hardcoded ceiling with no exploit development capability",
+        "No interactive terminal support — cannot use pwndbg, gdb, or shell-based exploit workflows",
+        "Hallucinations cause cascading failures in multi-step CTF challenges",
+        "Single-machine / single-challenge scope — no multi-host or lateral movement",
+        "Context window exhaustion on long challenges causes planner to lose track of state"
+      ],
+      "techniques": [
+        {
+          "id": "T1059",
+          "coverage": "covered",
+          "notes": "Command execution is primary mechanism throughout all CTF categories",
+          "source": { "tier": "T2", "ref": "arXiv 2412.01778: bash/python command execution is core interaction mode across all benchmarks" }
+        },
+        {
+          "id": "T1059.004",
+          "coverage": "covered",
+          "notes": "Unix Shell — Linux environment, bash commands throughout",
+          "source": { "tier": "T2", "ref": "arXiv 2412.01778: Linux/bash environment confirmed; all commands executed via Unix shell" }
+        },
+        {
+          "id": "T1083",
+          "coverage": "covered",
+          "notes": "File/directory discovery via find, ls, cat, strings — standard CTF enumeration",
+          "source": { "tier": "T2", "ref": "arXiv 2412.01778: find/ls/cat/strings in tool inventory for file enumeration" }
+        },
+        {
+          "id": "T1190",
+          "coverage": "partial",
+          "notes": "Web exploitation category: 14.3% success — low performance vs file/crypto categories",
+          "source": { "tier": "T2", "ref": "arXiv 2412.01778: category breakdown shows web challenges at 14.3%; lower than overall 34.2%" }
+        },
+        {
+          "id": "T1548",
+          "coverage": "not-covered",
+          "notes": "Binary exploitation 0% — privilege escalation via binary exploitation impossible; closed-world: no privesc documented",
+          "source": { "tier": "T2", "ref": "arXiv 2412.01778: binary exploitation 0% explicitly; no privesc category in benchmark results" }
+        },
+        {
+          "id": "T1021",
+          "coverage": "not-covered",
+          "notes": "Single-challenge scope — no multi-host or lateral movement capability",
+          "source": { "tier": "T2", "ref": "arXiv 2412.01778: CTF-only scope; no lateral movement or multi-host scenarios" }
+        }
+      ]
+    },
+    {
+      "id": "pentestagent",
+      "name": "PentestAgent",
+      "has_paper": true,
+      "paper": {
+        "title": "PentestAgent: Incorporating LLM Agents to Automated Penetration Testing",
+        "venue": "AsiaCCS 2025",
+        "year": 2025,
+        "authors": ["Xiangmin Shen", "Lingzhi Wang", "Zhenyuan Li", "et al."],
+        "arxiv": "2411.05185",
+        "url": "https://arxiv.org/abs/2411.05185",
+        "affiliation": "Not specified in available sources",
+        "summary": "4-agent pipeline (Reconnaissance → Search → Planning → Execution) + RAG from ExploitDB/Snyk/AVD. Evaluated on 67 VulHub Docker targets spanning 32 CWE categories. GPT-4 achieves 74.2%. First agent to systematically integrate vulnerability database search into planning phase.",
+        "tags": ["multi-agent", "RAG", "VulHub", "CVE", "4-agent", "exploit-search", "AsiaCCS"]
+      },
+      "benchmark": {
+        "dataset": "VulHub (67 Docker targets, 32 CWEs: 50 easy / 11 medium / 6 hard)",
+        "score": "GPT-4: 74.2%; GPT-3.5: 60.6%; avg execution ~1,165s; $2.66/task (GPT-4)",
+        "notes": "VulHub uses known-CVE Docker environments — evaluation limited to publicly-disclosed vulnerabilities"
+      },
+      "limitations": [
+        "Web component fingerprinting fails for PHPMailer, PHPUnit, Ghostscript — ObserverWard coverage gaps",
+        "Tasks requiring user interaction (file uploads via web UI) fail — no browser automation",
+        "LLM hallucinations in exploit parameter generation cause cascading failures",
+        "Evaluation limited to known CVEs — no zero-day or novel exploit capability",
+        "No lateral movement or multi-host design — single Docker environment per task"
+      ],
+      "techniques": [
+        {
+          "id": "T1595",
+          "coverage": "covered",
+          "notes": "Nmap active scanning in Reconnaissance phase — first step in all evaluations",
+          "source": { "tier": "T2", "ref": "arXiv 2411.05185: Recon agent uses Nmap as primary scanning tool; first stage in pipeline" }
+        },
+        {
+          "id": "T1046",
+          "coverage": "covered",
+          "notes": "Network service discovery and fingerprinting via Nmap — service version detection enabled",
+          "source": { "tier": "T2", "ref": "arXiv 2411.05185: Nmap with service detection; ObserverWard for web component fingerprinting" }
+        },
+        {
+          "id": "T1190",
+          "coverage": "covered",
+          "notes": "Exploit public-facing application — primary VulHub target type; Metasploit + ExploitDB-guided exploitation",
+          "source": { "tier": "T2", "ref": "arXiv 2411.05185: VulHub CVE-based docker exploitation is primary benchmark; Execution agent uses Metasploit" }
+        },
+        {
+          "id": "T1083",
+          "coverage": "covered",
+          "notes": "File/directory discovery during recon and post-exploitation phases",
+          "source": { "tier": "T2", "ref": "arXiv 2411.05185: file enumeration included in Recon agent capabilities" }
+        },
+        {
+          "id": "T1021",
+          "coverage": "not-covered",
+          "notes": "Single Docker environment per task — no lateral movement or multi-host design",
+          "source": { "tier": "T2", "ref": "arXiv 2411.05185: VulHub per-container isolated evaluation; no multi-host scope" }
+        }
+      ]
+    },
+    {
+      "id": "red-mirror",
+      "name": "Red-MIRROR",
+      "has_paper": true,
+      "paper": {
+        "title": "Red-MIRROR: Agentic LLM-based Autonomous Penetration Testing with Reflective Verification and Knowledge-augmented Interaction",
+        "venue": "arXiv 2026",
+        "year": 2026,
+        "authors": ["Tran Vy Khang", "Nguyen Dang Nguyen Khang", "et al."],
+        "arxiv": "2603.27127",
+        "url": "https://arxiv.org/abs/2603.27127",
+        "affiliation": "Vietnam (Van-Hau Pham, Phan The Duy — Vietnamese cybersecurity researchers)",
+        "summary": "Multi-agent framework with Shared Recurrent Memory Mechanism (SRMM) + dual-phase reflection for adaptive payload validation. RAG-augmented knowledge base. Achieves 86.0% on XBOW vs prior SOTA 50%. Highest XBOW score of web-focused agents as of 2026-03.",
+        "tags": ["multi-agent", "SRMM", "reflection", "RAG", "XBOW", "web", "SQL", "XSS", "business-logic"]
+      },
+      "benchmark": {
+        "dataset": "XBOW benchmark + Vulhub CVEs",
+        "score": "XBOW: 86.0% (vs PentestAgent 50%, AutoPT 46%, VulnBot 6%); subtask: 93.99%",
+        "notes": "Full paper not available via ar5iv (conversion error) — benchmark data from arXiv abstract only"
+      },
+      "limitations": [
+        "Full paper technical details unavailable via public HTML conversion — tool-level specifics unverified",
+        "XBOW benchmark covers web application scope only — no AD, network-level, or binary exploitation",
+        "Tool inventory not documented in publicly accessible sections",
+        "Evaluation scope limited to SQL injection, XSS, and business logic flaws"
+      ],
+      "techniques": [
+        {
+          "id": "T1190",
+          "coverage": "covered",
+          "notes": "Primary benchmark focus: SQL injection, XSS, business logic flaws — 86% XBOW success",
+          "source": { "tier": "T3", "ref": "arXiv 2603.27127 abstract: SQL injection, XSS, business logic cited as primary attack categories" }
+        },
+        {
+          "id": "T1595",
+          "coverage": "covered",
+          "notes": "Active scanning implied by XBOW benchmark workflow — reconnaissance precedes exploitation",
+          "source": { "tier": "T3", "ref": "arXiv 2603.27127 abstract: XBOW benchmark requires target enumeration before exploitation" }
+        },
+        {
+          "id": "T1059",
+          "coverage": "partial",
+          "notes": "Command injection as subset of XBOW challenge categories — coverage depth requires full paper",
+          "source": { "tier": "T3", "ref": "arXiv 2603.27127 abstract: XBOW includes command injection category; exact success rate pending full paper" }
+        },
+        {
+          "id": "T1021",
+          "coverage": "not-covered",
+          "notes": "Web-only scope — XBOW does not include lateral movement or network-level attacks",
+          "source": { "tier": "T3", "ref": "arXiv 2603.27127: XBOW benchmark scope is web application vulnerabilities only" }
+        }
+      ]
+    },
+    {
+      "id": "vulnbot",
+      "name": "VulnBot",
+      "has_paper": true,
+      "paper": {
+        "title": "VulnBot: Autonomous Penetration Testing for A Multi-Agent Collaborative Framework",
+        "venue": "arXiv 2025",
+        "year": 2025,
+        "authors": ["He Kong", "Die Hu", "Jingguo Ge", "Liangxiong Li", "Tong Li", "Bingzhen Wu"],
+        "arxiv": "2501.13411",
+        "url": "https://arxiv.org/abs/2501.13411",
+        "affiliation": "Not specified in available sources",
+        "summary": "3-phase collaborative framework (Reconnaissance → Scanning → Exploitation) guided by Penetration Task Graph (PTG). Integrates Nmap, Nikto, WPScan, Metasploit, Hydra. Outperforms GPT-4o baseline (30.3% vs 21.2% on AutoPenBench).",
+        "tags": ["multi-agent", "PTG", "3-phase", "AutoPenBench", "brute-force", "network"]
+      },
+      "benchmark": {
+        "dataset": "AutoPenBench (33 tasks) + AI-Pentest-Benchmark (13 real machines, 6 tested)",
+        "score": "AutoPenBench: 30.3% task / 69.05% subtask; beats GPT-4o (21.2%) and Llama3 baselines",
+        "notes": "AutoPenBench evaluates end-to-end penetration tasks; RAG integration enables real-world machine exploitation"
+      },
+      "limitations": [
+        "Cannot interpret images or GUI output — tool screenshots and graphical interfaces ignored",
+        "Context window limits cause information loss across extended multi-step operations",
+        "Privilege escalation and post-exploitation phases have higher failure rates",
+        "30.3% AutoPenBench task completion — low absolute success rate despite SOTA",
+        "No documentation of multi-host lateral movement capability"
+      ],
+      "techniques": [
+        {
+          "id": "T1595",
+          "coverage": "covered",
+          "notes": "Nmap active scanning in Reconnaissance phase — mandatory first step in PTG",
+          "source": { "tier": "T2", "ref": "arXiv 2501.13411: Nmap listed as primary Recon phase tool; PTG starts with scanning" }
+        },
+        {
+          "id": "T1046",
+          "coverage": "covered",
+          "notes": "Service enumeration via Nikto, WPScan in Scanning phase",
+          "source": { "tier": "T2", "ref": "arXiv 2501.13411: Nikto and WPScan listed as Scanning phase tools for service/vuln enumeration" }
+        },
+        {
+          "id": "T1083",
+          "coverage": "covered",
+          "notes": "File/directory discovery via Dirb in Scanning phase",
+          "source": { "tier": "T2", "ref": "arXiv 2501.13411: Dirb listed as Scanning phase tool for directory discovery" }
+        },
+        {
+          "id": "T1110",
+          "coverage": "covered",
+          "notes": "Brute force credential attacks via Hydra — Exploitation phase",
+          "source": { "tier": "T2", "ref": "arXiv 2501.13411: Hydra listed as Exploitation phase tool for credential brute forcing" }
+        },
+        {
+          "id": "T1190",
+          "coverage": "covered",
+          "notes": "Exploit public-facing application via Metasploit in Exploitation phase",
+          "source": { "tier": "T2", "ref": "arXiv 2501.13411: Metasploit listed as primary Exploitation phase tool" }
+        },
+        {
+          "id": "T1548",
+          "coverage": "not-covered",
+          "notes": "Privilege escalation phase documented as higher failure rate — no specific privesc techniques confirmed",
+          "source": { "tier": "T2", "ref": "arXiv 2501.13411: 'higher failure rates during privilege escalation' cited as limitation; no specific technique confirmed" }
+        },
+        {
+          "id": "T1021",
+          "coverage": "not-covered",
+          "notes": "No lateral movement documentation — AutoPenBench and AI-Pentest-Benchmark are single-target evaluations",
+          "source": { "tier": "T2", "ref": "arXiv 2501.13411: benchmark scope is single-target; no multi-host lateral movement described" }
+        }
+      ]
+    },
+    {
+      "id": "mapta",
+      "name": "MAPTA",
+      "has_paper": true,
+      "paper": {
+        "title": "Multi-Agent Penetration Testing AI for the Web",
+        "venue": "arXiv 2025",
+        "year": 2025,
+        "authors": ["Isaac David", "Arthur Gervais"],
+        "arxiv": "2508.20816",
+        "url": "https://arxiv.org/abs/2508.20816",
+        "affiliation": "Not specified in available sources",
+        "summary": "3-role architecture: Coordinator (orchestration) + N Sandbox Agents (isolated context, shared Docker) + Validation Agent (PoC execution verification). Web-only scope. XBOW 76.9% with perfect SSRF/misconfiguration coverage. First to add explicit proof-of-concept validation loop.",
+        "tags": ["multi-agent", "web-only", "XBOW", "docker", "validation-agent", "PoC-verification", "context-isolation"]
+      },
+      "benchmark": {
+        "dataset": "XBOW (104 web challenges)",
+        "score": "76.9% (80/104); SSRF 100%, Misconfiguration 100%, SSTI 85%, SQLi 83%, Auth 83%, XSS 57%, Blind SQLi 0%",
+        "notes": "Total cost $21.38 across all challenges; $0.073 median per successful attempt vs $0.357 for failures"
+      },
+      "limitations": [
+        "Blind SQL injection: 0% — timing-based attack not implemented",
+        "Excludes network-level vulnerabilities (SSL/TLS misconfigurations)",
+        "Cannot assess physical security, social engineering, or OWASP A08/A09",
+        "Authentication testing: 33% success rate",
+        "High false-positive risk for complex business logic vulnerabilities"
+      ],
+      "techniques": [
+        {
+          "id": "T1595",
+          "coverage": "covered",
+          "notes": "nmap reconnaissance — Coordinator delegates to Sandbox Agents for initial target enumeration",
+          "source": { "tier": "T2", "ref": "arXiv 2508.20816: nmap listed in tool inventory; reconnaissance precedes all exploitation" }
+        },
+        {
+          "id": "T1190",
+          "coverage": "covered",
+          "notes": "Primary benchmark focus: SQLi, XSS, SSTI, SSRF, command injection — 76.9% XBOW success",
+          "source": { "tier": "T2", "ref": "arXiv 2508.20816: XBOW benchmark breakdown shows web app exploitation across 8 categories" }
+        },
+        {
+          "id": "T1083",
+          "coverage": "covered",
+          "notes": "File/directory fuzzing via ffuf — web content discovery",
+          "source": { "tier": "T2", "ref": "arXiv 2508.20816: ffuf listed in tool inventory for web fuzzing/directory discovery" }
+        },
+        {
+          "id": "T1021",
+          "coverage": "not-covered",
+          "notes": "Web-only scope — no network-level lateral movement; XBOW does not include multi-host scenarios",
+          "source": { "tier": "T2", "ref": "arXiv 2508.20816: 'excludes network-level vulnerabilities'; web-only benchmark scope" }
+        }
+      ]
+    },
+    {
+      "id": "pentest-r1",
+      "name": "Pentest-R1",
+      "has_paper": true,
+      "paper": {
+        "title": "Pentest-R1: Towards Autonomous Penetration Testing Reasoning Optimized via Two-Stage Reinforcement Learning",
+        "venue": "arXiv 2025",
+        "year": 2025,
+        "authors": ["(authors not listed in available sources)"],
+        "arxiv": "2508.07382",
+        "url": "https://arxiv.org/abs/2508.07382",
+        "affiliation": "Not specified in available sources",
+        "summary": "Two-stage RL pipeline: offline RL on 14K HackTheBox/VulnHub walkthroughs + online RL via InterCode-CTF environment. GRPO+LoRA fine-tuning on 8B base model (DeepSeek-R1-0528-Qwen3-8B). Novel approach: learns pentest reasoning via RL rather than RAG/planning — first small RL-trained pentest model.",
+        "tags": ["single-agent", "reinforcement-learning", "LoRA", "GRPO", "CTF", "AutoPenBench", "8B-model"]
+      },
+      "benchmark": {
+        "dataset": "AutoPenBench (33 tasks) + Cybench (40 professional CTF tasks)",
+        "score": "AutoPenBench: 24.2%; Cybench: 15% (unguided)",
+        "notes": "1.64M tokens on Cybench vs Claude 3.7 (613K) — 2.7× token overhead; training data: 14K multi-turn tuples from 500+ real-world walkthroughs"
+      },
+      "limitations": [
+        "High token consumption: 1.64M tokens on Cybench vs 613K for Claude 3.7 — 2.7× overhead",
+        "No multimodal capability — visual interfaces (GUI, screenshots) not supported",
+        "No standard pentesting tool integration documented — operates in sandboxed environment",
+        "Low absolute scores: 24.2% AutoPenBench, 15% Cybench — below GPT-4 baselines",
+        "ATT&CK mapping not documented — only broad categories (web, crypto, reverse engineering)"
+      ],
+      "techniques": [
+        {
+          "id": "T1059",
+          "coverage": "covered",
+          "notes": "CTF command execution is primary interaction mode — all challenges involve shell commands",
+          "source": { "tier": "T3", "ref": "arXiv 2508.07382: 'Thought-Command-Observation' format implies command execution throughout; CTF challenge scope" }
+        },
+        {
+          "id": "T1083",
+          "coverage": "covered",
+          "notes": "File discovery in CTF contexts — standard enumeration before exploitation",
+          "source": { "tier": "T3", "ref": "arXiv 2508.07382: CTF benchmark categories include file enumeration; inferred from CTF standard methodology" }
+        },
+        {
+          "id": "T1190",
+          "coverage": "partial",
+          "notes": "Web exploitation category in Cybench — low performance (15% overall); specific web rate not broken out",
+          "source": { "tier": "T3", "ref": "arXiv 2508.07382: Cybench includes web exploitation; overall 15% implies weak web coverage" }
+        },
+        {
+          "id": "T1021",
+          "coverage": "not-covered",
+          "notes": "CTF-only evaluation scope — no multi-host or lateral movement scenarios",
+          "source": { "tier": "T3", "ref": "arXiv 2508.07382: CTF benchmark scope precludes lateral movement evaluation" }
+        }
+      ]
+    },
+    {
+      "id": "cochise",
+      "name": "cochise (LLMs Hack Enterprise Networks)",
+      "has_paper": true,
+      "paper": {
+        "title": "Can LLMs Hack Enterprise Networks? Autonomous Assumed Breach Penetration-Testing Active Directory Networks",
+        "venue": "ACM 2025",
+        "year": 2025,
+        "authors": ["Andreas Happe", "Jürgen Cito"],
+        "arxiv": "2502.04227",
+        "url": "https://arxiv.org/abs/2502.04227",
+        "affiliation": "TU Wien (Vienna, Austria)",
+        "summary": "Hierarchical Planner (o1) + Executor (gpt-4o) targeting AD networks. Evaluated on GOAD v3 testbed with 3 AD domains. 100% account compromise across 6 runs; 72 tools; $17.47 average cost per run. Demonstrates PTT-style planning applied to enterprise AD lateral movement.",
+        "tags": ["multi-agent", "AD", "enterprise", "hierarchical", "GOAD", "Kerberos", "Kerberoasting", "PTT", "ACM"]
+      },
+      "benchmark": {
+        "dataset": "GOAD v3 (Game of Active Directory) — 3 AD domains, Windows Server 2016/2019, simulated users",
+        "score": "100% compromise rate (6/6 runs); 1-3 user accounts compromised per run; avg $17.47/run",
+        "notes": "35.9% invalid command rate; 94.07% of cost from o1 model; saturation reached after 6 runs"
+      },
+      "limitations": [
+        "35.9% invalid command rate — hashcat 94% failure, impacket-mssqlclient 68.75% failure",
+        "'Rabbit hole' behavior: Planner hyper-focuses on unproductive attack vectors requiring circuit-breakers",
+        "Executor loses memory between rounds — must relearn tool parameters in each round",
+        "Pass-the-hash / pass-the-token not observed in experiments despite tool availability",
+        "Cost dominated by o1 model (94.07%); o1 output tokens billed at 4× input rate",
+        "Interactive/GUI tool incompatibility — 10-minute timeout for any blocking tool"
+      ],
+      "techniques": [
+        {
+          "id": "T1595",
+          "coverage": "covered",
+          "notes": "nmap active scanning — 100% of runs begin with nmap reconnaissance",
+          "source": { "tier": "T2", "ref": "arXiv 2502.04227: nmap listed as 100% usage across all 6 runs" }
+        },
+        {
+          "id": "T1046",
+          "coverage": "covered",
+          "notes": "Network service discovery via nmap service detection",
+          "source": { "tier": "T2", "ref": "arXiv 2502.04227: nmap with service detection; 100% of runs" }
+        },
+        {
+          "id": "T1135",
+          "coverage": "covered",
+          "notes": "Network share discovery via smbclient — 100% of runs",
+          "source": { "tier": "T1", "ref": "arXiv 2502.04227: smbclient usage at 100% of runs; Table showing tool frequency" }
+        },
+        {
+          "id": "T1069",
+          "coverage": "covered",
+          "notes": "Permission groups discovery via rpcclient — 83% of runs",
+          "source": { "tier": "T1", "ref": "arXiv 2502.04227: rpcclient at 83% usage; SMB resource querying for group enumeration" }
+        },
+        {
+          "id": "T1087",
+          "coverage": "covered",
+          "notes": "Account discovery via bloodhound-python for AD path analysis",
+          "source": { "tier": "T2", "ref": "arXiv 2502.04227: bloodhound-python listed in tool inventory for AD enumeration" }
+        },
+        {
+          "id": "T1110",
+          "coverage": "covered",
+          "notes": "Brute force credential attacks via hashcat (100%) and john (83%) for hash cracking",
+          "source": { "tier": "T1", "ref": "arXiv 2502.04227: hashcat 100% usage, john 83% — password cracking after hash extraction" }
+        },
+        {
+          "id": "T1558",
+          "coverage": "covered",
+          "notes": "Kerberoasting (impacket-GetUserSPNs 100%) + AS-REP roasting (impacket-GetNPUsers 83%)",
+          "source": { "tier": "T1", "ref": "arXiv 2502.04227: impacket-GetUserSPNs at 100%, impacket-GetNPUsers at 83% — Kerberos ticket attacks" }
+        },
+        {
+          "id": "T1003",
+          "coverage": "covered",
+          "notes": "OS credential dumping — 50% of runs; hash extraction feeding T1110",
+          "source": { "tier": "T2", "ref": "arXiv 2502.04227: credential dumping at 50% of runs in tool usage data" }
+        },
+        {
+          "id": "T1210",
+          "coverage": "covered",
+          "notes": "Remote service exploitation — 66% of runs for lateral movement entry",
+          "source": { "tier": "T1", "ref": "arXiv 2502.04227: T1210 remote service exploitation at 66% usage in tactic breakdown table" }
+        },
+        {
+          "id": "T1482",
+          "coverage": "covered",
+          "notes": "Domain trust discovery via bloodhound-python AD graph analysis",
+          "source": { "tier": "T2", "ref": "arXiv 2502.04227: bloodhound-python for AD path analysis includes trust enumeration" }
+        },
+        {
+          "id": "T1021",
+          "coverage": "partial",
+          "notes": "Lateral movement attempted via evil-winrm/impacket; pass-the-hash not observed despite tool availability",
+          "source": { "tier": "T2", "ref": "arXiv 2502.04227: 'pass-the-hash and pass-the-token attacks were not observed' — capability gap noted as limitation" }
+        }
+      ]
+    },
+    {
+      "id": "autopen",
+      "name": "AutoPen",
+      "has_paper": true,
+      "paper": {
+        "title": "AutoPen: Towards Autonomous Penetration Testing Using LLM-Powered Agents",
+        "venue": "ACM CSAE 2025 (9th International Conference on Computer Science and Application Engineering)",
+        "year": 2025,
+        "authors": ["(authors not publicly listed)"],
+        "arxiv": "",
+        "url": "https://dl.acm.org/doi/10.1145/3772886.3772899",
+        "affiliation": "Not specified in available sources",
+        "summary": "Multi-agent role-playing architecture with knowledge graph for information management. Uses RAG, chain-of-thought reasoning, and structured output to mitigate LLM limitations. Partitions penetration testing workflow across specialized agents. Full paper behind ACM paywall.",
+        "tags": ["multi-agent", "knowledge-graph", "RAG", "CoT", "structured-output", "ACM", "paywalled"]
+      },
+      "benchmark": {
+        "dataset": "Not available in publicly accessible sources",
+        "score": "Not available — paper behind ACM paywall",
+        "notes": "No public benchmark data found; paper published in ACM CSAE 2025 proceedings"
+      },
+      "limitations": [
+        "Full paper behind ACM paywall — technique-level details unavailable",
+        "No benchmark data accessible in public sources",
+        "Tool inventory not documented in publicly accessible sections",
+        "Cannot complete ATT&CK mapping without full paper access"
+      ],
+      "techniques": [
+        {
+          "id": "T1595",
+          "coverage": "partial",
+          "notes": "Active scanning implied by penetration testing workflow — specific tool not confirmed from available sources",
+          "source": { "tier": "T4", "ref": "ACM CSAE 2025 abstract: multi-agent pentest workflow implies reconnaissance phase; specific tools unconfirmed" }
+        },
+        {
+          "id": "T1190",
+          "coverage": "partial",
+          "notes": "Exploit public-facing application implied by pentest scope — specific techniques unconfirmed",
+          "source": { "tier": "T4", "ref": "ACM CSAE 2025 abstract: penetration testing scope implies exploitation; details behind paywall" }
+        }
+      ]
     }
   ],
   "tools": []
