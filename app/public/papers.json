@@ -876,7 +876,481 @@
           "source": { "tier": "T4", "ref": "ACM CSAE 2025 abstract: penetration testing scope implies exploitation; details behind paywall" }
         }
       ]
+    },
+    {
+      "id": "pentagi",
+      "name": "PentAGI",
+      "has_paper": false,
+      "paper": {
+        "title": "PentAGI — Fully Autonomous AI Agents System for Penetration Testing",
+        "venue": "GitHub (no paper)",
+        "year": 2026,
+        "authors": ["vxcontrol"],
+        "arxiv": "",
+        "url": "https://github.com/vxcontrol/pentagi",
+        "affiliation": "vxcontrol",
+        "summary": "6-agent team (Researcher, Developer, Executor, Adviser/Mentor, Planner, Reflector) with three memory layers (vector store, active context, episodic). 20+ tools in sandboxed Docker. Self-correction via Reflector agent. Supports 12+ concurrent flows.",
+        "tags": ["no-paper", "multi-agent", "self-correction", "vector-memory", "Neo4j", "docker", "multi-model"]
+      },
+      "benchmark": {
+        "dataset": "No published CTF/HTB benchmark",
+        "score": "2× result quality improvement with monitoring enabled (self-reported); no external benchmark",
+        "notes": "No reproducible external benchmark; quality claim is qualitative from README"
+      },
+      "limitations": [
+        "No published external benchmark — performance claims are self-reported",
+        "Tool call limits enforced: 100 for general agents, 20 for specialized — may stall long chains",
+        "Execution monitoring adds 2-3× token overhead and requires models < 32B for optimal use",
+        "Full tool inventory not enumerated in README — exact ATT&CK coverage unverifiable",
+        "No formal ATT&CK technique mapping in documentation"
+      ],
+      "techniques": [
+        {
+          "id": "T1595",
+          "coverage": "partial",
+          "notes": "nmap listed as primary recon tool — autonomous decision to scan not explicitly documented",
+          "source": { "tier": "T2", "ref": "GitHub README: nmap in tool list; Researcher agent handles reconnaissance phase" }
+        },
+        {
+          "id": "T1046",
+          "coverage": "partial",
+          "notes": "Service discovery via nmap — same autonomy caveat as T1595",
+          "source": { "tier": "T2", "ref": "GitHub README: nmap with service detection in tool inventory" }
+        },
+        {
+          "id": "T1190",
+          "coverage": "partial",
+          "notes": "sqlmap listed for SQL injection exploitation; Metasploit for exploitation — specific scenario not documented",
+          "source": { "tier": "T2", "ref": "GitHub README: sqlmap and metasploit in tool inventory; Executor agent handles exploitation" }
+        },
+        {
+          "id": "T1059",
+          "coverage": "partial",
+          "notes": "Executor agent runs shell commands in Docker sandbox — specific shell types not documented",
+          "source": { "tier": "T2", "ref": "GitHub README: Executor agent 'implements and runs security tests' via Docker containers" }
+        }
+      ]
+    },
+    {
+      "id": "shannon",
+      "name": "Shannon",
+      "has_paper": false,
+      "paper": {
+        "title": "Shannon — Autonomous White-Box AI Pentester for Web Applications",
+        "venue": "GitHub (no paper)",
+        "year": 2025,
+        "authors": ["KeygraphHQ"],
+        "arxiv": "",
+        "url": "https://github.com/KeygraphHQ/shannon",
+        "affiliation": "Keygragh (product company)",
+        "summary": "5-phase multi-agent pipeline (Pre-Recon → Recon → Vuln Analysis → Exploit → Report). 3 parallel agents in Phase 3 target injection/XSS/auth/authz/SSRF. Claude Agent SDK. White-box: requires source code. 96.15% on hint-free XBOW. 'No exploit, no report' policy enforces PoC validation.",
+        "tags": ["no-paper", "multi-agent", "white-box", "XBOW", "Claude-SDK", "parallel-agents", "web-only", "PoC-verified"]
+      },
+      "benchmark": {
+        "dataset": "XBOW benchmark (hint-free, source-aware variant)",
+        "score": "96.15% (100/104 exploits) — highest published XBOW score as of 2026-05-19",
+        "notes": "Source-aware variant: agent has access to source code; different from standard XBOW black-box evaluation"
+      },
+      "limitations": [
+        "White-box only: requires source code access — not applicable to black-box engagements",
+        "Web application scope only — no network scanning, no AD, no lateral movement",
+        "Production environments forbidden — 'actively executes attacks with potential mutative effects'",
+        "~$50 USD per scan (Claude 3.5 Sonnet), ~1-1.5 hours runtime",
+        "Claude models only — no other LLM support",
+        "Context window limits may miss vulnerabilities in complex codebases"
+      ],
+      "techniques": [
+        {
+          "id": "T1190",
+          "coverage": "covered",
+          "notes": "Primary benchmark focus: injection, XSS, broken auth, authz, SSRF — 96.15% XBOW (source-aware)",
+          "source": { "tier": "T2", "ref": "GitHub README: Phase 3 parallel agents target injection, XSS, auth, authz, SSRF; XBOW 96.15%" }
+        },
+        {
+          "id": "T1059",
+          "coverage": "partial",
+          "notes": "Command injection via web input — subset of T1190; no direct shell access or interactive terminal",
+          "source": { "tier": "T2", "ref": "GitHub README: injection attacks include command injection; no interactive shell capability documented" }
+        },
+        {
+          "id": "T1595",
+          "coverage": "not-covered",
+          "notes": "No network scanning — white-box source-code analysis replaces active scanning; nmap not used",
+          "source": { "tier": "T2", "ref": "GitHub README: pre-recon is source code analysis, not network scanning; no nmap or port scan tools" }
+        },
+        {
+          "id": "T1021",
+          "coverage": "not-covered",
+          "notes": "Web application scope only — no lateral movement or multi-host capability",
+          "source": { "tier": "T2", "ref": "GitHub README: web application pentesting scope; no multi-host or network-level features" }
+        }
+      ]
+    },
+    {
+      "id": "cairn",
+      "name": "Cairn",
+      "has_paper": false,
+      "paper": {
+        "title": "Cairn — General-Purpose State-Space Search Engine for Autonomous Penetration Testing",
+        "venue": "GitHub (no paper)",
+        "year": 2025,
+        "authors": ["oritera"],
+        "arxiv": "",
+        "url": "https://github.com/oritera/Cairn",
+        "affiliation": "oritera",
+        "summary": "General-purpose OODA-loop state-space search engine (Observe/Orient/Decide/Act) coordinated via stigmergy blackboard (Facts/Intents/Hints). Zero predefined agent roles, zero MCP, zero RAG. Workers coordinate indirectly. Validated first on pentest CTF. Perfect score (54/54) at Tencent Cloud Hackathon 2nd Edition.",
+        "tags": ["no-paper", "OODA-loop", "stigmergy", "general-purpose", "CTF", "zero-RAG", "zero-MCP"]
+      },
+      "benchmark": {
+        "dataset": "Tencent Cloud Hackathon AI Penetration Testing Challenge (2nd Edition) — 610 teams, 1,345 participants",
+        "score": "54/54 problems solved (only team with perfect score); 3rd place overall",
+        "notes": "Zero prior testing or tuning; deployed for first time at 4 AM on race day; domain-specific performance unverified"
+      },
+      "limitations": [
+        "No published reproducible pentest benchmark — hackathon score is not externally verifiable",
+        "General-purpose search: no domain-specific pentesting tools or knowledge base",
+        "No explicit ATT&CK mapping or attack-phase documentation",
+        "OODA loop may be inefficient for long attack chains requiring stateful context accumulation",
+        "Tool inventory not documented — no specific security tools listed"
+      ],
+      "techniques": [
+        {
+          "id": "T1059",
+          "coverage": "partial",
+          "notes": "Command execution via Claude Code/Codex backends in Docker containers — general-purpose shell access",
+          "source": { "tier": "T2", "ref": "GitHub README: Docker containers for worker isolation; Claude Code/Codex/Pi as execution backends" }
+        },
+        {
+          "id": "T1190",
+          "coverage": "partial",
+          "notes": "Hackathon pentesting likely includes web exploitation — specific categories not documented; inferred from CTF scope",
+          "source": { "tier": "T3", "ref": "GitHub README: Tencent Cloud Hackathon pentest scope; specific challenge categories not enumerated" }
+        }
+      ]
+    },
+    {
+      "id": "dark-moon",
+      "name": "Dark-Moon",
+      "has_paper": false,
+      "paper": {
+        "title": "Dark-Moon — Autonomous AI Pentesting Engine (Web/Cloud/AD/Kubernetes)",
+        "venue": "GitHub (no paper)",
+        "year": 2025,
+        "authors": ["ASCIT31"],
+        "arxiv": "",
+        "url": "https://github.com/ASCIT31/Dark-Moon",
+        "affiliation": "ASCIT31",
+        "summary": "3-tier architecture: User → OpenCode AI Brain → MCP Security Gatekeeper → Docker Toolbox (50+ tools). Dynamic sub-agent deployment per detected technology (CMS/AD/K8s/headless-browser). Parallel multi-agent execution. MITRE ATT&CK aligned. Broadest scope of no-paper agents: web + cloud + AD + Kubernetes.",
+        "tags": ["no-paper", "multi-agent", "MCP", "50-tools", "AD", "kubernetes", "cloud", "web", "ATT&CK-aligned"]
+      },
+      "benchmark": {
+        "dataset": "No published external benchmark",
+        "score": "No quantitative benchmark — qualitative claims only",
+        "notes": "MITRE ATT&CK alignment stated but no specific coverage numbers provided"
+      },
+      "limitations": [
+        "No published external benchmark — all performance claims qualitative",
+        "MITRE ATT&CK alignment stated but specific T-IDs not enumerated",
+        "Tool inventory breadth (50+) makes autonomous selection logic opaque",
+        "No peer-reviewed validation of multi-surface attack chain completeness"
+      ],
+      "techniques": [
+        {
+          "id": "T1595",
+          "coverage": "covered",
+          "notes": "Naabu and Masscan for port scanning; Subfinder for subdomain enumeration — Recon category",
+          "source": { "tier": "T2", "ref": "GitHub README: Naabu, Masscan in Port Scanning category; Subfinder in Recon & Crawling category" }
+        },
+        {
+          "id": "T1046",
+          "coverage": "covered",
+          "notes": "Service enumeration via Nuclei, httpx, wafw00f; CMS fingerprinting via WhatWeb, CMSeeK",
+          "source": { "tier": "T2", "ref": "GitHub README: Nuclei/httpx/wafw00f in Web Scanning; WhatWeb/CMSeeK in CMS category" }
+        },
+        {
+          "id": "T1083",
+          "coverage": "covered",
+          "notes": "File/directory discovery via ffuf, dirb; URL discovery via Katana, Waybackurls",
+          "source": { "tier": "T2", "ref": "GitHub README: ffuf/dirb in Web Scanning; Katana/Waybackurls in Recon & Crawling" }
+        },
+        {
+          "id": "T1190",
+          "coverage": "covered",
+          "notes": "SQLi via sqlmap, parameter discovery via Arjun, vulnerability templates via Nuclei",
+          "source": { "tier": "T2", "ref": "GitHub README: sqlmap, Arjun, Nuclei in Web Scanning category for exploitation" }
+        },
+        {
+          "id": "T1110",
+          "coverage": "covered",
+          "notes": "Brute force credential attacks via Hydra — Network category",
+          "source": { "tier": "T2", "ref": "GitHub README: Hydra in Network category for credential brute forcing" }
+        },
+        {
+          "id": "T1087",
+          "coverage": "covered",
+          "notes": "Account discovery via BloodHound — Active Directory category",
+          "source": { "tier": "T2", "ref": "GitHub README: BloodHound in Active Directory category for account/path discovery" }
+        },
+        {
+          "id": "T1482",
+          "coverage": "covered",
+          "notes": "Domain trust discovery via BloodHound path analysis — Active Directory category",
+          "source": { "tier": "T2", "ref": "GitHub README: BloodHound in Active Directory category; trust path analysis included" }
+        },
+        {
+          "id": "T1558",
+          "coverage": "partial",
+          "notes": "Kerberos ticket attacks via Impacket suite (30+ scripts) — specific subtechniques pending README verification",
+          "source": { "tier": "T2", "ref": "GitHub README: Impacket 30+ scripts in Active Directory category; Kerberoasting/AS-REP pending specific script enumeration" }
+        },
+        {
+          "id": "T1021",
+          "coverage": "partial",
+          "notes": "Lateral movement via NetExec (SMB/WinRM) + Impacket — specific execution sequences pending docs",
+          "source": { "tier": "T2", "ref": "GitHub README: NetExec in Active Directory category; Impacket includes PsExec/WMIExec equivalents" }
+        },
+        {
+          "id": "T1526",
+          "coverage": "covered",
+          "notes": "Cloud service discovery via Kubescape/kubectl for Kubernetes cluster enumeration",
+          "source": { "tier": "T2", "ref": "GitHub README: kubectl, Kubescape, Kubeletctl in Kubernetes category for cluster discovery" }
+        }
+      ]
     }
   ],
-  "tools": []
+  "tools": [
+    {
+      "id": "nmap",
+      "name": "nmap",
+      "type": "recon",
+      "techniques": [
+        { "id": "T1595", "name": "Active Scanning" },
+        { "id": "T1595.001", "name": "Scanning IP Blocks" },
+        { "id": "T1046", "name": "Network Service Discovery" }
+      ],
+      "automation_difficulty": "easy",
+      "used_by": ["pentestgpt", "decepticon", "artemis", "pentestagent", "vulnbot", "cochise", "mapta", "pentagi"],
+      "notes": "XML output parseable; standard first step in nearly all agents; service version detection via -sV flag"
+    },
+    {
+      "id": "sqlmap",
+      "name": "sqlmap",
+      "type": "exploitation",
+      "techniques": [
+        { "id": "T1190", "name": "Exploit Public-Facing Application" },
+        { "id": "T1059.006", "name": "Python" }
+      ],
+      "automation_difficulty": "easy",
+      "used_by": ["artemis", "mapta", "dark-moon", "pentagi"],
+      "notes": "Automated SQL injection discovery and exploitation; Python-based; output parseable but verbose"
+    },
+    {
+      "id": "metasploit",
+      "name": "Metasploit Framework",
+      "type": "exploitation",
+      "techniques": [
+        { "id": "T1190", "name": "Exploit Public-Facing Application" },
+        { "id": "T1059", "name": "Command and Scripting Interpreter" },
+        { "id": "T1548", "name": "Abuse Elevation Control Mechanism" },
+        { "id": "T1021", "name": "Remote Services" },
+        { "id": "T1003", "name": "OS Credential Dumping" }
+      ],
+      "automation_difficulty": "medium",
+      "used_by": ["decepticon", "artemis", "vulnbot", "pentestagent", "pentagi"],
+      "notes": "Interactive msfconsole requires tmux+prompt detection for autonomous use (Decepticon pattern); covers exploitation through post-exploitation"
+    },
+    {
+      "id": "bloodhound",
+      "name": "BloodHound / SharpHound",
+      "type": "AD-recon",
+      "techniques": [
+        { "id": "T1087", "name": "Account Discovery" },
+        { "id": "T1482", "name": "Domain Trust Discovery" },
+        { "id": "T1069", "name": "Permission Groups Discovery" }
+      ],
+      "automation_difficulty": "medium",
+      "used_by": ["decepticon", "cochise", "dark-moon"],
+      "notes": "Neo4j graph backend; outputs attack paths; requires domain credentials to run; results fed to lateral movement planning"
+    },
+    {
+      "id": "certipy",
+      "name": "certipy",
+      "type": "AD-exploitation",
+      "techniques": [
+        { "id": "T1649", "name": "Steal or Forge Authentication Certificates" }
+      ],
+      "automation_difficulty": "hard",
+      "used_by": ["decepticon"],
+      "notes": "ADCS abuse: ESC1–ESC15 attack vectors; requires CA enumeration and template misconfiguration; Decepticon AD Operator agent"
+    },
+    {
+      "id": "mimikatz",
+      "name": "mimikatz",
+      "type": "credential-dumping",
+      "techniques": [
+        { "id": "T1003", "name": "OS Credential Dumping" },
+        { "id": "T1003.001", "name": "LSASS Memory" }
+      ],
+      "automation_difficulty": "medium",
+      "used_by": ["decepticon"],
+      "notes": "Windows credential dumping; requires LSASS access; detected by modern AV/EDR; Decepticon Post-Exploit agent"
+    },
+    {
+      "id": "evil-winrm",
+      "name": "evil-winrm",
+      "type": "lateral-movement",
+      "techniques": [
+        { "id": "T1021.006", "name": "Remote Services: Windows Remote Management" }
+      ],
+      "automation_difficulty": "medium",
+      "used_by": ["decepticon"],
+      "notes": "WinRM interactive shell; requires valid credentials; tmux integration in Decepticon for prompt detection"
+    },
+    {
+      "id": "nuclei",
+      "name": "Nuclei",
+      "type": "vuln-scan",
+      "techniques": [
+        { "id": "T1595.002", "name": "Vulnerability Scanning" },
+        { "id": "T1190", "name": "Exploit Public-Facing Application" }
+      ],
+      "automation_difficulty": "easy",
+      "used_by": ["artemis", "dark-moon"],
+      "notes": "Template-based scanner; fast; covers CVE detection and exploit PoCs; YAML template library; output parseable"
+    },
+    {
+      "id": "gobuster",
+      "name": "gobuster / dirbuster",
+      "type": "recon",
+      "techniques": [
+        { "id": "T1595.003", "name": "Wordlist Scanning" },
+        { "id": "T1083", "name": "File and Directory Discovery" }
+      ],
+      "automation_difficulty": "easy",
+      "used_by": ["pentestgpt", "artemis"],
+      "notes": "Wordlist-based directory brute forcing; PentestGPT context explosion documented (thousands of tokens per run)"
+    },
+    {
+      "id": "rustscan",
+      "name": "RustScan",
+      "type": "recon",
+      "techniques": [
+        { "id": "T1595.001", "name": "Scanning IP Blocks" },
+        { "id": "T1046", "name": "Network Service Discovery" }
+      ],
+      "automation_difficulty": "easy",
+      "used_by": ["artemis"],
+      "notes": "Faster than nmap for initial port discovery; typically used before nmap for service detection; ARTEMIS pipeline"
+    },
+    {
+      "id": "netexec",
+      "name": "NetExec (CrackMapExec)",
+      "type": "AD-lateral",
+      "techniques": [
+        { "id": "T1021.002", "name": "SMB/Windows Admin Shares" },
+        { "id": "T1110", "name": "Brute Force" },
+        { "id": "T1135", "name": "Network Share Discovery" }
+      ],
+      "automation_difficulty": "medium",
+      "used_by": ["cochise", "dark-moon"],
+      "notes": "SMB/LDAP/WinRM enumeration; 100% usage in cochise; pass-the-hash and credential spraying capable"
+    },
+    {
+      "id": "impacket",
+      "name": "Impacket suite",
+      "type": "AD-exploitation",
+      "techniques": [
+        { "id": "T1558", "name": "Steal or Forge Kerberos Tickets" },
+        { "id": "T1558.003", "name": "Kerberoasting" },
+        { "id": "T1558.004", "name": "AS-REP Roasting" },
+        { "id": "T1021.002", "name": "SMB/Windows Admin Shares" }
+      ],
+      "automation_difficulty": "medium",
+      "used_by": ["cochise", "dark-moon"],
+      "notes": "30+ Python scripts; GetUserSPNs (Kerberoasting), GetNPUsers (AS-REP roasting); cochise at 100%/83% usage respectively"
+    },
+    {
+      "id": "hydra",
+      "name": "Hydra",
+      "type": "credential-attack",
+      "techniques": [
+        { "id": "T1110", "name": "Brute Force" },
+        { "id": "T1110.001", "name": "Password Guessing" }
+      ],
+      "automation_difficulty": "easy",
+      "used_by": ["vulnbot", "dark-moon"],
+      "notes": "Network protocol brute forcer; SSH, FTP, HTTP, SMB; VulnBot Exploitation phase"
+    },
+    {
+      "id": "hashcat",
+      "name": "hashcat / john",
+      "type": "credential-attack",
+      "techniques": [
+        { "id": "T1110.002", "name": "Password Cracking" }
+      ],
+      "automation_difficulty": "medium",
+      "used_by": ["cochise"],
+      "notes": "Offline hash cracking; hashcat GPU-accelerated; john CPU; cochise: hashcat 94% failure rate with auto-repair"
+    },
+    {
+      "id": "ffuf",
+      "name": "ffuf",
+      "type": "web-fuzzing",
+      "techniques": [
+        { "id": "T1595.003", "name": "Wordlist Scanning" },
+        { "id": "T1083", "name": "File and Directory Discovery" }
+      ],
+      "automation_difficulty": "easy",
+      "used_by": ["mapta", "dark-moon"],
+      "notes": "Fast web fuzzer; directory and parameter fuzzing; output JSON-parseable; dominant tool in MAPTA per Figure 6"
+    },
+    {
+      "id": "nikto",
+      "name": "Nikto",
+      "type": "vuln-scan",
+      "techniques": [
+        { "id": "T1046", "name": "Network Service Discovery" },
+        { "id": "T1595.002", "name": "Vulnerability Scanning" }
+      ],
+      "automation_difficulty": "easy",
+      "used_by": ["vulnbot"],
+      "notes": "Web server vulnerability scanner; identifies misconfigurations and known CVEs; VulnBot Scanning phase"
+    },
+    {
+      "id": "wpscan",
+      "name": "WPScan",
+      "type": "vuln-scan",
+      "techniques": [
+        { "id": "T1046", "name": "Network Service Discovery" },
+        { "id": "T1595.002", "name": "Vulnerability Scanning" }
+      ],
+      "automation_difficulty": "easy",
+      "used_by": ["vulnbot", "dark-moon"],
+      "notes": "WordPress-specific vulnerability scanner; plugin/theme enumeration; VulnBot Scanning phase"
+    },
+    {
+      "id": "chisel",
+      "name": "Chisel",
+      "type": "tunneling",
+      "techniques": [
+        { "id": "T1090", "name": "Proxy" },
+        { "id": "T1572", "name": "Protocol Tunneling" }
+      ],
+      "automation_difficulty": "hard",
+      "used_by": [],
+      "notes": "TCP/UDP tunneling over HTTP; typically used for firewall bypass in post-exploitation; no agent confirmed to use autonomously"
+    },
+    {
+      "id": "kubescape",
+      "name": "Kubescape / kubectl",
+      "type": "cloud-recon",
+      "techniques": [
+        { "id": "T1526", "name": "Cloud Service Discovery" },
+        { "id": "T1613", "name": "Container and Resource Discovery" }
+      ],
+      "automation_difficulty": "medium",
+      "used_by": ["dark-moon"],
+      "notes": "Kubernetes cluster security assessment; RBAC enumeration; misconfiguration discovery; Dark-Moon Kubernetes agent"
+    }
+  ]
 }
