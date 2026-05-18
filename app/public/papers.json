@@ -1,6 +1,138 @@
 {
   "version": "1.0",
   "lastUpdated": "2026-05-18",
-  "agents": [],
+  "agents": [
+    {
+      "id": "pentestgpt",
+      "name": "PentestGPT",
+      "has_paper": true,
+      "paper": {
+        "title": "PentestGPT: An LLM Empowered Automatic Penetration Testing",
+        "venue": "USENIX Security 2024",
+        "year": 2024,
+        "authors": ["Gelei Deng", "et al."],
+        "arxiv": "2308.06782",
+        "url": "https://arxiv.org/abs/2308.06782",
+        "affiliation": "Nanyang Technological University / UC Santa Barbara",
+        "summary": "Single agent + Pentesting Task Tree (PTT) + 3 LLM modules (Reasoning / Generation / Parsing). Modules use independent sessions to prevent context pollution. No role differentiation.",
+        "tags": ["single-agent", "PTT", "web", "CTF", "context-management"]
+      },
+      "benchmark": {
+        "dataset": "Custom HackTheBox-style machines (13 total) + HackTheBox (10) + picoMini CTF (21)",
+        "score": "61.54% (8/13 machines); Hard: 0/2; Sub-task: 61% (111/182)",
+        "notes": "Ablation: removing Reasoning Module drops to 53.6% — PTT is core contribution. GPT-4 vs naive: +58.6%"
+      },
+      "limitations": [
+        "Hard difficulty machines: 0/2 solved across all configurations",
+        "Single tool output (dirbuster/gobuster) can consume thousands of tokens — no compression mechanism",
+        "No multi-host / lateral movement design — single-machine scope only",
+        "No role differentiation — single LLM handles all attack phases sequentially",
+        "No Memory beyond PTT tree — no cross-session learning"
+      ],
+      "techniques": [
+        { "id": "T1595", "coverage": "covered", "notes": "nmap active scanning is first step in every session" },
+        { "id": "T1046", "coverage": "covered", "notes": "Network service discovery via nmap output parsing" },
+        { "id": "T1083", "coverage": "covered", "notes": "File/directory discovery via dirbuster/gobuster — causes context explosion" },
+        { "id": "T1190", "coverage": "covered", "notes": "Exploit Public-Facing Application — web vulns are primary target" },
+        { "id": "T1059", "coverage": "partial", "notes": "Command execution attempted; harder shells sometimes fail" },
+        { "id": "T1518", "coverage": "tool-dep", "notes": "Software discovery via tool output parsing" },
+        { "id": "T1082", "coverage": "tool-dep", "notes": "System info discovery via shell commands" },
+        { "id": "T1548", "coverage": "partial", "notes": "Privilege escalation attempted but hard machines fail (0/2)" },
+        { "id": "T1021", "coverage": "not-covered", "notes": "No lateral movement — single-machine design" },
+        { "id": "T1008", "coverage": "not-covered", "notes": "No multi-C2 or fallback channel" }
+      ]
+    },
+    {
+      "id": "decepticon",
+      "name": "Decepticon",
+      "has_paper": true,
+      "paper": {
+        "title": "Decepticon — Autonomous Red Team Agent",
+        "venue": "GitHub / XBOW benchmark (no formal venue found as of 2026-05-18)",
+        "year": 2025,
+        "authors": ["PurpleAILAB"],
+        "arxiv": "",
+        "url": "https://github.com/PurpleAILAB/Decepticon",
+        "affiliation": "PurpleAILAB",
+        "summary": "16 specialized agents orchestrated via LangGraph with engagement discipline (RoE + OPPLAN + MITRE ATT&CK mapping pre-generated). Fresh context per objective prevents noise accumulation. Neo4j stores findings graph. Supports interactive shells via tmux + prompt detection.",
+        "tags": ["multi-agent", "LangGraph", "Neo4j", "AD", "autonomous", "fresh-context", "OT", "cloud", "binary"]
+      },
+      "benchmark": {
+        "dataset": "XBOW validation-benchmarks Hard Level 3",
+        "score": "7/8 (87.5%)",
+        "notes": "Highest published score on XBOW Hard as of 2026-05-18. Supports msfconsole, sliver-client, evil-winrm via tmux."
+      },
+      "limitations": [
+        "Fresh context rebuilt per objective: no cross-session or cross-objective knowledge accumulation",
+        "Neo4j stores findings graph only — not an attack knowledge graph (no ATT&CK technique nodes or planning)",
+        "No Tactic-level reflection: agent cannot reason about 'which ATT&CK stage am I in globally'",
+        "12.5% failure cases on XBOW Hard (1/8) — specific failure cause not documented publicly",
+        "No formal academic paper — no reproducible benchmark methodology published"
+      ],
+      "techniques": [
+        { "id": "T1595", "coverage": "covered", "notes": "Recon agent: port scan, service enumeration, DNS, subdomain — results written to Neo4j" },
+        { "id": "T1590", "coverage": "covered", "notes": "Gather victim network info via Recon agent" },
+        { "id": "T1589", "coverage": "covered", "notes": "OSINT via Recon agent" },
+        { "id": "T1592", "coverage": "covered", "notes": "Gather victim host info — service fingerprinting" },
+        { "id": "T1190", "coverage": "covered", "notes": "Exploit agent: SQLi, SSTI, credential attacks, ADCS abuse" },
+        { "id": "T1078", "coverage": "covered", "notes": "Valid accounts — credential harvesting and reuse" },
+        { "id": "T1059", "coverage": "covered", "notes": "Command execution via interactive shells (tmux + prompt detection for msfconsole/evil-winrm)" },
+        { "id": "T1068", "coverage": "covered", "notes": "Exploitation for privilege escalation — Post-Exploit agent" },
+        { "id": "T1548", "coverage": "covered", "notes": "Abuse elevation control — Post-Exploit agent handles privesc" },
+        { "id": "T1003", "coverage": "covered", "notes": "OS credential dumping via mimikatz — Post-Exploit agent" },
+        { "id": "T1558", "coverage": "covered", "notes": "Steal/forge Kerberos tickets: Kerberoasting, AS-REP roasting — AD Operator agent" },
+        { "id": "T1649", "coverage": "covered", "notes": "Steal/forge auth certs: certipy ESC1-ESC15 — AD Operator agent" },
+        { "id": "T1087", "coverage": "covered", "notes": "Account discovery via BloodHound — AD Operator agent" },
+        { "id": "T1482", "coverage": "covered", "notes": "Domain trust discovery via BloodHound path analysis" },
+        { "id": "T1021", "coverage": "covered", "notes": "Remote services lateral movement — Post-Exploit + evil-winrm" },
+        { "id": "T1550", "coverage": "covered", "notes": "Use alternate auth material — pass-the-hash/ticket" },
+        { "id": "T1005", "coverage": "covered", "notes": "Data from local system — collection phase" },
+        { "id": "T1046", "coverage": "covered", "notes": "Network service discovery — Recon agent" },
+        { "id": "T1027", "coverage": "covered", "notes": "Binary analysis: Reverser agent — Ghidra/radare2, packer detection, ROP gadgets" },
+        { "id": "T1526", "coverage": "covered", "notes": "Cloud service discovery — Cloud Hunter agent: IAM, S3, K8s RBAC" },
+        { "id": "T1537", "coverage": "partial", "notes": "Data transfer to cloud account — Cloud Hunter agent" },
+        { "id": "T1003.001", "coverage": "covered", "notes": "LSASS memory dump — mimikatz via Post-Exploit agent" }
+      ]
+    },
+    {
+      "id": "cai",
+      "name": "CAI",
+      "has_paper": true,
+      "paper": {
+        "title": "CAI: An Open, Bug Bounty-Ready Cybersecurity AI",
+        "venue": "arXiv 2025",
+        "year": 2025,
+        "authors": ["aliasrobotics team"],
+        "arxiv": "2504.06017",
+        "url": "https://arxiv.org/abs/2504.06017",
+        "affiliation": "Alias Robotics (Spain)",
+        "summary": "Open-source cybersecurity AI framework. Modular agent architecture with Handoffs (agent routing), Guardrails (prompt injection defense), HITL checkpoints. 300+ model support. Community + Professional (€350/mo, alias1 model) tiers. Validated on OT/ICS CTF, Bug Bounty, robotics, and web security.",
+        "tags": ["framework", "handoffs", "guardrails", "HITL", "OT", "ICS", "bug-bounty", "production", "300-models"]
+      },
+      "benchmark": {
+        "dataset": "Dragos ICS/OT CTF 2025 (34 challenges) + HackTheBox + HackerOne",
+        "score": "32/34 (94.1%) OT CTF, Rank 1; +37% vs top human teams; alias1 claims to beat GPT-5 on HackTheBox",
+        "notes": "OT/ICS CTF is primary benchmark — Enterprise ATT&CK coverage is secondary; no single published Enterprise number"
+      },
+      "limitations": [
+        "No global attack knowledge graph: agent selection is Handoffs-based (dynamic routing), not ATT&CK-driven planning",
+        "No persistent memory stream across sessions: standard context window only",
+        "Strongest capability (alias1 model) locked behind €350/month Professional tier — Community Edition uses commodity models",
+        "OT/ICS primary focus — Enterprise ATT&CK coverage depth unverified in published benchmarks",
+        "No formal reproducible benchmark for Enterprise pentest (HackTheBox claim lacks published methodology)"
+      ],
+      "techniques": [
+        { "id": "T1595", "coverage": "covered", "notes": "Active scanning via built-in recon tools" },
+        { "id": "T1046", "coverage": "covered", "notes": "Network service discovery — recon phase" },
+        { "id": "T1190", "coverage": "covered", "notes": "Exploit public-facing app: PortSwigger race condition → web shell; Mercado Libre API enumeration" },
+        { "id": "T1552", "coverage": "covered", "notes": "Credentials in files: Unitree G1 RSA key world-writable; Ecoforest DES weak crypto" },
+        { "id": "T1083", "coverage": "covered", "notes": "File and directory discovery — built-in tools" },
+        { "id": "T1059", "coverage": "covered", "notes": "Command execution via built-in security tools" },
+        { "id": "T1498", "coverage": "not-covered", "notes": "Network DoS — out of scope for offensive AI framework" },
+        { "id": "T1021", "coverage": "partial", "notes": "Remote services — lateral movement unclear in published case studies" },
+        { "id": "T1548", "coverage": "partial", "notes": "Privilege escalation attempted in some case studies — depth unverified" }
+      ]
+    }
+  ],
   "tools": []
 }
