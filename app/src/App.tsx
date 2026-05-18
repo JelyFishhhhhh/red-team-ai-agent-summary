@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useData } from './hooks/useData'
 import { AgentTabs } from './components/AgentTabs'
 import { TacticSection } from './components/TacticSection'
+import { TacticToc } from './components/TacticToc'
 import { PaperSidebar } from './components/PaperSidebar'
 import { OverviewMatrix } from './components/OverviewMatrix'
 import type { Agent } from './types'
@@ -41,7 +42,14 @@ export default function App() {
           />
         ) : selectedAgent ? (
           <>
+            <TacticToc tactics={attack.tactics} agent={selectedAgent} />
             <div className="technique-panel">
+              <div className="coverage-legend-strip">
+                <span className="cls-item"><span className="coverage-dot coverage-dot--covered" />Fully automated</span>
+                <span className="cls-item"><span className="coverage-dot coverage-dot--partial" />Partially automated</span>
+                <span className="cls-item"><span className="coverage-dot coverage-dot--tool-dep" />Requires external tool</span>
+                <span className="cls-hint">Hover a technique to see evidence</span>
+              </div>
               {attack.tactics.map((tactic) => (
                 <TacticSection key={tactic.id} tactic={tactic} agent={selectedAgent} />
               ))}

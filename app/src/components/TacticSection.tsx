@@ -16,7 +16,7 @@ export function TacticSection({ tactic, agent }: Props) {
   const totalActive = coveredCount + partialCount + toolDepCount
 
   return (
-    <div className="tactic-section">
+    <div className="tactic-section" id={`tactic-${tactic.id}`}>
       <button
         className="tactic-header"
         onClick={() => setOpen((o) => !o)}

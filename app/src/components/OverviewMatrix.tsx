@@ -1,5 +1,7 @@
-import { buildOverviewMatrix } from '../utils/attack'
+import { useState } from 'react'
+import { buildOverviewMatrix, getCoveredTechniquesInTactic } from '../utils/attack'
 import type { Agent, Tactic } from '../types'
+import type { TechniqueInfo } from '../utils/attack'
 
 interface Props {
   agents: Agent[]
@@ -7,7 +9,23 @@ interface Props {
   onSelectAgent: (id: string) => void
 }
 
+interface TooltipState {
+  x: number
+  y: number
+  showAbove: boolean
+  agentName: string
+  tacticName: string
+  techniques: TechniqueInfo[]
+}
+
+const COVERAGE_LABELS: Record<string, string> = {
+  'covered': 'Covered',
+  'partial': 'Partial',
+  'tool-dep': 'Tool-dep',
+}
+
 export function OverviewMatrix({ agents, tactics, onSelectAgent }: Props) {
+  const [tooltip, setTooltip] = useState<TooltipState | null>(null)
   const matrix = buildOverviewMatrix(agents, tactics)
 
   function getCell(agentId: string, tacticId: string) {
@@ -33,21 +51,26 @@ export function OverviewMatrix({ agents, tactics, onSelectAgent }: Props) {
     return total > 0 ? String(total) : ''
   }
 
-  function cellTitle(agent: Agent, tactic: Tactic): string {
-    const cell = getCell(agent.id, tactic.id)
-    if (!cell) return `${agent.name} × ${tactic.name}: 0`
-    const parts: string[] = []
-    if (cell.coveredCount) parts.push(`${cell.coveredCount} covered`)
-    if (cell.partialCount) parts.push(`${cell.partialCount} partial`)
-    if (cell.toolDepCount) parts.push(`${cell.toolDepCount} tool-dep`)
-    return `${agent.name} × ${tactic.name}: ${parts.join(', ') || '0'}`
+  function handleCellEnter(e: React.MouseEvent<HTMLTableCellElement>, agent: Agent, tactic: Tactic) {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const techniques = getCoveredTechniquesInTactic(agent, tactic)
+    const x = Math.min(rect.left, window.innerWidth - 290)
+    const showAbove = rect.bottom > window.innerHeight * 0.55
+    setTooltip({
+      x,
+      y: showAbove ? rect.top - 4 : rect.bottom + 4,
+      showAbove,
+      agentName: agent.name,
+      tacticName: tactic.name,
+      techniques,
+    })
   }
 
   return (
-    <div className="overview-panel">
+    <div className="overview-panel" onMouseLeave={() => setTooltip(null)}>
       <h2 className="overview-title">Coverage Overview</h2>
       <p className="overview-subtitle">
-        Each cell shows techniques covered per tactic. Click an agent to view details.
+        Hover a cell to see covered techniques. Click an agent name to view details.
       </p>
 
       <div className="matrix-scroll">
@@ -77,7 +100,8 @@ export function OverviewMatrix({ agents, tactics, onSelectAgent }: Props) {
                     <td
                       key={tactic.id}
                       className={`matrix-td-cell intensity-${intensity}`}
-                      title={cellTitle(agent, tactic)}
+                      onMouseEnter={(e) => handleCellEnter(e, agent, tactic)}
+                      onMouseLeave={() => setTooltip(null)}
                     >
                       {cellLabel(agent.id, tactic.id)}
                     </td>
@@ -101,6 +125,36 @@ export function OverviewMatrix({ agents, tactics, onSelectAgent }: Props) {
         <span className="legend-key partial-key">■ partial</span>
         <span className="legend-key tooldep-key">■ tool-dep</span>
       </div>
+
+      {tooltip && (
+        <div
+          className="matrix-tooltip"
+          style={{
+            left: tooltip.x,
+            top: tooltip.y,
+            transform: tooltip.showAbove ? 'translateY(-100%)' : 'none',
+          }}
+        >
+          <div className="matrix-tooltip-header">
+            <strong>{tooltip.agentName}</strong>
+            <span className="matrix-tooltip-x"> × </span>
+            {tooltip.tacticName}
+          </div>
+          {tooltip.techniques.length === 0 ? (
+            <div className="matrix-tooltip-empty">No techniques covered in this tactic</div>
+          ) : (
+            <div className="matrix-tooltip-list">
+              {tooltip.techniques.map((t) => (
+                <div key={t.id} className="matrix-tooltip-row">
+                  <span className={`coverage-dot coverage-dot--${t.coverage}`} title={COVERAGE_LABELS[t.coverage]} />
+                  <span className="tid matrix-tooltip-tid">{t.id}</span>
+                  <span className="matrix-tooltip-name">{t.name}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

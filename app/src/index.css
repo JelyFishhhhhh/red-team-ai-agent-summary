@@ -87,6 +87,49 @@ a:hover { text-decoration: underline; }
 /* ---- Main body ---- */
 .main-body { display: flex; flex: 1; overflow: hidden; }
 
+/* ---- Tactic TOC sidebar ---- */
+.tactic-toc {
+  width: 160px; flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  overflow-y: auto; padding: 12px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.toc-header {
+  padding: 0 12px 8px;
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em;
+  color: var(--text-muted);
+}
+.toc-item {
+  display: flex; align-items: center; gap: 5px;
+  width: 100%; padding: 5px 12px;
+  background: none; border: none; border-left: 2px solid transparent;
+  cursor: pointer; font-family: var(--font); text-align: left;
+  color: var(--text-muted); font-size: 11px;
+  transition: background .1s, color .1s;
+}
+.toc-item:hover { background: var(--bg-card); color: var(--text); }
+.toc-item--active { color: var(--text); border-left-color: var(--accent-green); }
+.toc-tid { font-family: var(--font-mono); font-size: 9px; color: var(--text-muted); min-width: 42px; flex-shrink: 0; }
+.toc-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.toc-badge {
+  background: var(--accent-green-bg); color: var(--accent-green);
+  border-radius: 8px; padding: 0 5px;
+  font-size: 9px; font-weight: 700; flex-shrink: 0;
+}
+
+/* ---- Coverage legend strip ---- */
+.coverage-legend-strip {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  padding: 8px 12px; margin-bottom: 12px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); font-size: 11px; color: var(--text-muted);
+}
+.cls-item { display: flex; align-items: center; gap: 5px; }
+.cls-item .coverage-dot { margin-top: 0; flex-shrink: 0; }
+.cls-hint { margin-left: auto; font-size: 10px; font-style: italic; }
+
 /* ---- Technique panel ---- */
 .technique-panel { flex: 1; overflow-y: auto; padding: 16px 20px; }
 
@@ -94,7 +137,7 @@ a:hover { text-decoration: underline; }
 
 .tactic-header {
   display: flex; align-items: center; gap: 8px;
-  width: 100%; padding: 9px 12px;
+  width: 100%; padding: 11px 14px;
   background: var(--bg-card); border: 1px solid var(--border);
   border-radius: var(--radius); cursor: pointer;
   font-family: var(--font); font-size: 13px; font-weight: 600;
@@ -104,7 +147,7 @@ a:hover { text-decoration: underline; }
 .tactic-header:hover { background: var(--bg-hover); }
 
 .tactic-id { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); min-width: 60px; }
-.tactic-name { flex: 1; }
+.tactic-name { flex: 1; font-size: 15px; font-weight: 600; }
 .tactic-badge {
   display: flex; align-items: center; gap: 4px;
   font-size: 11px; font-weight: 500;
@@ -118,8 +161,8 @@ a:hover { text-decoration: underline; }
 .technique-list { padding: 3px 0 0 10px; }
 
 .technique-row {
-  display: flex; align-items: flex-start; gap: 8px;
-  padding: 5px 10px;
+  display: flex; flex-direction: column;
+  padding: 4px 10px;
   border-left: 2px solid var(--border);
   border-radius: 0 4px 4px 0;
   margin-bottom: 1px; font-size: 12px;
@@ -130,21 +173,55 @@ a:hover { text-decoration: underline; }
 .technique-row.coverage-partial { border-left-color: var(--accent-yellow); background: var(--accent-yellow-bg); }
 .technique-row.coverage-tool-dep { border-left-color: var(--accent-blue); background: var(--accent-blue-bg); }
 
+/* Technique main row: hoverable area that shows evidence card */
+.technique-main {
+  display: flex; align-items: center; gap: 8px;
+  position: relative; min-height: 24px;
+}
+
 .tid { font-family: var(--font-mono); color: var(--text-muted); font-size: 11px; min-width: 72px; flex-shrink: 0; }
 .tname { flex: 1; }
 
 .coverage-dot {
   width: 7px; height: 7px; border-radius: 50%;
-  flex-shrink: 0; margin-top: 4px;
+  flex-shrink: 0;
 }
 .coverage-dot--covered { background: var(--accent-green); }
 .coverage-dot--partial { background: var(--accent-yellow); }
 .coverage-dot--tool-dep { background: var(--accent-blue); }
 
-.sub-list { flex-basis: 100%; padding: 2px 0 0 18px; }
+/* Evidence card — shows on hover */
+.evidence-card {
+  display: none;
+  position: absolute;
+  top: calc(100% + 3px); left: 0;
+  z-index: 200;
+  background: #1c2128;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  min-width: 200px; max-width: 380px;
+  box-shadow: 0 4px 18px rgba(0,0,0,.55);
+  pointer-events: none;
+  white-space: normal;
+}
+.technique-main:hover .evidence-card { display: block; }
+.sub-row:hover .evidence-card { display: block; }
+
+.evidence-label {
+  display: block;
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .04em;
+  color: var(--text-muted); margin-bottom: 4px;
+}
+.evidence-text { font-size: 11px; color: var(--text); line-height: 1.55; margin: 0; }
+.evidence-empty { color: var(--text-muted); font-style: italic; }
+
+.sub-list { padding: 2px 0 0 18px; }
 
 .sub-row {
   display: flex; align-items: center; gap: 8px;
+  position: relative;
   padding: 3px 8px;
   border-left: 2px solid #1c2128;
   border-radius: 0 3px 3px 0;
@@ -255,3 +332,36 @@ a:hover { text-decoration: underline; }
 .covered-key { color: var(--accent-green); }
 .partial-key { color: var(--accent-yellow); }
 .tooldep-key { color: var(--accent-blue); }
+
+/* ---- Matrix hover tooltip ---- */
+.matrix-tooltip {
+  position: fixed; z-index: 400;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  min-width: 240px; max-width: 320px;
+  max-height: 360px; overflow-y: auto;
+  box-shadow: 0 6px 24px rgba(0,0,0,.6);
+  pointer-events: none;
+  scrollbar-width: thin;
+}
+.matrix-tooltip-header {
+  font-size: 11px; font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 8px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.4;
+}
+.matrix-tooltip-header strong { color: var(--text); }
+.matrix-tooltip-x { color: var(--border-light); }
+.matrix-tooltip-empty {
+  font-size: 11px; color: var(--text-muted); font-style: italic;
+}
+.matrix-tooltip-list { display: flex; flex-direction: column; gap: 3px; }
+.matrix-tooltip-row {
+  display: flex; align-items: center; gap: 7px; font-size: 11px;
+}
+.matrix-tooltip-row .coverage-dot { flex-shrink: 0; }
+.matrix-tooltip-tid { min-width: 64px; flex-shrink: 0; }
+.matrix-tooltip-name { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

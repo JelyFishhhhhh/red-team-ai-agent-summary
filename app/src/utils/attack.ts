@@ -41,6 +41,31 @@ export function countToolDepInTactic(agent: Agent, tactic: Tactic): number {
   ).length
 }
 
+export interface TechniqueInfo {
+  id: string
+  name: string
+  coverage: CoverageLevel
+  notes: string
+}
+
+/** Get all actively-covered techniques + sub-techniques in a tactic for tooltip display */
+export function getCoveredTechniquesInTactic(agent: Agent, tactic: Tactic): TechniqueInfo[] {
+  const results: TechniqueInfo[] = []
+  for (const tech of tactic.techniques) {
+    const mapping = agent.techniques.find((t) => t.id === tech.id)
+    if (mapping && mapping.coverage !== 'not-covered') {
+      results.push({ id: tech.id, name: tech.name, coverage: mapping.coverage, notes: mapping.notes })
+    }
+    for (const sub of tech.sub_techniques) {
+      const subMapping = agent.techniques.find((t) => t.id === sub.id)
+      if (subMapping && subMapping.coverage !== 'not-covered') {
+        results.push({ id: sub.id, name: sub.name, coverage: subMapping.coverage, notes: subMapping.notes })
+      }
+    }
+  }
+  return results
+}
+
 /** Build overview matrix: one OverviewCell per agent×tactic combination */
 export function buildOverviewMatrix(agents: Agent[], tactics: Tactic[]): OverviewCell[] {
   const cells: OverviewCell[] = []
