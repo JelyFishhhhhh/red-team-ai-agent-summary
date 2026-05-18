@@ -14,6 +14,120 @@
 
 ---
 
+## Phase 0.5 — Manual Technique Verification (手動驗證，隨時可做)
+
+> **Why this phase exists:** Technique mappings filled so far are inferred from partial Obsidian notes — not from reading actual papers. This phase is a manual checklist to verify each claim against the primary source (arXiv / GitHub docs).
+>
+> **Confidence levels assigned at fill time:**
+> - 🟢 High — from detailed notes with explicit evidence (tool names, code paths, benchmark breakdown)
+> - 🟡 Medium — inferred from description or general agent behavior
+> - 🔴 Low — estimated, no paper section found to confirm
+
+### Verification Rubric
+
+A technique is **verified** when you can point to a specific section in the paper that:
+- Shows the agent autonomously **decides** to use this technique (not just passively runs a tool)
+- Or shows a tool that directly implements this technique being called by the agent
+- For `not-covered`: paper explicitly states the limitation, OR benchmark shows 0% in that category
+
+Coverage label meanings:
+- `covered` = agent autonomously executes in ≥1 benchmark scenario
+- `partial` = agent attempts but requires human help, often fails, or only in easy scenarios
+- `tool-dep` = external tool does the work; agent only parses output
+- `not-covered` = explicitly out of scope or 0% in relevant scenarios
+
+---
+
+### 2a. PentestGPT Verification Checklist
+
+**Primary source:** arXiv 2308.06782 — read Section 3 (PTT), Section 4 (modules), Section 5 (eval)
+
+| Technique | Current label | Confidence | What to verify in paper |
+|---|---|---|---|
+| T1595 Active Scanning | covered | 🟢 | Confirm nmap is invoked autonomously by Reasoning module |
+| T1046 Network Service Discovery | covered | 🟢 | Confirm from nmap output parsing section |
+| T1083 File Discovery | covered | 🟡 | Find where dirbuster context explosion is documented |
+| T1190 Exploit Public-Facing App | covered | 🟢 | Web vulns are primary target — confirm in eval |
+| T1059 Command Execution | partial | 🟡 | Find which shell interactions fail / need human |
+| T1518 Software Discovery | tool-dep | 🔴 | Check if paper mentions software enumeration explicitly |
+| T1082 System Info | tool-dep | 🔴 | Check if paper mentions system info collection |
+| T1548 Privilege Escalation | partial | 🔴 | Does paper discuss privesc at all? Hard=0/2 may mean no privesc |
+| T1021 Lateral Movement | not-covered | 🟢 | Paper explicitly says no multi-host design |
+| T1008 Fallback Channels | not-covered | 🔴 | Remove if paper doesn't discuss C2 at all |
+
+- [ ] Read arXiv 2308.06782 Section 5 (Evaluation) — note exact failure categories
+- [ ] Confirm or remove T1518, T1082, T1008 entries (likely over-mapped)
+- [ ] Update `papers.json` with verified labels + add `"verified": true` flag to confirmed techniques
+- [ ] Note paper section reference in `notes` field for each verified technique
+
+---
+
+### 2b. Decepticon Verification Checklist
+
+**Primary source:** GitHub docs (https://docs.decepticon.red) + agent roster documentation  
+**Confidence baseline:** High — notes came from official docs, not secondary sources
+
+| Technique | Current label | Confidence | What to verify |
+|---|---|---|---|
+| T1595, T1590, T1589, T1592 | covered | 🟢 | Recon agent description is explicit — low risk |
+| T1190 | covered | 🟢 | Exploit agent: SQLi, SSTI, ADCS — explicitly documented |
+| T1059 | covered | 🟢 | tmux + prompt detection for msfconsole/evil-winrm — documented |
+| T1068, T1548 | covered | 🟡 | Post-Exploit agent listed — verify specific privesc techniques |
+| T1003, T1003.001 | covered | 🟢 | mimikatz explicit in Post-Exploit agent |
+| T1558 | covered | 🟢 | Kerberoasting, AS-REP explicitly listed for AD Operator |
+| T1649 | covered | 🟢 | certipy ESC1-ESC15 explicitly listed |
+| T1087, T1482 | covered | 🟢 | BloodHound path analysis explicit |
+| T1021, T1550 | covered | 🟡 | Lateral movement via evil-winrm + pass-the-hash — verify sequence |
+| T1027 | covered | 🟡 | Reverser agent: Ghidra/radare2 listed, but T1027 is obfuscation analysis, not execution — check if label is correct |
+| T1526, T1537 | covered/partial | 🟡 | Cloud Hunter agent listed but specific techniques need docs verification |
+
+- [ ] Verify T1027 label — Reverser does binary analysis, but T1027 (Obfuscated Files) may not be the right technique; consider T1055 (Process Injection) or just remove
+- [ ] Confirm Cloud Hunter techniques from docs — find specific IAM, S3, K8s technique IDs
+- [ ] Find the 12.5% failure case (1/8 XBOW) in any blog post or GitHub issue
+- [ ] Update papers.json with corrected labels
+
+---
+
+### 2c. CAI Verification Checklist
+
+**Primary source:** arXiv 2504.06017 + GitHub README + case study blog posts  
+**Confidence baseline:** Low for Enterprise ATT&CK (OT/ICS is primary)
+
+| Technique | Current label | Confidence | What to verify |
+|---|---|---|---|
+| T1595 Active Scanning | covered | 🟡 | Check if CAI runs nmap or delegates to built-in tools |
+| T1190 Exploit Public-Facing App | covered | 🟢 | PortSwigger race condition + Mercado Libre API — case study documented |
+| T1552 Credentials in Files | covered | 🟢 | Unitree RSA key world-writable — case study documented |
+| T1083 File Discovery | covered | 🔴 | Generic assumption — remove if not documented |
+| T1059 Command Execution | covered | 🟡 | Confirm from built-in security tools documentation |
+| T1498 Network DoS | not-covered | 🔴 | Remove — irrelevant and not mentioned anywhere |
+| T1021 Lateral Movement | partial | 🔴 | No case study shows lateral movement — likely remove or mark not-covered |
+| T1548 Privilege Escalation | partial | 🔴 | No specific case study — likely remove |
+
+- [ ] Read arXiv 2504.06017 abstract + Section 2 (architecture) + Section 4 (case studies)
+- [ ] Remove T1498 (DoS) — incorrect
+- [ ] Re-evaluate T1021 and T1548 — likely over-mapped for Enterprise scope
+- [ ] Check if ICS ATT&CK techniques should be added separately (OT case studies map to different matrix)
+- [ ] Consider adding `"matrix": "ics-attack"` flag for OT-specific techniques
+- [ ] Update papers.json with corrected labels
+
+---
+
+### Verification Tracking
+
+| Agent | Paper Read | Techniques Verified | papers.json Updated |
+|---|---|---|---|
+| PentestGPT | - [ ] | - [ ] | - [ ] |
+| Decepticon | - [ ] | - [ ] | - [ ] |
+| CAI | - [ ] | - [ ] | - [ ] |
+| ARTEMIS | pending Phase 3 | pending | pending |
+| Red-MIRROR | pending Phase 3 | pending | pending |
+| HackSynth | pending Phase 3 | pending | pending |
+
+> ⚠️ **Note:** For Phase 3 agents, fill + verify in one pass (read paper → map → verify → commit). Don't split fill and verify into separate rounds.
+
+---
+
 ## Three-Layer Framework Reference
 
 Every agent analysis must answer these three layers explicitly:
@@ -590,10 +704,10 @@ The editor/ tool (from the code plan) lets you update papers.json without re-run
 
 | Phase | Task | Status | Notes |
 |---|---|---|---|
-| 1 | papers.json skeleton | - [ ] | |
-| 2 | PentestGPT | - [ ] | |
-| 2 | Decepticon | - [ ] | |
-| 2 | CAI | - [ ] | Existing notes at Red Team/CAI.md |
+| 1 | papers.json skeleton | - [x] | committed 502dda8 |
+| 2 | PentestGPT | - [x] | 10 techniques; committed 1f7c826 |
+| 2 | Decepticon | - [x] | 22 techniques (21 covered); committed 1f7c826 |
+| 2 | CAI | - [x] | 9 techniques; OT primary; committed 1f7c826 |
 | 3 | ARTEMIS | - [ ] | |
 | 3 | Red-MIRROR | - [ ] | |
 | 3 | HackSynth | - [ ] | |
