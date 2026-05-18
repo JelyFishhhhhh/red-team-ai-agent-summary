@@ -69,7 +69,7 @@ export interface PapersData {
   version: string
   lastUpdated: string
   agents: Agent[]
-  tools: unknown[]        // present in schema as empty array; type TBD
+  tools: never[]          // present in schema as always-empty array; element type undefined
 }
 
 // Derived types for UI
