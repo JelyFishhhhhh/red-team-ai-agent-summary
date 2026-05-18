@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-05-18",
+  "lastUpdated": "2026-05-19",
   "agents": [
     {
       "id": "pentestgpt",
@@ -30,16 +30,48 @@
         "No Memory beyond PTT tree — no cross-session learning"
       ],
       "techniques": [
-        { "id": "T1595", "coverage": "covered", "notes": "nmap active scanning is first step in every session" },
-        { "id": "T1046", "coverage": "covered", "notes": "Network service discovery via nmap output parsing" },
-        { "id": "T1083", "coverage": "covered", "notes": "File/directory discovery via dirbuster/gobuster — causes context explosion" },
-        { "id": "T1190", "coverage": "covered", "notes": "Exploit Public-Facing Application — web vulns are primary target" },
-        { "id": "T1059", "coverage": "partial", "notes": "Command execution attempted; harder shells sometimes fail" },
-        { "id": "T1518", "coverage": "tool-dep", "notes": "Software discovery via tool output parsing" },
-        { "id": "T1082", "coverage": "tool-dep", "notes": "System info discovery via shell commands" },
-        { "id": "T1548", "coverage": "partial", "notes": "Privilege escalation attempted but hard machines fail (0/2)" },
-        { "id": "T1021", "coverage": "not-covered", "notes": "No lateral movement — single-machine design" },
-        { "id": "T1008", "coverage": "not-covered", "notes": "No multi-C2 or fallback channel" }
+        {
+          "id": "T1595",
+          "coverage": "covered",
+          "notes": "nmap active scanning is first step in every session",
+          "source": { "tier": "T1", "ref": "Deng et al. (2024) Section 4.1 — Generation Module invokes nmap; PTT node auto-created" }
+        },
+        {
+          "id": "T1046",
+          "coverage": "covered",
+          "notes": "Network service discovery via nmap output parsing",
+          "source": { "tier": "T1", "ref": "Deng et al. (2024) Section 4.1 — service detection implicit in nmap XML parsing" }
+        },
+        {
+          "id": "T1083",
+          "coverage": "covered",
+          "notes": "File/directory discovery via dirbuster/gobuster — causes context explosion",
+          "source": { "tier": "T1", "ref": "Deng et al. (2024) Section 5 — dirbuster context explosion cited as key limitation" }
+        },
+        {
+          "id": "T1190",
+          "coverage": "covered",
+          "notes": "Exploit Public-Facing Application — web vulns are primary target",
+          "source": { "tier": "T1", "ref": "Deng et al. (2024) Section 5 — web app exploitation is primary benchmark category" }
+        },
+        {
+          "id": "T1059",
+          "coverage": "partial",
+          "notes": "Command execution attempted; harder shells sometimes fail (Hard=0/2)",
+          "source": { "tier": "T1", "ref": "Deng et al. (2024) Section 5 — Hard difficulty 0/2; pending Section 4 confirmation of specific shell failures" }
+        },
+        {
+          "id": "T1548",
+          "coverage": "not-covered",
+          "notes": "No privilege escalation documented; Hard=0/2 machines likely require privesc — closed-world: no source found",
+          "source": { "tier": "T1", "ref": "Deng et al. (2024) Section 5 — Hard=0/2 with no privesc scenario documented" }
+        },
+        {
+          "id": "T1021",
+          "coverage": "not-covered",
+          "notes": "No lateral movement — single-machine design",
+          "source": { "tier": "T1", "ref": "Deng et al. (2024) — explicitly: 'single-machine penetration testing...lateral movement across hosts is out of scope'" }
+        }
       ]
     },
     {
@@ -70,28 +102,132 @@
         "No formal academic paper — no reproducible benchmark methodology published"
       ],
       "techniques": [
-        { "id": "T1595", "coverage": "covered", "notes": "Recon agent: port scan, service enumeration, DNS, subdomain — results written to Neo4j" },
-        { "id": "T1590", "coverage": "covered", "notes": "Gather victim network info via Recon agent" },
-        { "id": "T1589", "coverage": "covered", "notes": "OSINT via Recon agent" },
-        { "id": "T1592", "coverage": "covered", "notes": "Gather victim host info — service fingerprinting" },
-        { "id": "T1190", "coverage": "covered", "notes": "Exploit agent: SQLi, SSTI, credential attacks, ADCS abuse" },
-        { "id": "T1078", "coverage": "covered", "notes": "Valid accounts — credential harvesting and reuse" },
-        { "id": "T1059", "coverage": "covered", "notes": "Command execution via interactive shells (tmux + prompt detection for msfconsole/evil-winrm)" },
-        { "id": "T1068", "coverage": "covered", "notes": "Exploitation for privilege escalation — Post-Exploit agent" },
-        { "id": "T1548", "coverage": "covered", "notes": "Abuse elevation control — Post-Exploit agent handles privesc" },
-        { "id": "T1003", "coverage": "covered", "notes": "OS credential dumping via mimikatz — Post-Exploit agent" },
-        { "id": "T1558", "coverage": "covered", "notes": "Steal/forge Kerberos tickets: Kerberoasting, AS-REP roasting — AD Operator agent" },
-        { "id": "T1649", "coverage": "covered", "notes": "Steal/forge auth certs: certipy ESC1-ESC15 — AD Operator agent" },
-        { "id": "T1087", "coverage": "covered", "notes": "Account discovery via BloodHound — AD Operator agent" },
-        { "id": "T1482", "coverage": "covered", "notes": "Domain trust discovery via BloodHound path analysis" },
-        { "id": "T1021", "coverage": "covered", "notes": "Remote services lateral movement — Post-Exploit + evil-winrm" },
-        { "id": "T1550", "coverage": "covered", "notes": "Use alternate auth material — pass-the-hash/ticket" },
-        { "id": "T1005", "coverage": "covered", "notes": "Data from local system — collection phase" },
-        { "id": "T1046", "coverage": "covered", "notes": "Network service discovery — Recon agent" },
-        { "id": "T1027", "coverage": "covered", "notes": "Binary analysis: Reverser agent — Ghidra/radare2, packer detection, ROP gadgets" },
-        { "id": "T1526", "coverage": "covered", "notes": "Cloud service discovery — Cloud Hunter agent: IAM, S3, K8s RBAC" },
-        { "id": "T1537", "coverage": "partial", "notes": "Data transfer to cloud account — Cloud Hunter agent" },
-        { "id": "T1003.001", "coverage": "covered", "notes": "LSASS memory dump — mimikatz via Post-Exploit agent" }
+        {
+          "id": "T1595",
+          "coverage": "covered",
+          "notes": "Recon agent: port scan, service enumeration, DNS, subdomain — results written to Neo4j",
+          "source": { "tier": "T2", "ref": "GitHub docs Agent Roster: Recon agent explicitly lists nmap, whatweb, sublist3r" }
+        },
+        {
+          "id": "T1590",
+          "coverage": "covered",
+          "notes": "Gather victim network info via Recon agent",
+          "source": { "tier": "T2", "ref": "GitHub docs Agent Roster: Recon agent section" }
+        },
+        {
+          "id": "T1589",
+          "coverage": "covered",
+          "notes": "OSINT via Recon agent",
+          "source": { "tier": "T2", "ref": "GitHub docs Agent Roster: Recon agent section" }
+        },
+        {
+          "id": "T1592",
+          "coverage": "covered",
+          "notes": "Gather victim host info — service fingerprinting",
+          "source": { "tier": "T2", "ref": "GitHub docs Agent Roster: Recon agent section" }
+        },
+        {
+          "id": "T1190",
+          "coverage": "covered",
+          "notes": "Exploit agent: SQLi, SSTI, credential attacks, ADCS abuse",
+          "source": { "tier": "T2", "ref": "GitHub docs: Exploit agent section lists SQLi, SSTI, ADCS" }
+        },
+        {
+          "id": "T1078",
+          "coverage": "covered",
+          "notes": "Valid accounts — credential harvesting and reuse",
+          "source": { "tier": "T2", "ref": "GitHub docs: Exploit agent credential attack capabilities" }
+        },
+        {
+          "id": "T1059",
+          "coverage": "covered",
+          "notes": "Command execution via interactive shells (tmux + prompt detection for msfconsole/evil-winrm)",
+          "source": { "tier": "T2", "ref": "GitHub docs: tmux session management + shell prompt detection documented" }
+        },
+        {
+          "id": "T1068",
+          "coverage": "covered",
+          "notes": "Exploitation for privilege escalation — Post-Exploit agent",
+          "source": { "tier": "T2", "ref": "GitHub docs: Post-Exploit agent in roster — specific privesc binaries pending verification" }
+        },
+        {
+          "id": "T1548",
+          "coverage": "covered",
+          "notes": "Abuse elevation control — Post-Exploit agent handles privesc",
+          "source": { "tier": "T2", "ref": "GitHub docs: Post-Exploit agent in roster — specific technique pending verification" }
+        },
+        {
+          "id": "T1003",
+          "coverage": "covered",
+          "notes": "OS credential dumping via mimikatz — Post-Exploit agent",
+          "source": { "tier": "T2", "ref": "GitHub docs: Post-Exploit agent uses mimikatz" }
+        },
+        {
+          "id": "T1003.001",
+          "coverage": "covered",
+          "notes": "LSASS memory dump — mimikatz via Post-Exploit agent",
+          "source": { "tier": "T2", "ref": "GitHub docs: Post-Exploit agent uses mimikatz → T1003.001 (LSASS Memory)" }
+        },
+        {
+          "id": "T1558",
+          "coverage": "covered",
+          "notes": "Steal/forge Kerberos tickets: Kerberoasting, AS-REP roasting — AD Operator agent",
+          "source": { "tier": "T2", "ref": "GitHub docs AD Operator: GetSPN, AS-REP roasting explicitly listed" }
+        },
+        {
+          "id": "T1649",
+          "coverage": "covered",
+          "notes": "Steal/forge auth certs: certipy ESC1-ESC15 — AD Operator agent",
+          "source": { "tier": "T2", "ref": "GitHub docs AD Operator: certipy ESC1–ESC15 explicitly listed" }
+        },
+        {
+          "id": "T1087",
+          "coverage": "covered",
+          "notes": "Account discovery via BloodHound — AD Operator agent",
+          "source": { "tier": "T2", "ref": "GitHub docs: BloodHound/SharpHound for AD path analysis explicit" }
+        },
+        {
+          "id": "T1482",
+          "coverage": "covered",
+          "notes": "Domain trust discovery via BloodHound path analysis",
+          "source": { "tier": "T2", "ref": "GitHub docs: BloodHound/SharpHound for AD path analysis explicit" }
+        },
+        {
+          "id": "T1021",
+          "coverage": "covered",
+          "notes": "Remote services lateral movement — Post-Exploit + evil-winrm; execution sequence pending autonomous decision verification",
+          "source": { "tier": "T2", "ref": "GitHub docs: evil-winrm + pass-the-hash listed; sequence autonomy uncertain" }
+        },
+        {
+          "id": "T1550",
+          "coverage": "covered",
+          "notes": "Use alternate auth material — pass-the-hash/ticket; pending explicit sequence documentation",
+          "source": { "tier": "T2", "ref": "GitHub docs: pass-the-hash implied in lateral movement capabilities" }
+        },
+        {
+          "id": "T1005",
+          "coverage": "covered",
+          "notes": "Data from local system — collection phase",
+          "source": { "tier": "T2", "ref": "GitHub docs: collection capabilities in Post-Exploit agent" }
+        },
+        {
+          "id": "T1046",
+          "coverage": "covered",
+          "notes": "Network service discovery — Recon agent",
+          "source": { "tier": "T2", "ref": "GitHub docs Agent Roster: Recon agent section" }
+        },
+        {
+          "id": "T1526",
+          "coverage": "covered",
+          "notes": "Cloud service discovery — Cloud Hunter agent: IAM, S3, K8s RBAC; specific T-IDs pending docs verification",
+          "source": { "tier": "T2", "ref": "GitHub docs: Cloud Hunter agent in roster — specific techniques pending verification" }
+        },
+        {
+          "id": "T1537",
+          "coverage": "partial",
+          "notes": "Data transfer to cloud account — Cloud Hunter agent; specific techniques pending docs verification",
+          "source": { "tier": "T2", "ref": "GitHub docs: Cloud Hunter agent in roster — specific techniques pending verification" }
+        }
       ]
     },
     {
@@ -122,15 +258,48 @@
         "No formal reproducible benchmark for Enterprise pentest (HackTheBox claim lacks published methodology)"
       ],
       "techniques": [
-        { "id": "T1595", "coverage": "covered", "notes": "Active scanning via built-in recon tools" },
-        { "id": "T1046", "coverage": "covered", "notes": "Network service discovery — recon phase" },
-        { "id": "T1190", "coverage": "covered", "notes": "Exploit public-facing app: PortSwigger race condition → web shell; Mercado Libre API enumeration" },
-        { "id": "T1552", "coverage": "covered", "notes": "Credentials in files: Unitree G1 RSA key world-writable; Ecoforest DES weak crypto" },
-        { "id": "T1083", "coverage": "covered", "notes": "File and directory discovery — built-in tools" },
-        { "id": "T1059", "coverage": "covered", "notes": "Command execution via built-in security tools" },
-        { "id": "T1498", "coverage": "not-covered", "notes": "Network DoS — out of scope for offensive AI framework" },
-        { "id": "T1021", "coverage": "partial", "notes": "Remote services — lateral movement unclear in published case studies" },
-        { "id": "T1548", "coverage": "partial", "notes": "Privilege escalation attempted in some case studies — depth unverified" }
+        {
+          "id": "T1595",
+          "coverage": "covered",
+          "notes": "Active scanning via built-in recon tools — autonomous decision-making level pending arXiv 2504.06017 Section 2 confirmation",
+          "source": { "tier": "T2", "ref": "GitHub README: built-in security tools framework; autonomy level pending paper confirmation" }
+        },
+        {
+          "id": "T1190",
+          "coverage": "covered",
+          "notes": "Exploit public-facing app: PortSwigger race condition → web shell; Mercado Libre API enumeration",
+          "source": { "tier": "T3", "ref": "arXiv 2504.06017 Section 4: PortSwigger race condition case study + Mercado Libre API exploitation" }
+        },
+        {
+          "id": "T1552",
+          "coverage": "covered",
+          "notes": "Credentials in files: Unitree G1 RSA key world-writable; Ecoforest DES weak crypto",
+          "source": { "tier": "T3", "ref": "arXiv 2504.06017 Section 4: Unitree G1 world-readable RSA private key case study" }
+        },
+        {
+          "id": "T1083",
+          "coverage": "covered",
+          "notes": "File and directory discovery — pending arXiv 2504.06017 section reference to confirm (user notes: CTF flag-reading included)",
+          "source": { "tier": "T2", "ref": "GitHub README: built-in security tools; arXiv section ref pending verification" }
+        },
+        {
+          "id": "T1059",
+          "coverage": "covered",
+          "notes": "Command execution via built-in security tools — pending arXiv 2504.06017 Section 2 confirmation",
+          "source": { "tier": "T2", "ref": "GitHub README: built-in security tools framework" }
+        },
+        {
+          "id": "T1021",
+          "coverage": "not-covered",
+          "notes": "All 4 published case studies (Unitree, Ecoforest, MiR, Mercado Libre) are single-target — no lateral movement documented",
+          "source": { "tier": "T3", "ref": "arXiv 2504.06017 Section 4: all case studies are single-device/single-service targets" }
+        },
+        {
+          "id": "T1548",
+          "coverage": "partial",
+          "notes": "Privilege escalation possible in some CTF scenarios — pending specific arXiv section ref; ICS CTF privesc may not map to Enterprise T1548",
+          "source": { "tier": "T2", "ref": "Pending: arXiv 2504.06017 section confirmation required before upgrading to covered" }
+        }
       ]
     }
   ],
