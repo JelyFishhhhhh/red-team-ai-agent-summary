@@ -2,7 +2,7 @@
 
 Visual reference mapping red-team AI agent research papers to MITRE ATT&CK Enterprise techniques.
 
-**Live:** [Deploy to Cloudflare Pages — see setup below]
+**Live:** https://1m.w1nter.cc
 
 ## What's in here
 
