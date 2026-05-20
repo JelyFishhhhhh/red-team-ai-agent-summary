@@ -1116,6 +1116,66 @@
           "source": { "tier": "T2", "ref": "GitHub README: kubectl, Kubescape, Kubeletctl in Kubernetes category for cluster discovery" }
         }
       ]
+    },
+    {
+      "id": "pentest-ai-agents",
+      "name": "pentest-ai-agents",
+      "has_paper": false,
+      "paper": {
+        "title": "pentest-ai-agents — 35 Specialized Claude Code Subagents for Offensive Security",
+        "venue": "GitHub (no paper)",
+        "year": 2025,
+        "authors": ["0xSteph"],
+        "arxiv": "",
+        "url": "https://github.com/0xSteph/pentest-ai-agents",
+        "affiliation": "0xSteph",
+        "summary": "35 specialized Claude Code subagents in 5 clusters (planning, recon, exploitation, post-exploitation, defense). Tier 1: advisory-only (human provides tool output, agent guides). Tier 2: 7 agents can compose/execute commands directly. 80+ tools. HITL by design. Requires signed RoE. Broadest scope of any no-paper agent: AD, web, cloud, mobile, wireless, social engineering, CTF, C2, LLM red teaming.",
+        "tags": ["no-paper", "HITL", "claude-code", "35-agents", "advisory", "80-tools", "enterprise", "multi-domain"]
+      },
+      "benchmark": {
+        "dataset": "No published benchmark",
+        "score": "No benchmark — framework targets authorized human-assisted engagements, not autonomous scoring",
+        "notes": "Explicitly targets enterprise (500+ endpoint) scenarios; no XBOW/HTB/CTF benchmark"
+      },
+      "limitations": [
+        "Tier 1 agents are advisory-only — human must provide tool output; not fully autonomous",
+        "No published benchmark — coverage claims are based on tool list, not validated performance",
+        "Autonomy ceiling: only 7 of 35 agents can execute commands directly",
+        "Requires signed Rules of Engagement — not designed for unattended autonomous operation",
+        "No ATT&CK technique coverage mapping in documentation"
+      ],
+      "techniques": [
+        {
+          "id": "T1595",
+          "coverage": "partial",
+          "notes": "nmap wrapped in recon-advisor agent (Tier 2) — autonomous execution possible but human-guided",
+          "source": { "tier": "T2", "ref": "GitHub README: nmap in 80+ tool list; recon-advisor in Tier 2 execution agents" }
+        },
+        {
+          "id": "T1190",
+          "coverage": "partial",
+          "notes": "sqlmap, nuclei, web-hunter agent (Tier 2) — web exploitation with human scope validation",
+          "source": { "tier": "T2", "ref": "GitHub README: web-hunter and exploit-chainer in Tier 2; sqlmap/nuclei in tool list" }
+        },
+        {
+          "id": "T1087",
+          "coverage": "partial",
+          "notes": "BloodHound wrapped in ad-attacker agent (Tier 2) — AD account discovery with human guidance",
+          "source": { "tier": "T2", "ref": "GitHub README: BloodHound in tool list; ad-attacker in Tier 2 execution agents" }
+        },
+        {
+          "id": "T1558",
+          "coverage": "partial",
+          "notes": "Impacket Kerberoasting via ad-attacker agent — specific autonomy level uncertain",
+          "source": { "tier": "T2", "ref": "GitHub README: Impacket in tool list; ad-attacker agent covers AD attack techniques" }
+        },
+        {
+          "id": "T1021",
+          "coverage": "partial",
+          "notes": "CrackMapExec/Impacket lateral movement via ad-attacker — Tier 2 execution with human scope",
+          "source": { "tier": "T2", "ref": "GitHub README: CrackMapExec and Impacket in tool list; lateral movement in post-exploitation cluster" }
+        }
+      ]
     }
   ],
   "tools": [
