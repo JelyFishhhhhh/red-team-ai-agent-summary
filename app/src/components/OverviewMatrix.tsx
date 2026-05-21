@@ -18,11 +18,6 @@ interface TooltipState {
   techniques: TechniqueInfo[]
 }
 
-const COVERAGE_LABELS: Record<string, string> = {
-  'covered': 'Covered',
-  'partial': 'Partial',
-  'tool-dep': 'Tool-dep',
-}
 
 export function OverviewMatrix({ agents, tactics, onSelectAgent }: Props) {
   const [tooltip, setTooltip] = useState<TooltipState | null>(null)
@@ -146,7 +141,7 @@ export function OverviewMatrix({ agents, tactics, onSelectAgent }: Props) {
             <div className="matrix-tooltip-list">
               {tooltip.techniques.map((t) => (
                 <div key={t.id} className="matrix-tooltip-row">
-                  <span className={`coverage-dot coverage-dot--${t.coverage}`} title={COVERAGE_LABELS[t.coverage]} />
+                  <span className={`coverage-badge coverage-badge--${t.coverage}`}>{t.coverage === 'covered' ? 'C' : t.coverage === 'partial' ? 'P' : t.coverage === 'tool-dep' ? 'T' : 'N'}</span>
                   <span className="tid matrix-tooltip-tid">{t.id}</span>
                   <span className="matrix-tooltip-name">{t.name}</span>
                 </div>

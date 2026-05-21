@@ -25,11 +25,18 @@ export interface AttackData {
 // Coverage enum matching actual papers.json values
 export type CoverageLevel = 'covered' | 'partial' | 'tool-dep' | 'not-covered'
 
+// Evidence source for a technique mapping
+export interface TechniqueSource {
+  tier: string
+  ref: string
+}
+
 // Technique mapping — matches actual papers.json schema
 export interface TechniqueMapping {
   id: string              // technique or sub-technique ID (e.g. "T1595" or "T1003.001")
   coverage: CoverageLevel
   notes: string
+  source?: TechniqueSource
 }
 
 // Paper metadata
