@@ -1118,6 +1118,114 @@
       ]
     },
     {
+      "id": "xalgorix",
+      "name": "Xalgorix",
+      "has_paper": false,
+      "paper": {
+        "title": "Xalgorix — The Most Powerful Open-Source AI Pentesting Agent",
+        "venue": "GitHub (no paper)",
+        "year": 2025,
+        "authors": ["xalgord"],
+        "arxiv": "",
+        "url": "https://github.com/xalgord/xalgorix",
+        "affiliation": "xalgord",
+        "summary": "Fully autonomous 22-phase web pentesting agent with live WebSocket dashboard. Covers injection, SSRF, IDOR, API/GraphQL, file uploads, cloud infrastructure. Auto-installs tools on demand. Single/DAST/wildcard/multi-target flows. Web-focused, bug bounty optimized.",
+        "tags": ["no-paper", "autonomous", "web-only", "22-phase", "bug-bounty", "multi-target", "dashboard"]
+      },
+      "benchmark": {
+        "dataset": "No published benchmark",
+        "score": "No benchmark — feature-focused documentation; no comparative metrics",
+        "notes": "Linux-only; no tool inventory listed (auto-install model)"
+      },
+      "limitations": [
+        "No published benchmark — feature claims unvalidated externally",
+        "Tool inventory not documented (auto-install on demand) — ATT&CK coverage unverifiable",
+        "Web-only scope — no network-level, AD, or binary exploitation",
+        "Linux-only platform",
+        "No mention of evasion or enterprise-scale testing"
+      ],
+      "techniques": [
+        {
+          "id": "T1190",
+          "coverage": "covered",
+          "notes": "Primary scope: injection, SSRF, IDOR, API/GraphQL, file uploads — 22-phase web methodology",
+          "source": { "tier": "T2", "ref": "GitHub README: 22-phase methodology covers injection/SSRF/IDOR/file-upload/API/GraphQL/cloud" }
+        },
+        {
+          "id": "T1595",
+          "coverage": "partial",
+          "notes": "Web-focused scanning in multi-target flow — no nmap or network scanner documented",
+          "source": { "tier": "T2", "ref": "GitHub README: DAST and wildcard flows imply scanning; specific network tools not listed" }
+        },
+        {
+          "id": "T1021",
+          "coverage": "not-covered",
+          "notes": "Web application scope only — no lateral movement or multi-host capability",
+          "source": { "tier": "T2", "ref": "GitHub README: single/multi-target web flows only; no network-level or AD features" }
+        }
+      ]
+    },
+    {
+      "id": "pentest-copilot",
+      "name": "Pentest Copilot",
+      "has_paper": false,
+      "paper": {
+        "title": "Pentest Copilot — AI-Powered Browser-Based Ethical Hacking Agent",
+        "venue": "GitHub (no paper)",
+        "year": 2025,
+        "authors": ["bugbasesecurity"],
+        "arxiv": "",
+        "url": "https://github.com/bugbasesecurity/pentest-copilot",
+        "affiliation": "BugBase Security",
+        "summary": "Fully autonomous agent: up to 25 iterations/turn with no manual nudging. Dockerized Kali Linux attack environment. Burp Suite integration (proxy, Repeater, Intruder, Collaborator). React frontend + TypeScript backend + MongoDB/Redis. 100+ capabilities spanning recon, pwn, crypto, forensics, stego.",
+        "tags": ["no-paper", "autonomous", "burp-suite", "docker-kali", "browser-ui", "CTF", "pentest", "25-iterations"]
+      },
+      "benchmark": {
+        "dataset": "No published benchmark (OWASP Juice Shop demo only)",
+        "score": "No benchmark — demo shows auth bypass on Juice Shop; no quantitative metrics",
+        "notes": "Real-world pentest + boot2root CTF scope; no XBOW/HTB/AutoPenBench numbers"
+      },
+      "limitations": [
+        "No published benchmark — performance unvalidated externally",
+        "25-iteration cap per turn — may stall on complex multi-stage exploitation chains",
+        "Dangerous commands (rm -rf, fork bombs, device writes) require explicit human approval",
+        "No ATT&CK coverage mapping in documentation",
+        "No multi-host or AD lateral movement documented"
+      ],
+      "techniques": [
+        {
+          "id": "T1595",
+          "coverage": "covered",
+          "notes": "Network reconnaissance in 100+ capabilities; Dockerized Kali environment enables full recon toolset",
+          "source": { "tier": "T2", "ref": "GitHub README: network reconnaissance in capabilities registry; Dockerized Kali Linux toolset" }
+        },
+        {
+          "id": "T1190",
+          "coverage": "covered",
+          "notes": "Web exploitation demonstrated on OWASP Juice Shop (auth bypass); Burp Suite integration for web attacks",
+          "source": { "tier": "T2", "ref": "GitHub README: demo shows auth bypass; Burp Suite Repeater/Intruder/Collaborator integration" }
+        },
+        {
+          "id": "T1059",
+          "coverage": "covered",
+          "notes": "Bash execution and shell management are core agent tools; Python scripting included",
+          "source": { "tier": "T2", "ref": "GitHub README: 16 agent tools include bash execution, Python scripting, shell management" }
+        },
+        {
+          "id": "T1083",
+          "coverage": "covered",
+          "notes": "File and directory discovery via Kali toolset and bash execution",
+          "source": { "tier": "T2", "ref": "GitHub README: 100+ capabilities include core utilities; bash access enables file discovery" }
+        },
+        {
+          "id": "T1021",
+          "coverage": "not-covered",
+          "notes": "No multi-host or lateral movement documented; CTF/single-target scope",
+          "source": { "tier": "T2", "ref": "GitHub README: boot2root CTF and authorized pentest scope; no lateral movement features" }
+        }
+      ]
+    },
+    {
       "id": "pentest-ai-agents",
       "name": "pentest-ai-agents",
       "has_paper": false,
