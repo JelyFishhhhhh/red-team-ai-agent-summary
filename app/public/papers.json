@@ -86,13 +86,13 @@
         "arxiv": "",
         "url": "https://github.com/PurpleAILAB/Decepticon",
         "affiliation": "PurpleAILAB",
-        "summary": "16 specialized agents orchestrated via LangGraph with engagement discipline (RoE + OPPLAN + MITRE ATT&CK mapping pre-generated). Fresh context per objective prevents noise accumulation. Neo4j stores findings graph. Supports interactive shells via tmux + prompt detection.",
-        "tags": ["multi-agent", "LangGraph", "Neo4j", "AD", "autonomous", "fresh-context", "OT", "cloud", "binary"]
+        "summary": "16 specialized agents (3 orchestrators: Decepticon/Vulnresearch/Soundwave; 1 Recon; 5 Vuln Pipeline: Scanner/Detector/Verifier/Exploiter/Patcher; 2 Exploitation: Exploit/Post-Exploit; 5 Domain: AD Operator/Cloud Hunter/Contract Auditor/Reverser/Analyst) orchestrated via LangGraph. Engagement discipline: Soundwave pre-generates 8-document bundle (RoE+ConOps+Deconfliction+OPPLAN with ATT&CK mapping). Fresh context per objective. Neo4j findings graph (Hosts/Services/Vulns/Credentials/Accounts nodes; EXPLOITS/REQUIRES/AFFECTS/LEADS_TO edges). tmux with prompt detection for msfconsole/sliver-client/evil-winrm. Dual-network: management-net vs sandbox-net, Docker socket only.",
+        "tags": ["multi-agent", "LangGraph", "Neo4j", "AD", "autonomous", "fresh-context", "cloud", "binary", "smart-contract", "OPPLAN", "tmux", "dual-network"]
       },
       "benchmark": {
-        "dataset": "XBOW validation-benchmarks Hard Level 3",
-        "score": "7/8 (87.5%)",
-        "notes": "Highest published score on XBOW Hard as of 2026-05-18. Supports msfconsole, sliver-client, evil-winrm via tmux."
+        "dataset": "XBOW validation-benchmarks (104 web app CTF challenges, black-box)",
+        "score": "102/104 (98.08%) overall — L1 Easy: 45/45 (100%), L2 Medium: 50/51 (98.0%), L3 Hard: 7/8 (87.5%)",
+        "notes": "Highest black-box XBOW score as of 2026-05. Leaderboard: Decepticon 98.08% > Strix 96.15% (black-box) > Shannon 96.15% (white-box) > PentestGPT 86.5% > Red-MIRROR 86.0% > XBOW commercial ~85%. Supports msfconsole, sliver-client, evil-winrm via tmux."
       },
       "limitations": [
         "Fresh context rebuilt per objective: no cross-session or cross-objective knowledge accumulation",
