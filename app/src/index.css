@@ -902,3 +902,62 @@ a:hover { text-decoration: underline; }
   .home-table th:nth-child(4) { display: none; }   /* hide Benchmark on mobile */
   .depth-summary { gap: 14px; }
 }
+
+/* ================================================================
+   SORT TH — clickable header indicators
+   ================================================================ */
+.sort-th {
+  cursor: pointer;
+  user-select: none;
+  transition: color .12s, background .12s;
+}
+.sort-th:hover {
+  color: var(--text);
+  background: var(--bg-hover);
+}
+.sort-th--active {
+  color: var(--text);
+}
+.sort-indicator {
+  display: inline-block;
+  margin-left: 4px;
+  color: var(--border-light);
+  font-size: 10px;
+  font-weight: 400;
+}
+.sort-th--active .sort-indicator {
+  color: var(--accent-blue);
+}
+
+/* Table A: Total Coverage column */
+.depth-matrix-total-th {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  min-width: 110px;
+  text-align: center !important;
+}
+/* Note: when both agent + total are sticky, agent stays left; total sits right next to it */
+.depth-matrix-total-th { left: 140px; }
+
+.depth-matrix-score-td {
+  position: sticky;
+  left: 140px;
+  z-index: 1;
+  background: var(--bg);
+  border-right: 1px solid var(--border);
+  padding: 5px 10px;
+  text-align: center;
+}
+.depth-matrix-score {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  color: var(--text);
+  background: var(--bg-hover);
+  border-radius: 10px;
+  padding: 1px 10px;
+  min-width: 24px;
+}
+.depth-matrix tr:hover .depth-matrix-score-td { background: var(--bg-hover); }

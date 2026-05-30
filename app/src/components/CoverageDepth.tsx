@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { useSort, applySortFn } from '../hooks/useSort'
+import { SortTh } from './SortTh'
 import type { Agent, Tactic, CoverageLevel } from '../types'
 
 const TACTIC_TOTAL: Record<string, number> = {
@@ -29,7 +31,6 @@ function buildStats(agents: Agent[], tactics: Tactic[]): TacticStats[] {
   return tactics.map((tactic) => {
     const agentsCovered = new Set<string>()
     const allTIds = new Set<string>()
-
     agents.forEach((agent) => {
       let hasCoverage = false
       agent.techniques.forEach((t) => {
@@ -45,7 +46,6 @@ function buildStats(agents: Agent[], tactics: Tactic[]): TacticStats[] {
       })
       if (hasCoverage) agentsCovered.add(agent.id)
     })
-
     const uniqueTIds = [...allTIds].sort()
     const total = TACTIC_TOTAL[tactic.id] ?? tactic.techniques.length
     return {
@@ -76,26 +76,27 @@ function getAgentTacticStatus(agent: Agent, tactic: Tactic): AgentTacticStatus {
   return { coverage: best, tIds: [...new Set(tIds)].sort() }
 }
 
+function coverageScore(c: CoverageLevel | 'none'): number {
+  return c === 'covered' ? 2 : c === 'partial' ? 1 : c === 'tool-dep' ? 1 : 0
+}
+
 function cellLabel(c: CoverageLevel | 'none'): string {
-  if (c === 'covered') return 'C'
-  if (c === 'partial') return 'P'
-  if (c === 'tool-dep') return 'T'
-  return '—'
+  return c === 'covered' ? 'C' : c === 'partial' ? 'P' : c === 'tool-dep' ? 'T' : '—'
 }
 
 function statusClass(c: CoverageLevel | 'none'): string {
-  if (c === 'covered') return 'depth-cell--covered'
-  if (c === 'partial') return 'depth-cell--partial'
-  if (c === 'tool-dep') return 'depth-cell--tooldep'
-  return 'depth-cell--none'
+  return c === 'covered' ? 'depth-cell--covered'
+    : c === 'partial'   ? 'depth-cell--partial'
+    : c === 'tool-dep'  ? 'depth-cell--tooldep'
+    : 'depth-cell--none'
 }
 
 function gapClass(pct: number): string {
-  if (pct === 0) return 'gap-zero'
-  if (pct < 20) return 'gap-critical'
-  if (pct < 50) return 'gap-significant'
-  return 'gap-ok'
+  return pct === 0 ? 'gap-zero' : pct < 20 ? 'gap-critical' : pct < 50 ? 'gap-significant' : 'gap-ok'
 }
+
+type AgentCol = 'name' | 'total'
+type TacticCol = 'tactic' | 'agents' | 'depth' | 'gap'
 
 interface Props {
   agents: Agent[]
@@ -107,19 +108,47 @@ export function CoverageDepth({ agents, tactics, onSelectAgent }: Props) {
   const stats = buildStats(agents, tactics)
   const [hoveredCell, setHoveredCell] = useState<{ agentId: string; tacticId: string } | null>(null)
 
+  // Table A sort
+  const { sort: agentSort, toggle: agentToggle } = useSort<AgentCol>()
+  const sortedAgents = applySortFn<Agent, AgentCol>(agents, agentSort, (agent, key) => {
+    if (key === 'name') return agent.name
+    // 'total': sum of coverage scores across all tactics
+    return tactics.reduce((sum, tactic) => {
+      const status = getAgentTacticStatus(agent, tactic)
+      return sum + coverageScore(status.coverage)
+    }, 0)
+  })
+
+  // Table B sort
+  const { sort: tacticSort, toggle: tacticToggle } = useSort<TacticCol>('depth', 'desc')
+  const sortedStats = applySortFn<TacticStats, TacticCol>(stats, tacticSort, (s, key) => {
+    switch (key) {
+      case 'tactic':  return s.tactic.name
+      case 'agents':  return s.agentCount
+      case 'depth':   return s.depthPct
+      case 'gap':     return s.total - s.uniqueTIds.length
+      default:        return 0
+    }
+  })
+
   const totalUnique = new Set(
-    agents.flatMap((a) =>
-      a.techniques.filter((t) => t.coverage !== 'not-covered').map((t) => parentId(t.id))
-    )
+    agents.flatMap((a) => a.techniques.filter((t) => t.coverage !== 'not-covered').map((t) => parentId(t.id)))
   ).size
   const totalATT = Object.values(TACTIC_TOTAL).reduce((s, v) => s + v, 0)
   const uncoveredCount = stats.filter((s) => s.agentCount === 0).length
-  const criticalCount = stats.filter((s) => s.agentCount > 0 && s.depthPct < 20).length
+  const criticalCount  = stats.filter((s) => s.agentCount > 0 && s.depthPct < 20).length
+
+  const aThProps = (key: AgentCol) => ({
+    sortKey: key, activeKey: agentSort.key, dir: agentSort.dir, onClick: () => agentToggle(key),
+  })
+  const tThProps = (key: TacticCol) => ({
+    sortKey: key, activeKey: tacticSort.key, dir: tacticSort.dir, onClick: () => tacticToggle(key),
+  })
 
   return (
     <div className="depth-panel">
 
-      {/* ── Summary bar ── */}
+      {/* Summary bar */}
       <div className="depth-summary">
         <div className="depth-stat">
           <span className="depth-stat-value">{agents.length}</span>
@@ -145,7 +174,7 @@ export function CoverageDepth({ agents, tactics, onSelectAgent }: Props) {
         </div>
       </div>
 
-      {/* ── Table A: Agent × Tactic matrix ── */}
+      {/* Table A */}
       <section className="depth-section">
         <h2 className="depth-section-title">
           Table A — Agent × Tactic Matrix
@@ -157,7 +186,8 @@ export function CoverageDepth({ agents, tactics, onSelectAgent }: Props) {
           <table className="depth-matrix">
             <thead>
               <tr>
-                <th className="depth-matrix-agent-th">Agent</th>
+                <SortTh label="Agent"          {...aThProps('name')}  className="depth-matrix-agent-th" />
+                <SortTh label="Total Coverage" {...aThProps('total')} className="depth-matrix-agent-th depth-matrix-total-th" />
                 {tactics.map((t) => (
                   <th key={t.id} className="depth-matrix-tactic-th" title={t.name}>
                     <span className="depth-matrix-tactic-id">{t.id}</span>
@@ -167,47 +197,55 @@ export function CoverageDepth({ agents, tactics, onSelectAgent }: Props) {
               </tr>
             </thead>
             <tbody>
-              {agents.map((agent) => (
-                <tr key={agent.id}>
-                  <td className="depth-matrix-agent-td">
-                    <button className="depth-agent-btn" onClick={() => onSelectAgent(agent.id)}>
-                      {agent.name}
-                    </button>
-                  </td>
-                  {tactics.map((tactic) => {
-                    const status = getAgentTacticStatus(agent, tactic)
-                    const isHovered = hoveredCell?.agentId === agent.id && hoveredCell?.tacticId === tactic.id
-                    return (
-                      <td
-                        key={tactic.id}
-                        className={`depth-cell ${statusClass(status.coverage)}`}
-                        onMouseEnter={() => setHoveredCell({ agentId: agent.id, tacticId: tactic.id })}
-                        onMouseLeave={() => setHoveredCell(null)}
-                      >
-                        <span className="depth-cell-label">{cellLabel(status.coverage)}</span>
-                        {isHovered && status.tIds.length > 0 && (
-                          <div className="depth-cell-tooltip">
-                            <div className="depth-cell-tooltip-header">
-                              {agent.name} × {tactic.name}
+              {sortedAgents.map((agent) => {
+                const totalScore = tactics.reduce((sum, tactic) => {
+                  return sum + coverageScore(getAgentTacticStatus(agent, tactic).coverage)
+                }, 0)
+                return (
+                  <tr key={agent.id}>
+                    <td className="depth-matrix-agent-td">
+                      <button className="depth-agent-btn" onClick={() => onSelectAgent(agent.id)}>
+                        {agent.name}
+                      </button>
+                    </td>
+                    <td className="depth-matrix-score-td">
+                      <span className="depth-matrix-score">{totalScore}</span>
+                    </td>
+                    {tactics.map((tactic) => {
+                      const status = getAgentTacticStatus(agent, tactic)
+                      const isHovered = hoveredCell?.agentId === agent.id && hoveredCell?.tacticId === tactic.id
+                      return (
+                        <td
+                          key={tactic.id}
+                          className={`depth-cell ${statusClass(status.coverage)}`}
+                          onMouseEnter={() => setHoveredCell({ agentId: agent.id, tacticId: tactic.id })}
+                          onMouseLeave={() => setHoveredCell(null)}
+                        >
+                          <span className="depth-cell-label">{cellLabel(status.coverage)}</span>
+                          {isHovered && status.tIds.length > 0 && (
+                            <div className="depth-cell-tooltip">
+                              <div className="depth-cell-tooltip-header">
+                                {agent.name} × {tactic.name}
+                              </div>
+                              <div className="depth-cell-tids">
+                                {status.tIds.map((tid) => (
+                                  <code key={tid} className="tid depth-cell-tid">{tid}</code>
+                                ))}
+                              </div>
                             </div>
-                            <div className="depth-cell-tids">
-                              {status.tIds.map((tid) => (
-                                <code key={tid} className="tid depth-cell-tid">{tid}</code>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </td>
-                    )
-                  })}
-                </tr>
-              ))}
+                          )}
+                        </td>
+                      )
+                    })}
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>
       </section>
 
-      {/* ── Table B: Technique Depth ── */}
+      {/* Table B */}
       <section className="depth-section">
         <h2 className="depth-section-title">
           Table B — Technique Depth per Tactic
@@ -217,16 +255,16 @@ export function CoverageDepth({ agents, tactics, onSelectAgent }: Props) {
           <table className="depth-table-b">
             <thead>
               <tr>
-                <th>Tactic</th>
-                <th>Agents</th>
-                <th>Depth</th>
+                <SortTh label="Tactic" {...tThProps('tactic')} />
+                <SortTh label="Agents" {...tThProps('agents')} />
+                <SortTh label="Depth"  {...tThProps('depth')}  />
                 <th>Bar</th>
-                <th>Gap</th>
+                <SortTh label="Gap"    {...tThProps('gap')}    />
                 <th>Covered T-IDs</th>
               </tr>
             </thead>
             <tbody>
-              {stats.map((s) => {
+              {sortedStats.map((s) => {
                 const gc = gapClass(s.depthPct)
                 return (
                   <tr key={s.tactic.id} className={`depth-row ${s.agentCount === 0 ? 'depth-row--zero' : ''}`}>
