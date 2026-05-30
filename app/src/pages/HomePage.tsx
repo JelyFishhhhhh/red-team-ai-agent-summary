@@ -9,10 +9,18 @@ function coverageCount(agent: Agent, level: string) {
   return agent.techniques.filter((t) => t.coverage === level).length
 }
 
-function hasPaperBadge(agent: Agent) {
-  return agent.has_paper
-    ? <span className="badge badge--paper">Paper</span>
-    : <span className="badge badge--nopaper">No Paper</span>
+function sourceBadge(agent: Agent) {
+  const url = agent.paper.url ?? ''
+  const venue = agent.paper.venue ?? ''
+  // GitHub-only: no formal paper OR venue explicitly says GitHub
+  if (!agent.has_paper || venue.toLowerCase().includes('github')) {
+    return <span className="badge badge--github">GitHub</span>
+  }
+  if (url.includes('arxiv.org')) return <span className="badge badge--arxiv">arXiv</span>
+  if (venue.includes('USENIX') || venue.includes('CCS') || venue.includes('IEEE') || venue.includes('ACM')) {
+    return <span className="badge badge--conf">Conference</span>
+  }
+  return <span className="badge badge--paper">Paper</span>
 }
 
 export function HomePage({ agents }: Props) {
@@ -48,6 +56,7 @@ export function HomePage({ agents }: Props) {
       </div>
 
       <div className="home-table-wrap">
+        <div className="home-table-scroll">
         <table className="home-table">
           <thead>
             <tr>
@@ -80,7 +89,7 @@ export function HomePage({ agents }: Props) {
                       {agent.name}
                     </Link>
                   </td>
-                  <td className="home-td-badge">{hasPaperBadge(agent)}</td>
+                  <td className="home-td-badge">{sourceBadge(agent)}</td>
                   <td className="home-td-venue">
                     <span className="home-venue">{agent.paper.venue}</span>
                     <span className="home-year"> {agent.paper.year}</span>
@@ -119,6 +128,7 @@ export function HomePage({ agents }: Props) {
             })}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   )
