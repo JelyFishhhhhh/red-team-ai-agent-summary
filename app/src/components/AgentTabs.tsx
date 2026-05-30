@@ -17,6 +17,15 @@ export function AgentTabs({ agents, selectedId, onSelect }: Props) {
       >
         Overview
       </button>
+      <button
+        role="tab"
+        aria-selected={selectedId === 'depth'}
+        className={`agent-tab depth-tab${selectedId === 'depth' ? ' active' : ''}`}
+        onClick={() => onSelect('depth')}
+      >
+        Depth Analysis
+      </button>
+      <span className="agent-tabs-sep" aria-hidden="true" />
       {agents.map((agent) => (
         <button
           key={agent.id}
