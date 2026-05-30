@@ -1,0 +1,1481 @@
+{
+  "generated": "2026-05-30",
+  "totalAgents": 19,
+  "totalTactics": 14,
+  "tacticSummary": [
+    {
+      "tacticId": "TA0043",
+      "name": "Reconnaissance",
+      "coveredCount": 3,
+      "total": 10,
+      "pct": 30,
+      "gap": 7,
+      "coveredTids": [
+        "T1589",
+        "T1590",
+        "T1595"
+      ]
+    },
+    {
+      "tacticId": "TA0042",
+      "name": "Resource Development",
+      "coveredCount": 0,
+      "total": 8,
+      "pct": 0,
+      "gap": 8,
+      "coveredTids": []
+    },
+    {
+      "tacticId": "TA0001",
+      "name": "Initial Access",
+      "coveredCount": 1,
+      "total": 10,
+      "pct": 10,
+      "gap": 9,
+      "coveredTids": [
+        "T1190"
+      ]
+    },
+    {
+      "tacticId": "TA0002",
+      "name": "Execution",
+      "coveredCount": 1,
+      "total": 14,
+      "pct": 7.1,
+      "gap": 13,
+      "coveredTids": [
+        "T1059"
+      ]
+    },
+    {
+      "tacticId": "TA0003",
+      "name": "Persistence",
+      "coveredCount": 0,
+      "total": 19,
+      "pct": 0,
+      "gap": 19,
+      "coveredTids": []
+    },
+    {
+      "tacticId": "TA0004",
+      "name": "Privilege Escalation",
+      "coveredCount": 1,
+      "total": 14,
+      "pct": 7.1,
+      "gap": 13,
+      "coveredTids": [
+        "T1068"
+      ]
+    },
+    {
+      "tacticId": "TA0005",
+      "name": "Defense Evasion",
+      "coveredCount": 2,
+      "total": 43,
+      "pct": 4.7,
+      "gap": 41,
+      "coveredTids": [
+        "T1078",
+        "T1548"
+      ]
+    },
+    {
+      "tacticId": "TA0006",
+      "name": "Credential Access",
+      "coveredCount": 5,
+      "total": 17,
+      "pct": 29.4,
+      "gap": 12,
+      "coveredTids": [
+        "T1003",
+        "T1110",
+        "T1552",
+        "T1558",
+        "T1649"
+      ]
+    },
+    {
+      "tacticId": "TA0007",
+      "name": "Discovery",
+      "coveredCount": 8,
+      "total": 32,
+      "pct": 25,
+      "gap": 24,
+      "coveredTids": [
+        "T1046",
+        "T1069",
+        "T1083",
+        "T1087",
+        "T1135",
+        "T1482",
+        "T1526",
+        "T1592"
+      ]
+    },
+    {
+      "tacticId": "TA0008",
+      "name": "Lateral Movement",
+      "coveredCount": 4,
+      "total": 9,
+      "pct": 44.4,
+      "gap": 5,
+      "coveredTids": [
+        "T1021",
+        "T1210",
+        "T1550",
+        "T1570"
+      ]
+    },
+    {
+      "tacticId": "TA0009",
+      "name": "Collection",
+      "coveredCount": 1,
+      "total": 17,
+      "pct": 5.9,
+      "gap": 16,
+      "coveredTids": [
+        "T1005"
+      ]
+    },
+    {
+      "tacticId": "TA0010",
+      "name": "Exfiltration",
+      "coveredCount": 1,
+      "total": 9,
+      "pct": 11.1,
+      "gap": 8,
+      "coveredTids": [
+        "T1537"
+      ]
+    },
+    {
+      "tacticId": "TA0011",
+      "name": "Command and Control",
+      "coveredCount": 0,
+      "total": 18,
+      "pct": 0,
+      "gap": 18,
+      "coveredTids": []
+    },
+    {
+      "tacticId": "TA0040",
+      "name": "Impact",
+      "coveredCount": 0,
+      "total": 14,
+      "pct": 0,
+      "gap": 14,
+      "coveredTids": []
+    }
+  ],
+  "agentTacticMatrix": {
+    "pentestgpt": {
+      "TA0043": {
+        "coverage": "covered",
+        "techniques": [
+          "T1595"
+        ]
+      },
+      "TA0042": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0001": {
+        "coverage": "covered",
+        "techniques": [
+          "T1190"
+        ]
+      },
+      "TA0002": {
+        "coverage": "partial",
+        "techniques": [
+          "T1059"
+        ]
+      },
+      "TA0003": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0004": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0005": {
+        "coverage": "not-covered",
+        "techniques": [
+          "T1548"
+        ]
+      },
+      "TA0006": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0007": {
+        "coverage": "covered",
+        "techniques": [
+          "T1046",
+          "T1083"
+        ]
+      },
+      "TA0008": {
+        "coverage": "not-covered",
+        "techniques": [
+          "T1021"
+        ]
+      },
+      "TA0009": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0010": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0011": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0040": {
+        "coverage": "not-covered",
+        "techniques": []
+      }
+    },
+    "decepticon": {
+      "TA0043": {
+        "coverage": "covered",
+        "techniques": [
+          "T1589",
+          "T1590",
+          "T1595"
+        ]
+      },
+      "TA0042": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0001": {
+        "coverage": "covered",
+        "techniques": [
+          "T1190"
+        ]
+      },
+      "TA0002": {
+        "coverage": "covered",
+        "techniques": [
+          "T1059"
+        ]
+      },
+      "TA0003": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0004": {
+        "coverage": "covered",
+        "techniques": [
+          "T1068"
+        ]
+      },
+      "TA0005": {
+        "coverage": "covered",
+        "techniques": [
+          "T1078",
+          "T1548"
+        ]
+      },
+      "TA0006": {
+        "coverage": "covered",
+        "techniques": [
+          "T1003",
+          "T1558",
+          "T1649"
+        ]
+      },
+      "TA0007": {
+        "coverage": "covered",
+        "techniques": [
+          "T1046",
+          "T1087",
+          "T1482",
+          "T1526",
+          "T1592"
+        ]
+      },
+      "TA0008": {
+        "coverage": "covered",
+        "techniques": [
+          "T1021",
+          "T1550"
+        ]
+      },
+      "TA0009": {
+        "coverage": "covered",
+        "techniques": [
+          "T1005"
+        ]
+      },
+      "TA0010": {
+        "coverage": "partial",
+        "techniques": [
+          "T1537"
+        ]
+      },
+      "TA0011": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0040": {
+        "coverage": "not-covered",
+        "techniques": []
+      }
+    },
+    "cai": {
+      "TA0043": {
+        "coverage": "covered",
+        "techniques": [
+          "T1595"
+        ]
+      },
+      "TA0042": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0001": {
+        "coverage": "covered",
+        "techniques": [
+          "T1190"
+        ]
+      },
+      "TA0002": {
+        "coverage": "covered",
+        "techniques": [
+          "T1059"
+        ]
+      },
+      "TA0003": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0004": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0005": {
+        "coverage": "partial",
+        "techniques": [
+          "T1548"
+        ]
+      },
+      "TA0006": {
+        "coverage": "covered",
+        "techniques": [
+          "T1552"
+        ]
+      },
+      "TA0007": {
+        "coverage": "covered",
+        "techniques": [
+          "T1083"
+        ]
+      },
+      "TA0008": {
+        "coverage": "not-covered",
+        "techniques": [
+          "T1021"
+        ]
+      },
+      "TA0009": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0010": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0011": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0040": {
+        "coverage": "not-covered",
+        "techniques": []
+      }
+    },
+    "artemis": {
+      "TA0043": {
+        "coverage": "covered",
+        "techniques": [
+          "T1595"
+        ]
+      },
+      "TA0042": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0001": {
+        "coverage": "covered",
+        "techniques": [
+          "T1190"
+        ]
+      },
+      "TA0002": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0003": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0004": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0005": {
+        "coverage": "covered",
+        "techniques": [
+          "T1078"
+        ]
+      },
+      "TA0006": {
+        "coverage": "covered",
+        "techniques": [
+          "T1003"
+        ]
+      },
+      "TA0007": {
+        "coverage": "covered",
+        "techniques": [
+          "T1046",
+          "T1083"
+        ]
+      },
+      "TA0008": {
+        "coverage": "covered",
+        "techniques": [
+          "T1021",
+          "T1570"
+        ]
+      },
+      "TA0009": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0010": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0011": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0040": {
+        "coverage": "not-covered",
+        "techniques": []
+      }
+    },
+    "hacksynth": {
+      "TA0043": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0042": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0001": {
+        "coverage": "partial",
+        "techniques": [
+          "T1190"
+        ]
+      },
+      "TA0002": {
+        "coverage": "covered",
+        "techniques": [
+          "T1059"
+        ]
+      },
+      "TA0003": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0004": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0005": {
+        "coverage": "not-covered",
+        "techniques": [
+          "T1548"
+        ]
+      },
+      "TA0006": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0007": {
+        "coverage": "covered",
+        "techniques": [
+          "T1083"
+        ]
+      },
+      "TA0008": {
+        "coverage": "not-covered",
+        "techniques": [
+          "T1021"
+        ]
+      },
+      "TA0009": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0010": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0011": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0040": {
+        "coverage": "not-covered",
+        "techniques": []
+      }
+    },
+    "pentestagent": {
+      "TA0043": {
+        "coverage": "covered",
+        "techniques": [
+          "T1595"
+        ]
+      },
+      "TA0042": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0001": {
+        "coverage": "covered",
+        "techniques": [
+          "T1190"
+        ]
+      },
+      "TA0002": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0003": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0004": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0005": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0006": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0007": {
+        "coverage": "covered",
+        "techniques": [
+          "T1046",
+          "T1083"
+        ]
+      },
+      "TA0008": {
+        "coverage": "not-covered",
+        "techniques": [
+          "T1021"
+        ]
+      },
+      "TA0009": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0010": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0011": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0040": {
+        "coverage": "not-covered",
+        "techniques": []
+      }
+    },
+    "red-mirror": {
+      "TA0043": {
+        "coverage": "covered",
+        "techniques": [
+          "T1595"
+        ]
+      },
+      "TA0042": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0001": {
+        "coverage": "covered",
+        "techniques": [
+          "T1190"
+        ]
+      },
+      "TA0002": {
+        "coverage": "partial",
+        "techniques": [
+          "T1059"
+        ]
+      },
+      "TA0003": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0004": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0005": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0006": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0007": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0008": {
+        "coverage": "not-covered",
+        "techniques": [
+          "T1021"
+        ]
+      },
+      "TA0009": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0010": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0011": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0040": {
+        "coverage": "not-covered",
+        "techniques": []
+      }
+    },
+    "vulnbot": {
+      "TA0043": {
+        "coverage": "covered",
+        "techniques": [
+          "T1595"
+        ]
+      },
+      "TA0042": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0001": {
+        "coverage": "covered",
+        "techniques": [
+          "T1190"
+        ]
+      },
+      "TA0002": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0003": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0004": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0005": {
+        "coverage": "not-covered",
+        "techniques": [
+          "T1548"
+        ]
+      },
+      "TA0006": {
+        "coverage": "covered",
+        "techniques": [
+          "T1110"
+        ]
+      },
+      "TA0007": {
+        "coverage": "covered",
+        "techniques": [
+          "T1046",
+          "T1083"
+        ]
+      },
+      "TA0008": {
+        "coverage": "not-covered",
+        "techniques": [
+          "T1021"
+        ]
+      },
+      "TA0009": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0010": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0011": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0040": {
+        "coverage": "not-covered",
+        "techniques": []
+      }
+    },
+    "mapta": {
+      "TA0043": {
+        "coverage": "covered",
+        "techniques": [
+          "T1595"
+        ]
+      },
+      "TA0042": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0001": {
+        "coverage": "covered",
+        "techniques": [
+          "T1190"
+        ]
+      },
+      "TA0002": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0003": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0004": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0005": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0006": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0007": {
+        "coverage": "covered",
+        "techniques": [
+          "T1083"
+        ]
+      },
+      "TA0008": {
+        "coverage": "not-covered",
+        "techniques": [
+          "T1021"
+        ]
+      },
+      "TA0009": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0010": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0011": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0040": {
+        "coverage": "not-covered",
+        "techniques": []
+      }
+    },
+    "pentest-r1": {
+      "TA0043": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0042": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0001": {
+        "coverage": "partial",
+        "techniques": [
+          "T1190"
+        ]
+      },
+      "TA0002": {
+        "coverage": "covered",
+        "techniques": [
+          "T1059"
+        ]
+      },
+      "TA0003": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0004": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0005": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0006": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0007": {
+        "coverage": "covered",
+        "techniques": [
+          "T1083"
+        ]
+      },
+      "TA0008": {
+        "coverage": "not-covered",
+        "techniques": [
+          "T1021"
+        ]
+      },
+      "TA0009": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0010": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0011": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0040": {
+        "coverage": "not-covered",
+        "techniques": []
+      }
+    },
+    "cochise": {
+      "TA0043": {
+        "coverage": "covered",
+        "techniques": [
+          "T1595"
+        ]
+      },
+      "TA0042": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0001": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0002": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0003": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0004": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0005": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0006": {
+        "coverage": "covered",
+        "techniques": [
+          "T1003",
+          "T1110",
+          "T1558"
+        ]
+      },
+      "TA0007": {
+        "coverage": "covered",
+        "techniques": [
+          "T1046",
+          "T1069",
+          "T1087",
+          "T1135",
+          "T1482"
+        ]
+      },
+      "TA0008": {
+        "coverage": "covered",
+        "techniques": [
+          "T1021",
+          "T1210"
+        ]
+      },
+      "TA0009": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0010": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0011": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0040": {
+        "coverage": "not-covered",
+        "techniques": []
+      }
+    },
+    "autopen": {
+      "TA0043": {
+        "coverage": "partial",
+        "techniques": [
+          "T1595"
+        ]
+      },
+      "TA0042": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0001": {
+        "coverage": "partial",
+        "techniques": [
+          "T1190"
+        ]
+      },
+      "TA0002": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0003": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0004": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0005": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0006": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0007": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0008": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0009": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0010": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0011": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0040": {
+        "coverage": "not-covered",
+        "techniques": []
+      }
+    },
+    "pentagi": {
+      "TA0043": {
+        "coverage": "partial",
+        "techniques": [
+          "T1595"
+        ]
+      },
+      "TA0042": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0001": {
+        "coverage": "partial",
+        "techniques": [
+          "T1190"
+        ]
+      },
+      "TA0002": {
+        "coverage": "partial",
+        "techniques": [
+          "T1059"
+        ]
+      },
+      "TA0003": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0004": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0005": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0006": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0007": {
+        "coverage": "partial",
+        "techniques": [
+          "T1046"
+        ]
+      },
+      "TA0008": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0009": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0010": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0011": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0040": {
+        "coverage": "not-covered",
+        "techniques": []
+      }
+    },
+    "shannon": {
+      "TA0043": {
+        "coverage": "not-covered",
+        "techniques": [
+          "T1595"
+        ]
+      },
+      "TA0042": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0001": {
+        "coverage": "covered",
+        "techniques": [
+          "T1190"
+        ]
+      },
+      "TA0002": {
+        "coverage": "partial",
+        "techniques": [
+          "T1059"
+        ]
+      },
+      "TA0003": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0004": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0005": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0006": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0007": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0008": {
+        "coverage": "not-covered",
+        "techniques": [
+          "T1021"
+        ]
+      },
+      "TA0009": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0010": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0011": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0040": {
+        "coverage": "not-covered",
+        "techniques": []
+      }
+    },
+    "cairn": {
+      "TA0043": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0042": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0001": {
+        "coverage": "partial",
+        "techniques": [
+          "T1190"
+        ]
+      },
+      "TA0002": {
+        "coverage": "partial",
+        "techniques": [
+          "T1059"
+        ]
+      },
+      "TA0003": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0004": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0005": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0006": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0007": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0008": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0009": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0010": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0011": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0040": {
+        "coverage": "not-covered",
+        "techniques": []
+      }
+    },
+    "dark-moon": {
+      "TA0043": {
+        "coverage": "covered",
+        "techniques": [
+          "T1595"
+        ]
+      },
+      "TA0042": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0001": {
+        "coverage": "covered",
+        "techniques": [
+          "T1190"
+        ]
+      },
+      "TA0002": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0003": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0004": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0005": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0006": {
+        "coverage": "covered",
+        "techniques": [
+          "T1110",
+          "T1558"
+        ]
+      },
+      "TA0007": {
+        "coverage": "covered",
+        "techniques": [
+          "T1046",
+          "T1083",
+          "T1087",
+          "T1482",
+          "T1526"
+        ]
+      },
+      "TA0008": {
+        "coverage": "partial",
+        "techniques": [
+          "T1021"
+        ]
+      },
+      "TA0009": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0010": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0011": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0040": {
+        "coverage": "not-covered",
+        "techniques": []
+      }
+    },
+    "xalgorix": {
+      "TA0043": {
+        "coverage": "partial",
+        "techniques": [
+          "T1595"
+        ]
+      },
+      "TA0042": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0001": {
+        "coverage": "covered",
+        "techniques": [
+          "T1190"
+        ]
+      },
+      "TA0002": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0003": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0004": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0005": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0006": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0007": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0008": {
+        "coverage": "not-covered",
+        "techniques": [
+          "T1021"
+        ]
+      },
+      "TA0009": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0010": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0011": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0040": {
+        "coverage": "not-covered",
+        "techniques": []
+      }
+    },
+    "pentest-copilot": {
+      "TA0043": {
+        "coverage": "covered",
+        "techniques": [
+          "T1595"
+        ]
+      },
+      "TA0042": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0001": {
+        "coverage": "covered",
+        "techniques": [
+          "T1190"
+        ]
+      },
+      "TA0002": {
+        "coverage": "covered",
+        "techniques": [
+          "T1059"
+        ]
+      },
+      "TA0003": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0004": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0005": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0006": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0007": {
+        "coverage": "covered",
+        "techniques": [
+          "T1083"
+        ]
+      },
+      "TA0008": {
+        "coverage": "not-covered",
+        "techniques": [
+          "T1021"
+        ]
+      },
+      "TA0009": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0010": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0011": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0040": {
+        "coverage": "not-covered",
+        "techniques": []
+      }
+    },
+    "pentest-ai-agents": {
+      "TA0043": {
+        "coverage": "partial",
+        "techniques": [
+          "T1595"
+        ]
+      },
+      "TA0042": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0001": {
+        "coverage": "partial",
+        "techniques": [
+          "T1190"
+        ]
+      },
+      "TA0002": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0003": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0004": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0005": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0006": {
+        "coverage": "partial",
+        "techniques": [
+          "T1558"
+        ]
+      },
+      "TA0007": {
+        "coverage": "partial",
+        "techniques": [
+          "T1087"
+        ]
+      },
+      "TA0008": {
+        "coverage": "partial",
+        "techniques": [
+          "T1021"
+        ]
+      },
+      "TA0009": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0010": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0011": {
+        "coverage": "not-covered",
+        "techniques": []
+      },
+      "TA0040": {
+        "coverage": "not-covered",
+        "techniques": []
+      }
+    }
+  }
+}

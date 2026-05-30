@@ -1,0 +1,15 @@
+Tactic ID,Tactic Name,ATT&CK Total,pentestgpt,decepticon,cai,artemis,hacksynth,pentestagent,red-mirror,vulnbot,mapta,pentest-r1,cochise,autopen,pentagi,shannon,cairn,dark-moon,xalgorix,pentest-copilot,pentest-ai-agents
+TA0043,Reconnaissance,10,C,C,C,C,N,C,C,C,C,N,C,P,P,N,N,C,P,C,P
+TA0042,Resource Development,8,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+TA0001,Initial Access,10,C,C,C,C,P,C,C,C,C,P,N,P,P,C,P,C,C,C,P
+TA0002,Execution,14,P,C,C,N,C,N,P,N,N,C,N,N,P,P,P,N,N,C,N
+TA0003,Persistence,19,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+TA0004,Privilege Escalation,14,N,C,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+TA0005,Defense Evasion,43,N,C,P,C,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+TA0006,Credential Access,17,N,C,C,C,N,N,N,C,N,N,C,N,N,N,N,C,N,N,P
+TA0007,Discovery,32,C,C,C,C,C,C,N,C,C,C,C,N,P,N,N,C,N,C,P
+TA0008,Lateral Movement,9,N,C,N,C,N,N,N,N,N,N,C,N,N,N,N,P,N,N,P
+TA0009,Collection,17,N,C,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+TA0010,Exfiltration,9,N,P,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+TA0011,Command and Control,18,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+TA0040,Impact,14,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N

@@ -1,0 +1,20 @@
+Agent,TA0043 Reconnaissance,TA0042 Resource Development,TA0001 Initial Access,TA0002 Execution,TA0003 Persistence,TA0004 Privilege Escalation,TA0005 Defense Evasion,TA0006 Credential Access,TA0007 Discovery,TA0008 Lateral Movement,TA0009 Collection,TA0010 Exfiltration,TA0011 Command and Control,TA0040 Impact
+pentestgpt,C,N,C,P,N,N,N,N,C,N,N,N,N,N
+decepticon,C,N,C,C,N,C,C,C,C,C,C,P,N,N
+cai,C,N,C,C,N,N,P,C,C,N,N,N,N,N
+artemis,C,N,C,N,N,N,C,C,C,C,N,N,N,N
+hacksynth,N,N,P,C,N,N,N,N,C,N,N,N,N,N
+pentestagent,C,N,C,N,N,N,N,N,C,N,N,N,N,N
+red-mirror,C,N,C,P,N,N,N,N,N,N,N,N,N,N
+vulnbot,C,N,C,N,N,N,N,C,C,N,N,N,N,N
+mapta,C,N,C,N,N,N,N,N,C,N,N,N,N,N
+pentest-r1,N,N,P,C,N,N,N,N,C,N,N,N,N,N
+cochise,C,N,N,N,N,N,N,C,C,C,N,N,N,N
+autopen,P,N,P,N,N,N,N,N,N,N,N,N,N,N
+pentagi,P,N,P,P,N,N,N,N,P,N,N,N,N,N
+shannon,N,N,C,P,N,N,N,N,N,N,N,N,N,N
+cairn,N,N,P,P,N,N,N,N,N,N,N,N,N,N
+dark-moon,C,N,C,N,N,N,N,C,C,P,N,N,N,N
+xalgorix,P,N,C,N,N,N,N,N,N,N,N,N,N,N
+pentest-copilot,C,N,C,C,N,N,N,N,C,N,N,N,N,N
+pentest-ai-agents,P,N,P,N,N,N,N,P,P,P,N,N,N,N
