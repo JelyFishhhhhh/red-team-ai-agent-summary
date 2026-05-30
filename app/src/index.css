@@ -961,3 +961,118 @@ a:hover { text-decoration: underline; }
   min-width: 24px;
 }
 .depth-matrix tr:hover .depth-matrix-score-td { background: var(--bg-hover); }
+
+/* ================================================================
+   GAP ROADMAP PAGE
+   ================================================================ */
+.gap-tactic-chips {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.gap-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  font-size: 11px;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background .12s, color .12s, border-color .12s;
+}
+.gap-chip:hover { background: var(--bg-hover); color: var(--text); }
+.gap-chip--active { background: var(--bg-hover); color: var(--text); border-color: var(--border-light); }
+.gap-chip--warn   { color: #a89060; border-color: #4a3a20; }
+.gap-chip--severe { color: #9a5050; border-color: #4a2020; }
+.gap-chip-id { font-family: var(--font-mono); font-size: 10px; opacity: .7; }
+.gap-chip-name { font-size: 11px; }
+.gap-chip-count {
+  font-family: var(--font-mono); font-size: 10px;
+  background: var(--bg); border-radius: 8px; padding: 0 6px;
+}
+
+.gap-filter-row {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;
+}
+.gap-filter {
+  padding: 5px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 11px;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background .12s, color .12s;
+}
+.gap-filter:hover { background: var(--bg-hover); color: var(--text); }
+.gap-filter--active { background: var(--bg-hover); color: var(--text); border-color: var(--border-light); }
+
+/* Priority badge */
+.gap-prio {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+.gap-prio--0 { background: #2a1818; color: #c97373; border-color: #4a2020; }
+.gap-prio--1 { background: #2a2218; color: #c9a373; border-color: #4a3820; }
+.gap-prio--2 { background: #28281a; color: #c4c073; border-color: #404020; }
+.gap-prio--3 { background: var(--bg-card); color: var(--text-muted); }
+
+.gap-row--p0 { background: rgba(154, 80, 80, .04); }
+.gap-row--p0:hover { background: rgba(154, 80, 80, .08); }
+
+/* Technique cell */
+.gap-tech { display: flex; flex-direction: column; gap: 2px; min-width: 220px; }
+.gap-tid { font-size: 10px; padding: 1px 6px; }
+.gap-tech-name { font-size: 12px; color: var(--text); }
+.gap-subcount {
+  font-size: 10px; color: var(--text-muted);
+  background: var(--bg); border-radius: 8px; padding: 0 5px;
+  width: fit-content;
+}
+
+/* Agent chips */
+.gap-agents { display: flex; flex-wrap: wrap; gap: 3px; max-width: 180px; }
+.gap-agent {
+  font-size: 10px; padding: 1px 6px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+.gap-agent--covered { background: rgba(74, 138, 98, .15); color: #8abb9a; }
+.gap-agent--partial { background: rgba(168, 144, 96, .12); color: #b9a07c; }
+.gap-agent-more {
+  font-size: 10px; padding: 1px 6px;
+  background: var(--bg-card); color: var(--text-muted);
+  border-radius: 10px;
+}
+.gap-none { color: var(--border-light); font-size: 12px; }
+
+/* Tool cell */
+.gap-tool-cell { min-width: 180px; }
+.gap-tool {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--text-muted);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+
+/* Difficulty */
+.gap-diff {
+  font-size: 11px; font-weight: 600;
+  padding: 1px 8px; border-radius: 10px;
+  text-transform: lowercase;
+}
+.gap-diff--easy   { background: rgba(74, 138, 98, .12); color: #6aab80; }
+.gap-diff--medium { background: rgba(168, 144, 96, .12); color: #a89060; }
+.gap-diff--hard   { background: rgba(154, 80, 80, .12); color: #c97373; }
+
+.gap-table th { white-space: nowrap; }

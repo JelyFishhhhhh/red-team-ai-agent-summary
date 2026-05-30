@@ -2,6 +2,7 @@ import { Routes, Route, NavLink, useNavigate } from 'react-router-dom'
 import { useData } from './hooks/useData'
 import { OverviewMatrix } from './components/OverviewMatrix'
 import { CoverageDepth } from './components/CoverageDepth'
+import { GapRoadmap } from './components/GapRoadmap'
 import { HomePage } from './pages/HomePage'
 import { AgentPage } from './pages/AgentPage'
 
@@ -27,6 +28,9 @@ export default function App() {
           </NavLink>
           <NavLink to="/analysis" className={({ isActive }) => `topbar-link topbar-link--accent${isActive ? ' active' : ''}`}>
             Depth Analysis
+          </NavLink>
+          <NavLink to="/gap-roadmap" className={({ isActive }) => `topbar-link topbar-link--accent${isActive ? ' active' : ''}`}>
+            Gap Roadmap
           </NavLink>
         </nav>
       </header>
@@ -63,6 +67,15 @@ export default function App() {
                 agents={papers.agents}
                 tactics={attack.tactics}
                 onSelectAgent={(id) => navigate(`/${id}`)}
+              />
+            }
+          />
+          <Route
+            path="/gap-roadmap"
+            element={
+              <GapRoadmap
+                agents={papers.agents}
+                tactics={attack.tactics}
               />
             }
           />
