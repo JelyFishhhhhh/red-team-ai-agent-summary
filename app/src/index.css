@@ -1606,3 +1606,205 @@ a:hover { text-decoration: underline; }
 @media (max-width: 900px) {
   .kg-schema-grid { grid-template-columns: 1fr; }
 }
+
+/* ================================================================
+   BOTTLENECKS PAGE
+   ================================================================ */
+.bottleneck-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 14px;
+}
+
+.bottleneck-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 3px solid #8a5a40;
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+
+.bottleneck-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+.bottleneck-id {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.bottleneck-week {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: #7aaccc;
+  background: rgba(122, 172, 204, .08);
+  padding: 1px 6px;
+  border-radius: 8px;
+}
+
+.bottleneck-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.bottleneck-blocks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 10px;
+}
+.bottleneck-blocks-label {
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.bottleneck-block {
+  background: rgba(154, 80, 80, .12);
+  color: #c97373;
+  border: 1px solid #4a2020;
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-size: 10px;
+}
+
+.bottleneck-section {
+  margin-bottom: 10px;
+}
+.bottleneck-section-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: 3px;
+}
+.bottleneck-text {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.bottleneck-evidence {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #c97373;
+}
+.bottleneck-solution {
+  color: #8abb9a;
+}
+
+/* Weekly plan */
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.plan-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.plan-week {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: #7aaccc;
+}
+.plan-targets {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.plan-target {
+  background: rgba(168, 144, 96, .15);
+  color: #c4a570;
+  border: 1px solid #5a4830;
+  border-radius: 3px;
+  padding: 0 5px;
+  margin-left: 2px;
+  font-size: 10px;
+  font-family: var(--font-mono);
+}
+
+.plan-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.plan-tasks {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.plan-tasks li {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  padding-left: 14px;
+  position: relative;
+}
+.plan-tasks li::before {
+  content: '·';
+  position: absolute;
+  left: 5px;
+  color: var(--border-light);
+  font-weight: 700;
+}
+
+.plan-acceptance {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+}
+.plan-acceptance-label {
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  font-weight: 600;
+}
+.plan-acceptance-text { color: #8abb9a; }
+
+/* Risk pills */
+.risk-pill {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: lowercase;
+  padding: 1px 8px;
+  border-radius: 10px;
+}
+.risk-pill--low    { background: rgba(74, 138, 98, .12); color: #8abb9a; }
+.risk-pill--medium { background: rgba(168, 144, 96, .12); color: #c4a570; }
+.risk-pill--high   { background: rgba(154, 80, 80, .12); color: #c97373; }
+
+.risk-mitigation {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
