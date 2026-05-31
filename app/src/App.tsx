@@ -4,6 +4,7 @@ import { OverviewMatrix } from './components/OverviewMatrix'
 import { CoverageDepth } from './components/CoverageDepth'
 import { GapRoadmap } from './components/GapRoadmap'
 import { AttackChainDemo } from './components/AttackChainDemo'
+import { KgSchema } from './components/KgSchema'
 import { HomePage } from './pages/HomePage'
 import { AgentPage } from './pages/AgentPage'
 
@@ -32,6 +33,9 @@ export default function App() {
           </NavLink>
           <NavLink to="/gap-roadmap" className={({ isActive }) => `topbar-link topbar-link--accent${isActive ? ' active' : ''}`}>
             Gap Roadmap
+          </NavLink>
+          <NavLink to="/kg-schema" className={({ isActive }) => `topbar-link topbar-link--accent${isActive ? ' active' : ''}`}>
+            KG Schema
           </NavLink>
           <NavLink to="/attack-chain" className={({ isActive }) => `topbar-link topbar-link--accent${isActive ? ' active' : ''}`}>
             Attack Chain Demo
@@ -83,6 +87,7 @@ export default function App() {
               />
             }
           />
+          <Route path="/kg-schema" element={<KgSchema />} />
           <Route path="/attack-chain" element={<AttackChainDemo />} />
           <Route
             path="/:agentId"
