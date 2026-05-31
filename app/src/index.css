@@ -1076,3 +1076,85 @@ a:hover { text-decoration: underline; }
 .gap-diff--hard   { background: rgba(154, 80, 80, .12); color: #c97373; }
 
 .gap-table th { white-space: nowrap; }
+
+/* Sub-technique expand button & expanded row */
+.gap-subcount--btn {
+  cursor: pointer;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-family: var(--font);
+  color: var(--text-muted);
+  font-size: 10px;
+  padding: 1px 7px;
+  border-radius: 8px;
+  transition: background .12s, color .12s;
+}
+.gap-subcount--btn:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+  border-color: var(--border-light);
+}
+
+.gap-zero-pill {
+  display: inline-block;
+  font-size: 10px;
+  padding: 1px 8px;
+  border-radius: 10px;
+  background: var(--bg-card);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.gap-sub-row td {
+  background: rgba(28, 33, 40, .5);
+  padding: 8px 12px 10px 28px !important;
+  border-bottom: 1px solid var(--border-light) !important;
+}
+
+.gap-sub-list { display: flex; flex-direction: column; gap: 4px; }
+.gap-sub-header {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: 4px;
+}
+
+.gap-sub-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 8px;
+  background: var(--bg);
+  border-left: 2px solid var(--border);
+  border-radius: 0 4px 4px 0;
+  font-size: 12px;
+}
+.gap-sub-item--p0 { border-left-color: #6b3030; background: rgba(154, 80, 80, .04); }
+.gap-sub-item--p1 { border-left-color: #6b4030; }
+.gap-sub-item--p2 { border-left-color: #4d8a62; }
+
+.gap-sub-id { font-size: 10px; min-width: 78px; }
+.gap-sub-name { flex: 1; color: var(--text); }
+.gap-sub-agents { display: flex; gap: 6px; align-items: center; font-size: 11px; }
+.gap-sub-cov {
+  background: rgba(74, 138, 98, .15);
+  color: #8abb9a;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+.gap-sub-par {
+  background: rgba(168, 144, 96, .12);
+  color: #b9a07c;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+.gap-sub-none {
+  color: var(--text-muted);
+  font-size: 10px;
+  font-style: italic;
+}

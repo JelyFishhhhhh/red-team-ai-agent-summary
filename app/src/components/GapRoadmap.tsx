@@ -7,13 +7,20 @@ function parentId(id: string): string {
   return id.includes('.') ? id.split('.')[0] : id
 }
 
+interface SubTechInfo {
+  id: string
+  name: string
+  coveredBy: string[]
+  partialBy: string[]
+}
+
 interface TechniqueGap {
   tacticId: string
   tacticName: string
   techniqueId: string
   techniqueName: string
-  subCount: number
-  /** Agents with covered status for this exact T-ID */
+  subTechniques: SubTechInfo[]
+  /** Agents with covered status for parent or any sub */
   coveredBy: string[]
   partialBy: string[]
   /** Suggested tool / method to fill gap */
@@ -140,38 +147,67 @@ function getToolHint(tid: string): { tool: string; difficulty: 'easy' | 'medium'
 }
 
 function buildGaps(agents: Agent[], tactics: Tactic[]): TechniqueGap[] {
-  // For each (tactic, technique), compute which agents have coverage on parent T-ID
-  // We treat coverage at parent level (sub-techniques inherit)
   return tactics.flatMap((tactic) =>
     tactic.techniques.map((tech) => {
-      const coveredBy: string[] = []
-      const partialBy: string[] = []
+      // Coverage for the PARENT (only direct mappings to tech.id)
+      const parentCovered: string[] = []
+      const parentPartial: string[] = []
+      // Aggregate (parent + any sub-technique) for the priority badge
+      const aggCovered = new Set<string>()
+      const aggPartial = new Set<string>()
+
       agents.forEach((agent) => {
-        const matched = agent.techniques.filter(
-          (t) => parentId(t.id) === tech.id ||
-                 tech.sub_techniques.some((st) => st.id === t.id)
+        const direct = agent.techniques.filter((t) => parentId(t.id) === tech.id && !t.id.includes('.'))
+        const subMatches = agent.techniques.filter(
+          (t) => t.id.includes('.') && tech.sub_techniques.some((st) => st.id === t.id)
         )
-        let best: CoverageLevel | null = null
-        matched.forEach((m) => {
-          if (m.coverage !== 'not-covered') {
-            if (!best || m.coverage === 'covered') best = m.coverage
+        // parent-level
+        let pBest: CoverageLevel | null = null
+        direct.forEach((m) => {
+          if (m.coverage !== 'not-covered' && (!pBest || m.coverage === 'covered')) pBest = m.coverage
+        })
+        if (pBest === 'covered') parentCovered.push(agent.name)
+        else if (pBest === 'partial' || pBest === 'tool-dep') parentPartial.push(agent.name)
+
+        // aggregate (parent + subs) for priority
+        const allMatches = [...direct, ...subMatches]
+        let aBest: CoverageLevel | null = null
+        allMatches.forEach((m) => {
+          if (m.coverage !== 'not-covered' && (!aBest || m.coverage === 'covered')) aBest = m.coverage
+        })
+        if (aBest === 'covered') aggCovered.add(agent.name)
+        else if (aBest === 'partial' || aBest === 'tool-dep') aggPartial.add(agent.name)
+      })
+
+      // Build per sub-technique coverage
+      const subTechniques: SubTechInfo[] = tech.sub_techniques.map((st) => {
+        const sc: string[] = []
+        const sp: string[] = []
+        agents.forEach((agent) => {
+          const m = agent.techniques.find((t) => t.id === st.id)
+          if (m && m.coverage !== 'not-covered') {
+            if (m.coverage === 'covered') sc.push(agent.name)
+            else sp.push(agent.name)
           }
         })
-        if (best === 'covered') coveredBy.push(agent.name)
-        else if (best === 'partial' || best === 'tool-dep') partialBy.push(agent.name)
+        return { id: st.id, name: st.name, coveredBy: sc, partialBy: sp }
       })
+
       const hint = getToolHint(tech.id)
-      const priority = coveredBy.length === 0 && partialBy.length === 0 ? 0
-        : coveredBy.length === 0 ? 1
-        : coveredBy.length <= 2 ? 2 : 3
+      const aggCoveredCount = aggCovered.size
+      const aggPartialCount = aggPartial.size
+      const priority = aggCoveredCount === 0 && aggPartialCount === 0 ? 0
+        : aggCoveredCount === 0 ? 1
+        : aggCoveredCount <= 2 ? 2 : 3
+
       return {
         tacticId: tactic.id,
         tacticName: tactic.name,
         techniqueId: tech.id,
         techniqueName: tech.name,
-        subCount: tech.sub_techniques.length,
-        coveredBy,
-        partialBy,
+        subTechniques,
+        coveredBy: [...aggCovered],
+        partialBy: [...aggPartial],
         suggestedTool: hint.tool,
         difficulty: hint.difficulty,
         priority,
@@ -193,6 +229,16 @@ export function GapRoadmap({ agents, tactics }: Props) {
   const allGaps = buildGaps(agents, tactics)
   const [filter, setFilter] = useState<'all' | 'zero' | 'low' | 'easy-wins'>('zero')
   const [tacticFilter, setTacticFilter] = useState<string>('all')
+  const [expanded, setExpanded] = useState<Set<string>>(new Set())
+
+  const toggleExpand = (id: string) => {
+    setExpanded((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
 
   const filtered = allGaps.filter((g) => {
     if (filter === 'zero' && g.coveredBy.length + g.partialBy.length > 0) return false
@@ -324,52 +370,113 @@ export function GapRoadmap({ agents, tactics }: Props) {
               </tr>
             </thead>
             <tbody>
-              {sorted.map((g) => (
-                <tr key={`${g.tacticId}-${g.techniqueId}`} className={`depth-row gap-row gap-row--p${g.priority}`}>
-                  <td>
-                    <span className={`gap-prio gap-prio--${g.priority}`}>P{g.priority}</span>
-                  </td>
-                  <td className="depth-tactic-cell">
-                    <span className="depth-tactic-id">{g.tacticId}</span>
-                    <span className="depth-tactic-name">{g.tacticName}</span>
-                  </td>
-                  <td>
-                    <div className="gap-tech">
-                      <code className="tid gap-tid">{g.techniqueId}</code>
-                      <span className="gap-tech-name">{g.techniqueName}</span>
-                      {g.subCount > 0 && <span className="gap-subcount">+{g.subCount} sub</span>}
-                    </div>
-                  </td>
-                  <td>
-                    {g.coveredBy.length === 0
-                      ? <span className="gap-none">—</span>
-                      : <div className="gap-agents">
-                          {g.coveredBy.slice(0, 3).map((n) => (
-                            <span key={n} className="gap-agent gap-agent--covered">{n}</span>
-                          ))}
-                          {g.coveredBy.length > 3 && <span className="gap-agent-more">+{g.coveredBy.length - 3}</span>}
+              {sorted.flatMap((g) => {
+                const rowKey = `${g.tacticId}-${g.techniqueId}`
+                const isExpanded = expanded.has(rowKey)
+                const hasSubs = g.subTechniques.length > 0
+                const rows = [
+                  <tr key={rowKey} className={`depth-row gap-row gap-row--p${g.priority}`}>
+                    <td>
+                      <span className={`gap-prio gap-prio--${g.priority}`}>P{g.priority}</span>
+                    </td>
+                    <td className="depth-tactic-cell">
+                      <span className="depth-tactic-id">{g.tacticId}</span>
+                      <span className="depth-tactic-name">{g.tacticName}</span>
+                    </td>
+                    <td>
+                      <div className="gap-tech">
+                        <code className="tid gap-tid">{g.techniqueId}</code>
+                        <span className="gap-tech-name">{g.techniqueName}</span>
+                        {hasSubs && (
+                          <button
+                            className="gap-subcount gap-subcount--btn"
+                            onClick={() => toggleExpand(rowKey)}
+                            title={isExpanded ? 'Hide sub-techniques' : 'Show sub-techniques'}
+                          >
+                            {isExpanded ? '▼' : '▶'} {g.subTechniques.length} sub
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                    <td>
+                      {g.coveredBy.length === 0
+                        ? <span className="gap-zero-pill">0 agents</span>
+                        : <div className="gap-agents">
+                            {g.coveredBy.slice(0, 3).map((n) => (
+                              <span key={n} className="gap-agent gap-agent--covered">{n}</span>
+                            ))}
+                            {g.coveredBy.length > 3 && (
+                              <span className="gap-agent-more" title={g.coveredBy.join(', ')}>
+                                +{g.coveredBy.length - 3}
+                              </span>
+                            )}
+                          </div>
+                      }
+                    </td>
+                    <td>
+                      {g.partialBy.length === 0
+                        ? <span className="gap-zero-pill">0 agents</span>
+                        : <div className="gap-agents">
+                            {g.partialBy.slice(0, 3).map((n) => (
+                              <span key={n} className="gap-agent gap-agent--partial">{n}</span>
+                            ))}
+                            {g.partialBy.length > 3 && (
+                              <span className="gap-agent-more" title={g.partialBy.join(', ')}>
+                                +{g.partialBy.length - 3}
+                              </span>
+                            )}
+                          </div>
+                      }
+                    </td>
+                    <td className="gap-tool-cell">
+                      <code className="gap-tool">{g.suggestedTool}</code>
+                    </td>
+                    <td>
+                      <span className={`gap-diff gap-diff--${g.difficulty}`}>{g.difficulty}</span>
+                    </td>
+                  </tr>
+                ]
+                if (isExpanded && hasSubs) {
+                  rows.push(
+                    <tr key={`${rowKey}-expand`} className="gap-sub-row">
+                      <td></td>
+                      <td colSpan={6}>
+                        <div className="gap-sub-list">
+                          <div className="gap-sub-header">Sub-techniques of {g.techniqueId}:</div>
+                          {g.subTechniques.map((st) => {
+                            const stPrio = st.coveredBy.length === 0 && st.partialBy.length === 0 ? 0
+                              : st.coveredBy.length === 0 ? 1
+                              : 2
+                            return (
+                              <div key={st.id} className={`gap-sub-item gap-sub-item--p${stPrio}`}>
+                                <span className={`gap-prio gap-prio--${stPrio}`}>P{stPrio}</span>
+                                <code className="tid gap-sub-id">{st.id}</code>
+                                <span className="gap-sub-name">{st.name}</span>
+                                <span className="gap-sub-agents">
+                                  {st.coveredBy.length > 0 && (
+                                    <span className="gap-sub-cov" title={st.coveredBy.join(', ')}>
+                                      C: {st.coveredBy.length}
+                                    </span>
+                                  )}
+                                  {st.partialBy.length > 0 && (
+                                    <span className="gap-sub-par" title={st.partialBy.join(', ')}>
+                                      P: {st.partialBy.length}
+                                    </span>
+                                  )}
+                                  {st.coveredBy.length === 0 && st.partialBy.length === 0 && (
+                                    <span className="gap-sub-none">zero coverage</span>
+                                  )}
+                                </span>
+                              </div>
+                            )
+                          })}
                         </div>
-                    }
-                  </td>
-                  <td>
-                    {g.partialBy.length === 0
-                      ? <span className="gap-none">—</span>
-                      : <div className="gap-agents">
-                          {g.partialBy.slice(0, 3).map((n) => (
-                            <span key={n} className="gap-agent gap-agent--partial">{n}</span>
-                          ))}
-                          {g.partialBy.length > 3 && <span className="gap-agent-more">+{g.partialBy.length - 3}</span>}
-                        </div>
-                    }
-                  </td>
-                  <td className="gap-tool-cell">
-                    <code className="gap-tool">{g.suggestedTool}</code>
-                  </td>
-                  <td>
-                    <span className={`gap-diff gap-diff--${g.difficulty}`}>{g.difficulty}</span>
-                  </td>
-                </tr>
-              ))}
+                      </td>
+                    </tr>
+                  )
+                }
+                return rows
+              })}
             </tbody>
           </table>
         </div>
