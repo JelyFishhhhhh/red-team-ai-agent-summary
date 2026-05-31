@@ -1158,3 +1158,231 @@ a:hover { text-decoration: underline; }
   font-size: 10px;
   font-style: italic;
 }
+
+/* ================================================================
+   ATTACK CHAIN DEMO PAGE
+   ================================================================ */
+.chain-intro {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.chain-intro strong { color: var(--text); }
+.chain-intro .chain-pill { vertical-align: 1px; }
+
+.chain-tactic-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.chain-tactic-bubble {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  min-width: 140px;
+}
+.chain-tactic-id {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-muted);
+}
+.chain-tactic-name {
+  font-size: 12px;
+  color: var(--text);
+  font-weight: 500;
+}
+.chain-tactic-count {
+  display: flex; gap: 6px;
+  margin-top: 4px;
+  font-size: 10px;
+}
+.chain-tactic-new {
+  background: rgba(168, 144, 96, .15);
+  color: #b9a07c;
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+.chain-tactic-cov {
+  background: rgba(74, 138, 98, .12);
+  color: #8abb9a;
+  padding: 1px 6px;
+  border-radius: 8px;
+}
+
+/* Pill */
+.chain-pill {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  padding: 1px 8px;
+  border-radius: 10px;
+  text-transform: uppercase;
+}
+.chain-pill--new {
+  background: rgba(168, 144, 96, .15);
+  color: #c4a570;
+  border: 1px solid #5a4830;
+}
+.chain-pill--cov {
+  background: rgba(74, 138, 98, .12);
+  color: #8abb9a;
+  border: 1px solid #2d4a38;
+}
+
+/* Steps */
+.chain-steps {
+  display: flex;
+  flex-direction: column;
+}
+
+.chain-step {
+  display: flex;
+  gap: 14px;
+  padding: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: background .12s, border-color .12s;
+}
+.chain-step--new {
+  border-left: 3px solid #8a6a40;
+  background: linear-gradient(90deg, rgba(168, 144, 96, .06), var(--bg-card) 30%);
+}
+.chain-step--covered {
+  border-left: 3px solid #4d8a62;
+}
+.chain-step--hover {
+  background: var(--bg-hover);
+  border-color: var(--border-light);
+}
+
+.chain-step-num {
+  flex-shrink: 0;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg);
+  border: 1px solid var(--border-light);
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+.chain-step--new .chain-step-num {
+  border-color: #5a4830;
+  color: #c4a570;
+}
+.chain-step--covered .chain-step-num {
+  border-color: #2d4a38;
+  color: #8abb9a;
+}
+
+.chain-step-content { flex: 1; min-width: 0; }
+
+.chain-step-header {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin-bottom: 5px;
+}
+.chain-step-tid { font-size: 11px; padding: 1px 6px; }
+.chain-step-name {
+  font-size: 14px; font-weight: 600; color: var(--text);
+}
+
+.chain-step-meta {
+  display: flex; flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.chain-step-tactic-id {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  background: var(--bg);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+.chain-step-tool code {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-size: 10px;
+}
+.chain-step-cover em {
+  color: var(--text);
+  font-style: normal;
+}
+
+.chain-step-note {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.chain-connector {
+  display: flex;
+  justify-content: center;
+  padding: 4px 0;
+}
+.chain-arrow {
+  width: 32px;
+  text-align: center;
+  color: var(--border-light);
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* Footer */
+.chain-footer {
+  margin-top: 28px;
+  padding: 18px 22px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+}
+.chain-footer-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.chain-footer-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.chain-footer-list li {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.55;
+  padding-left: 18px;
+  position: relative;
+}
+.chain-footer-list li::before {
+  content: '›';
+  position: absolute;
+  left: 4px;
+  color: var(--border-light);
+  font-weight: 700;
+}
+.chain-footer-list strong { color: var(--text); }
