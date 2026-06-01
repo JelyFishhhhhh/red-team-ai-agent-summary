@@ -1284,6 +1284,169 @@
           "source": { "tier": "T2", "ref": "GitHub README: CrackMapExec and Impacket in tool list; lateral movement in post-exploitation cluster" }
         }
       ]
+    },
+    {
+      "id": "pentest-swarm-ai",
+      "name": "Pentest Swarm AI",
+      "has_paper": false,
+      "paper": {
+        "title": "Pentest Swarm AI — Autonomous Penetration Testing via Swarm Agents",
+        "venue": "GitHub (no paper)",
+        "year": 2025,
+        "authors": ["Armur-Ai"],
+        "arxiv": "",
+        "url": "https://github.com/Armur-Ai/Pentest-Swarm-AI",
+        "affiliation": "Armur-Ai",
+        "summary": "4 specialist agents (Recon/Classifier/Exploit/Report) coordinating via stigmergic blackboard with pheromone-weighted findings (no central planner). Built with Go + Claude API. Integrates ProjectDiscovery suite (subfinder/httpx/nuclei/naabu/katana/dnsx/gau) + nmap. 5 mode playbooks: bug-bounty, external ASM, CI/CD, internal network, CTF.",
+        "tags": ["no-paper", "swarm", "blackboard", "stigmergic", "4-agent", "ReAct", "go", "projectdiscovery", "claude-api"]
+      },
+      "benchmark": {
+        "dataset": "No published benchmark yet",
+        "score": "Self-stated: Cybench / AutoPenBench / CVE-Bench comparisons planned for Wave 3",
+        "notes": "README explicitly: 'We will ship real benchmark numbers in a future release' (Phase 3.3 milestone)"
+      },
+      "limitations": [
+        "Blackboard backend in beta (Postgres migrations shipped, runner uses memory-only board)",
+        "Live dashboard alpha — UI built, wiring incomplete",
+        "MCP server beta status",
+        "No fine-tuned Pentest-Swarm model yet (Wave 3 roadmap)",
+        "Agent-memory poisoning defenses not yet implemented",
+        "No published benchmark — performance claims unvalidated"
+      ],
+      "techniques": [
+        {
+          "id": "T1595",
+          "coverage": "covered",
+          "notes": "Recon agent: subfinder + naabu + nmap; double-layered scope validation",
+          "source": { "tier": "T2", "ref": "GitHub README: Recon agent lists 8 tools incl subfinder, naabu, nmap" }
+        },
+        {
+          "id": "T1590",
+          "coverage": "covered",
+          "notes": "subfinder + dnsx for subdomain/DNS enumeration",
+          "source": { "tier": "T2", "ref": "GitHub README: Recon agent tool inventory" }
+        },
+        {
+          "id": "T1595.002",
+          "coverage": "covered",
+          "notes": "nuclei template-based vulnerability scanning in Recon → Classifier flow",
+          "source": { "tier": "T2", "ref": "GitHub README: nuclei is core scanning tool" }
+        },
+        {
+          "id": "T1083",
+          "coverage": "covered",
+          "notes": "katana + gau for URL/path discovery",
+          "source": { "tier": "T2", "ref": "GitHub README: katana and gau in Recon tool list" }
+        },
+        {
+          "id": "T1190",
+          "coverage": "covered",
+          "notes": "Exploit agent builds attack chains from Classifier CVE candidates; Burp MCP / sqlmap / Metasploit planned in Wave 2",
+          "source": { "tier": "T2", "ref": "GitHub README: Exploit agent description + Wave 2 roadmap" }
+        }
+      ]
+    },
+    {
+      "id": "vigolium",
+      "name": "Vigolium",
+      "has_paper": false,
+      "paper": {
+        "title": "Vigolium — High-fidelity Vulnerability Scanner Fusing Agentic AI with Native Speed",
+        "venue": "GitHub (no paper)",
+        "year": 2025,
+        "authors": ["vigolium"],
+        "arxiv": "",
+        "url": "https://github.com/vigolium/vigolium",
+        "affiliation": "vigolium",
+        "summary": "Hybrid native scanner + agentic mode. Native: 250+ modules (154 active + 97 passive) covering content discovery (Deparos), Chromium-driven browser spider (Spitolas), embedded JS engine. Agentic (Olium): turn-based loop that autonomously plans attacks, selects modules, generates custom extensions, triages results. Multi-LLM (OpenAI/Anthropic/Vertex). Go + TypeScript + Python.",
+        "tags": ["no-paper", "hybrid", "agentic", "scanner", "go", "chromium-spider", "multi-llm", "250-modules", "OWASP"]
+      },
+      "benchmark": {
+        "dataset": "DVWA, OWASP Juice Shop, VAmPI, crAPI, Acunetix TestPHP, Gin & Juice Shop, Testfire, XBOW (multi-vulnerability), BruteLogic (XSS)",
+        "score": "No quantitative scores published; canary + integration test suites via make test-canary / make test-integration",
+        "notes": "Broad self-test coverage but no published comparative benchmark"
+      },
+      "limitations": [
+        "Agent mode runs with NO sandbox — LLM has full system access",
+        "Extensions can run arbitrary commands; recommend disposable container/VM per engagement",
+        "No published performance ceiling, data size limit, or false-positive rate",
+        "Agentic mode is turn-based (sync) — same Bottleneck B as other agents",
+        "No formal benchmark comparison vs Decepticon/PentestGPT/etc."
+      ],
+      "techniques": [
+        {
+          "id": "T1595",
+          "coverage": "covered",
+          "notes": "Deparos content discovery + Spitolas browser spider — adaptive enumeration",
+          "source": { "tier": "T2", "ref": "GitHub README: Deparos + Spitolas modules" }
+        },
+        {
+          "id": "T1595.002",
+          "coverage": "covered",
+          "notes": "154 active + 97 passive audit modules; 250+ total",
+          "source": { "tier": "T2", "ref": "GitHub README: native scan module count" }
+        },
+        {
+          "id": "T1190",
+          "coverage": "covered",
+          "notes": "OWASP Top 10+: injection, access control, file/path, API/protocol vulns. Tested on DVWA/Juice Shop/XBOW.",
+          "source": { "tier": "T2", "ref": "GitHub README: OWASP coverage + test target list" }
+        },
+        {
+          "id": "T1083",
+          "coverage": "covered",
+          "notes": "Content discovery + endpoint discovery in Olium agent mode",
+          "source": { "tier": "T2", "ref": "GitHub README: agentic mode capabilities" }
+        }
+      ]
+    },
+    {
+      "id": "openhack",
+      "name": "OpenHack",
+      "has_paper": false,
+      "paper": {
+        "title": "OpenHack — File-based Workspace for Source-guided Whitebox Security Review",
+        "venue": "GitHub (no paper, Hadrian Security)",
+        "year": 2025,
+        "authors": ["hadriansecurity"],
+        "arxiv": "",
+        "url": "https://github.com/hadriansecurity/OpenHack",
+        "affiliation": "Hadrian Security",
+        "summary": "State-machine workflow orchestrating multiple AI agents for whitebox source review. Chain: Recon agents (map review surfaces) → Scenario router (scoped tasks) → 12 Expert agents (root-cause family specialists aligned to OWASP 2025 / CWE) → Triage agent (independent validator). File-based JSON/Markdown state. Phase gates require human approval.",
+        "tags": ["no-paper", "whitebox", "source-review", "state-machine", "12-expert", "OWASP-2025", "CWE", "human-checkpoint", "experimental"]
+      },
+      "benchmark": {
+        "dataset": "Git repositories with source code (no specific benchmark target)",
+        "score": "No benchmark provided",
+        "notes": "Explicitly labelled 'experimental research prototype'; disclaimer: 'will miss real vulnerabilities and may report issues that do not exist'"
+      },
+      "limitations": [
+        "Whitebox only — requires source code access",
+        "Self-described as experimental research prototype with no benchmark",
+        "Disclaimer admits false negatives + false positives",
+        "Phase gates require human approval — not fully autonomous (HITL similar to pentest-ai-agents)",
+        "Scope limited to source-code level vulnerabilities; no runtime/network attacks"
+      ],
+      "techniques": [
+        {
+          "id": "T1190",
+          "coverage": "covered",
+          "notes": "12 expert domains aligned to OWASP Top 10:2025 + CWE — covers injection, broken access control, etc.",
+          "source": { "tier": "T2", "ref": "GitHub README: 12 expert agents covering OWASP 2025 categories" }
+        },
+        {
+          "id": "T1083",
+          "coverage": "partial",
+          "notes": "Recon agents map review surfaces (routes, sinks, auth boundaries) — source-level discovery only",
+          "source": { "tier": "T2", "ref": "GitHub README: Recon agent description" }
+        },
+        {
+          "id": "T1595",
+          "coverage": "not-covered",
+          "notes": "Whitebox source review only — no active scanning",
+          "source": { "tier": "T2", "ref": "GitHub README: whitebox source review scope explicit" }
+        }
+      ]
     }
   ],
   "tools": [
