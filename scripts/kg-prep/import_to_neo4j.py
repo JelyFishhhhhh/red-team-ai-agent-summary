@@ -64,23 +64,46 @@ TACTIC_NAMES = {
 # ─── LEADS_TO edges from KG-Extension-EasyWins (the 9-step Persistence + C2 + Impact chain) ──
 
 DEFAULT_LEADS_TO_EDGES: list[tuple[str, str]] = [
-    # Initial Access -> Persistence
-    ("T1190", "T1505.003"),
+    # Resource Development -> Initial Access (pre-attack prep)
+    ("T1583.001", "T1190"),     # registered domain → use it to host exploit
+    ("T1588.005", "T1068"),     # acquired exploit → kernel privesc
+
+    # Initial Access -> Execution / Persistence
+    ("T1190", "T1505.003"),     # Web RCE → drop webshell
+    ("T1190", "T1059"),         # Web RCE → shell exec
+    ("T1566", "T1204"),         # Phishing → user execution
+    ("T1091", "T1059"),         # Removable media → exec
+
     # Persistence -> C2
-    ("T1505.003", "T1572"),
-    ("T1572", "T1105"),
-    # Credential Access chain
-    ("T1558.003", "T1078"),
-    ("T1078", "T1098"),
-    ("T1078", "T1547.001"),
-    # C2 -> Impact
-    ("T1105", "T1489"),
+    ("T1505.003", "T1572"),     # Webshell → tunnel out
+    ("T1572", "T1105"),         # Tunnel → tool transfer
+
+    # C2 / post-exploit -> Privilege Escalation
+    ("T1105", "T1068"),         # Ingress tool → run privesc exploit
+    ("T1059", "T1068"),         # Have shell → privesc
+    ("T1059", "T1548.002"),     # Have shell on Windows → UAC bypass
+
+    # Privilege Escalation -> Credential Access
+    ("T1068", "T1558.003"),     # Root → Kerberoasting capability
+    ("T1548.002", "T1558.003"), # Admin → Kerberoasting
+
+    # Credential Access -> Lateral / further PrivEsc
+    ("T1558.003", "T1078"),     # Cracked TGS → valid account
+    ("T1078", "T1098"),         # Domain user → AD account manip
+    ("T1078", "T1547.001"),     # Domain user → registry persistence
+
+    # Persistence (after DA) -> Impact
+    ("T1098", "T1489"),         # AD backdoor → service stop (revenge)
+    ("T1098", "T1531"),         # AD backdoor → disable victim accounts
+    ("T1547.001", "T1489"),     # Reg run persistence → impact
 ]
 
 DEFAULT_REQUIRES_EDGES: list[tuple[str, str]] = [
     ("T1098", "T1078"),         # AD account add requires valid creds
     ("T1547.001", "T1078"),     # Registry Run needs user session
     ("T1572", "T1505.003"),     # Tunnel needs initial RCE
+    ("T1068", "T1588.005"),     # Privesc exploit needs the binary
+    ("T1558.003", "T1078"),     # Kerberoasting needs valid domain user
 ]
 
 

