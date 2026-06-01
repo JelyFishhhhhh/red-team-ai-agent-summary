@@ -18,6 +18,21 @@ editor/dist/
 # brainstorm artifacts
 .superpowers/
 
+# Claude Code internal (skills, plan files, conversation snapshots)
+.claude/
+.claude_history
+**/.claude/
+*.claude
+
+# Local kg-prep working dirs (may contain pulled CTI data + AttacKG dumps)
+scripts/kg-prep/out/
+scripts/kg-prep/.attackg/
+scripts/kg-prep/tmp/
+
+# Neo4j credentials (Aura free instance .env / connection files)
+*.aura.env
+neo4j.env
+
 # test coverage
 app/coverage/
 editor/coverage/

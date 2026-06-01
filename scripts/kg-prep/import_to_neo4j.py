@@ -256,8 +256,12 @@ def main() -> int:
     ap.add_argument("--attackg", type=Path, help="AttacKG-derived nodes JSON")
     ap.add_argument("--uri", default=os.environ.get("NEO4J_URI", "bolt://localhost:7687"),
                     help="Neo4j URI (env NEO4J_URI; default bolt://localhost:7687)")
-    ap.add_argument("--user", default=os.environ.get("NEO4J_USER", "neo4j"),
-                    help="Neo4j user (env NEO4J_USER; default neo4j)")
+    # Aura uses NEO4J_USERNAME (instance ID as user); standard convention is NEO4J_USER.
+    # Try both, prefer NEO4J_USERNAME when present.
+    ap.add_argument("--user",
+                    default=os.environ.get("NEO4J_USERNAME")
+                            or os.environ.get("NEO4J_USER", "neo4j"),
+                    help="Neo4j user (env NEO4J_USERNAME or NEO4J_USER; default neo4j)")
     ap.add_argument("--password", default=os.environ.get("NEO4J_PASSWORD", ""),
                     help="Neo4j password (env NEO4J_PASSWORD)")
     ap.add_argument("--batch-size", type=int, default=500)
