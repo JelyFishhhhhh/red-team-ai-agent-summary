@@ -305,6 +305,96 @@ TECHNIQUE_RULES: dict[str, Enrichment] = {
 }
 
 
+# ─── Composite cost formula (Cost-Function-Methodology.md §3) ────────────────
+# cost(a) = w1·c_vuln + w2·c_cti + w3·c_priv + w4·c_net
+#
+# References per term:
+#   c_vuln — CVSS (Hu 2020, Yousefi 2018, Chowdhary 2020)
+#   c_cti  — Loevenich (2025) §IV-E
+#   c_priv — Gangupantulu (2021) Crown Jewels terrain penalty
+#   c_net  — Cody (2022) Exfiltration network dependency
+
+DEFAULT_WEIGHTS = {"vuln": 0.4, "cti": 0.2, "priv": 0.2, "net": 0.2}
+
+PRIV_COST = {
+    "none": 0.0,
+    "user": 0.1,
+    "admin": 0.3,
+    "root": 0.3,
+    "domain_admin": 0.5,
+}
+
+
+def vuln_cost(cvss_exploitability: float | None) -> float | None:
+    """CVSS-derived term. Returns None if no CVE binding (most ATT&CK persistence/
+    C2/impact actions). When None, c_vuln drops out of the formula and w1 is
+    redistributed uniformly across the other three terms.
+    """
+    if cvss_exploitability is None:
+        return None
+    return 1.0 - min(max(cvss_exploitability / 10.0, 0.0), 1.0)
+
+
+def cti_cost(occurrences: int, max_occurrences: int = 1113) -> float:
+    """Loevenich §IV-E: actions appearing in more CTI reports → lower cost.
+
+    max_occurrences default is AttacKG's most-frequent technique (T1071 C&C =
+    1113 reports). Override when working with a different corpus.
+    """
+    if occurrences <= 0:
+        return 1.0
+    return 1.0 - min(occurrences / max_occurrences, 1.0)
+
+
+def priv_cost(precondition: Precondition) -> float:
+    """Gangupantulu (2021) terrain: higher required privilege → higher cost
+    (agent must first reach that privilege)."""
+    return PRIV_COST.get(precondition.privilege, 0.2)
+
+
+def net_cost(precondition: Precondition) -> float:
+    """Cody (2022) network dependency: outbound channels add risk + setup."""
+    if precondition.required_access == "local":
+        return 0.0
+    if precondition.additional:  # e.g. ["outbound_http_allowed"]
+        return 0.2
+    return 0.1
+
+
+def composite_cost(precondition: Precondition,
+                   cvss_exploitability: float | None = None,
+                   cti_occurrences: int = 0,
+                   weights: dict[str, float] | None = None) -> tuple[float, str]:
+    """
+    Combine the four terms per Cost-Function-Methodology.md §3.
+
+    When cvss_exploitability is None (no CVE bound), w1 is redistributed
+    uniformly across the remaining three terms — the documented fallback path
+    for ATT&CK actions without CVE bindings.
+
+    Returns (cost ∈ [0, 1], quality_tag) where quality_tag is one of:
+      "composite-full"   — all four terms used (rare for ATT&CK actions)
+      "composite-3term"  — fallback redistribution applied (typical)
+    """
+    w = weights or DEFAULT_WEIGHTS
+    c_v = vuln_cost(cvss_exploitability)
+    c_c = cti_cost(cti_occurrences)
+    c_p = priv_cost(precondition)
+    c_n = net_cost(precondition)
+
+    if c_v is not None:
+        cost = (w["vuln"] * c_v + w["cti"] * c_c
+                + w["priv"] * c_p + w["net"] * c_n)
+        return round(min(max(cost, 0.0), 1.0), 3), "composite-full"
+
+    # Fallback: redistribute w1 uniformly across the remaining 3 weights.
+    extra = w["vuln"] / 3.0
+    cost = ((w["cti"] + extra) * c_c
+            + (w["priv"] + extra) * c_p
+            + (w["net"] + extra) * c_n)
+    return round(min(max(cost, 0.0), 1.0), 3), "composite-3term"
+
+
 # ─── Public API ──────────────────────────────────────────────────────────────
 
 def parent_id(tid: str) -> str:
@@ -312,25 +402,57 @@ def parent_id(tid: str) -> str:
     return tid.split(".")[0] if "." in tid else tid
 
 
-def enrich(technique_id: str, tactic_id: str) -> Enrichment:
+def enrich(technique_id: str,
+           tactic_id: str,
+           cti_occurrences: int = 0,
+           cvss_exploitability: float | None = None,
+           use_composite_cost: bool = False) -> Enrichment:
     """
     Return Loevenich-style precondition/effect for a given T-ID.
 
-    Resolution order:
+    Resolution order for precondition/effect:
       1. Exact T-ID match (handles sub-technique overrides).
       2. Parent T-ID match.
       3. Tactic-level default (flagged enrichment_quality="default").
       4. Generic fallback if tactic unknown.
+
+    Cost handling:
+      - Default: keep the hand-assigned cost on the matched Enrichment
+        (preserves the hand-verified seed corpus exactly as authored).
+      - use_composite_cost=True: replace the cost with composite_cost(...)
+        per the 4-term formula. enrichment_quality is upgraded to
+        "composite-full" / "composite-3term" depending on whether
+        cvss_exploitability is provided.
+
+    For Phase B4 W2 AttacKG bulk import, pass use_composite_cost=True
+    so each node carries a principled cost grounded in CTI frequency
+    + privilege + network terms.
     """
     if technique_id in TECHNIQUE_RULES:
-        return TECHNIQUE_RULES[technique_id]
-    parent = parent_id(technique_id)
-    if parent in TECHNIQUE_RULES:
-        return TECHNIQUE_RULES[parent]
-    if tactic_id in TACTIC_DEFAULTS:
-        return TACTIC_DEFAULTS[tactic_id]
+        base = TECHNIQUE_RULES[technique_id]
+    elif parent_id(technique_id) in TECHNIQUE_RULES:
+        base = TECHNIQUE_RULES[parent_id(technique_id)]
+    elif tactic_id in TACTIC_DEFAULTS:
+        base = TACTIC_DEFAULTS[tactic_id]
+    else:
+        base = Enrichment(
+            Precondition(), Effect(), cost=0.3, enrichment_quality="default",
+        )
+
+    if not use_composite_cost:
+        return base
+
+    new_cost, quality = composite_cost(
+        base.preconditions,
+        cvss_exploitability=cvss_exploitability,
+        cti_occurrences=cti_occurrences,
+    )
     return Enrichment(
-        Precondition(), Effect(), cost=0.3, enrichment_quality="default",
+        preconditions=base.preconditions,
+        effects=base.effects,
+        cost=new_cost,
+        rules_of_engagement_required=base.rules_of_engagement_required,
+        enrichment_quality=quality,
     )
 
 
@@ -346,15 +468,21 @@ def to_dict(e: Enrichment) -> dict:
 
 
 if __name__ == "__main__":
-    # Quick self-test
+    # Quick self-test — compare hand-assigned cost vs composite-cost formula
     samples = [
-        ("T1505.003", "TA0003"),
-        ("T1572", "TA0011"),
-        ("T1489", "TA0040"),
-        ("T1547.005", "TA0003"),   # sub-technique not in rules → falls to parent T1547? No, T1547 not in rules → tactic default
-        ("T9999", "TA0007"),       # unknown technique → tactic default
+        # (T-ID, Tactic, hypothetical CTI occurrences from AttacKG)
+        ("T1505.003", "TA0003", 0),     # webshell — not in AttacKG top list
+        ("T1572", "TA0011", 0),         # chisel tunnel
+        ("T1489", "TA0040", 0),         # service stop
+        ("T1547.005", "TA0003", 100),   # falls back to T1547 parent? No, T1547 unmapped → tactic default
+        ("T1071", "TA0011", 1113),      # AttacKG top T-ID (C&C application layer)
+        ("T1059", "TA0002", 1089),      # AttacKG #2
     ]
-    import json
-    for tid, tactic in samples:
-        e = enrich(tid, tactic)
-        print(f"{tid} ({tactic}): {json.dumps(to_dict(e), indent=2)}\n")
+    print("=== Cost comparison: hand-assigned vs composite formula ===\n")
+    for tid, tactic, occ in samples:
+        hand = enrich(tid, tactic)
+        comp = enrich(tid, tactic, cti_occurrences=occ, use_composite_cost=True)
+        print(f"{tid} ({tactic}) cti_occ={occ}")
+        print(f"  hand-assigned: cost={hand.cost} quality={hand.enrichment_quality}")
+        print(f"  composite    : cost={comp.cost} quality={comp.enrichment_quality}")
+        print()

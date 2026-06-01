@@ -36,7 +36,7 @@ from typing import Iterable
 
 # Local import — works when run as `python attackg_to_pddl.py`
 sys.path.insert(0, str(Path(__file__).parent))
-from loevenich_rules import enrich, to_dict, parent_id  # noqa: E402
+from loevenich_rules import enrich, to_dict, parent_id, composite_cost  # noqa: E402, F401
 
 
 # ─── ATT&CK Technique ID → Tactic ID (subset; expand as needed) ──────────────
@@ -179,10 +179,16 @@ def make_uuid(tid: str, report: str, idx: int) -> str:
     return f"aa-attackg-{tid.lower().replace('.', '_')}-{safe_report}-{idx:04d}"
 
 
-def attackg_entry_to_node(entry: dict, idx: int) -> dict | None:
+def attackg_entry_to_node(entry: dict, idx: int,
+                           cti_occurrences_by_tid: dict[str, int] | None = None,
+                           use_composite_cost: bool = True) -> dict | None:
     """
     Convert one AttacKG entry into an APT-GPT PDDL AttackAction node.
     Returns None when the entry has no usable T-ID.
+
+    cti_occurrences_by_tid: pre-computed T-ID → global occurrence count
+        across the AttacKG corpus. Feeds the composite cost formula's
+        c_cti term per Cost-Function-Methodology.md.
     """
     tid = entry.get("technique_id") or entry.get("technique") or ""
     if not T_ID_REGEX.fullmatch(tid):
@@ -197,7 +203,14 @@ def attackg_entry_to_node(entry: dict, idx: int) -> dict | None:
         # unknown technique — skip with note rather than guess
         return None
 
-    enrichment = enrich(tid, tactic)
+    occ = 0
+    if cti_occurrences_by_tid is not None:
+        occ = cti_occurrences_by_tid.get(tid, 0) \
+              or cti_occurrences_by_tid.get(parent_id(tid), 0)
+
+    enrichment = enrich(tid, tactic,
+                        cti_occurrences=occ,
+                        use_composite_cost=use_composite_cost)
     report = entry.get("report", "unknown")
     confidence = float(entry.get("confidence", 0.0) or 0.0)
 
@@ -235,23 +248,51 @@ def main() -> int:
                     help="Stop after N nodes (0 = unlimited)")
     ap.add_argument("--min-confidence", type=float, default=0.0,
                     help="Skip AttacKG entries below this confidence")
+    ap.add_argument("--no-composite-cost", action="store_true",
+                    help="Keep hand-assigned costs from loevenich_rules "
+                         "(default: compute composite cost per Methodology §3)")
     args = ap.parse_args()
 
+    # First pass: tally CTI occurrences per T-ID across the corpus.
+    # Needed for the c_cti term of the composite cost formula.
     if args.input:
-        source = parse_techniques_json(args.input)
+        first_pass = list(parse_techniques_json(args.input))
+        second_pass = first_pass
     else:
-        source = parse_gml_dir(args.gml_dir)
+        first_pass = list(parse_gml_dir(args.gml_dir))
+        second_pass = first_pass
+
+    cti_occurrences: dict[str, int] = {}
+    for entry in first_pass:
+        raw_tid = entry.get("technique_id") or entry.get("technique") or ""
+        if not T_ID_REGEX.fullmatch(raw_tid):
+            m = T_ID_REGEX.search(str(entry))
+            raw_tid = m.group(0) if m else ""
+        if raw_tid:
+            cti_occurrences[raw_tid] = cti_occurrences.get(raw_tid, 0) + 1
+            # also count toward the parent for sub-techniques
+            p = parent_id(raw_tid)
+            if p != raw_tid:
+                cti_occurrences[p] = cti_occurrences.get(p, 0) + 1
+
+    print(f"Tallied CTI occurrences for {len(cti_occurrences)} unique T-IDs "
+          f"(max = {max(cti_occurrences.values(), default=0)})")
 
     out_nodes: list[dict] = []
     skipped_unknown_tid = 0
     skipped_low_confidence = 0
+    use_composite = not args.no_composite_cost
 
-    for idx, entry in enumerate(source):
+    for idx, entry in enumerate(second_pass):
         confidence = float(entry.get("confidence", 0.0) or 0.0)
         if confidence < args.min_confidence and confidence > 0:
             skipped_low_confidence += 1
             continue
-        node = attackg_entry_to_node(entry, idx)
+        node = attackg_entry_to_node(
+            entry, idx,
+            cti_occurrences_by_tid=cti_occurrences,
+            use_composite_cost=use_composite,
+        )
         if node is None:
             skipped_unknown_tid += 1
             continue
