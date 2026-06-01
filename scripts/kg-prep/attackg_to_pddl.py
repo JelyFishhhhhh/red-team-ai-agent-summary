@@ -53,7 +53,10 @@ TECHNIQUE_TO_TACTIC: dict[str, str] = {
     "T1091": "TA0001", "T1195": "TA0001", "T1199": "TA0001", "T1078": "TA0001",
     # Execution
     "T1059": "TA0002", "T1106": "TA0002", "T1053": "TA0002", "T1129": "TA0002",
-    "T1569": "TA0002", "T1204": "TA0002", "T1047": "TA0002",
+    "T1569": "TA0002", "T1204": "TA0002", "T1047": "TA0002", "T1203": "TA0002",
+    "T1559": "TA0002", "T1072": "TA0002",
+    # Defense Evasion extras
+    "T1127": "TA0005",
     # Persistence
     "T1098": "TA0003", "T1197": "TA0003", "T1547": "TA0003", "T1037": "TA0003",
     "T1176": "TA0003", "T1554": "TA0003", "T1136": "TA0003", "T1543": "TA0003",
@@ -119,30 +122,84 @@ T_ID_REGEX = re.compile(r"T\d{4}(?:\.\d{3})?")
 
 def parse_techniques_json(path: Path) -> Iterable[dict]:
     """
-    AttacKG `output_techniques.json` schema (best-effort; their format is
-    semi-structured). Expected fields per entry:
-      - technique_id  (e.g. "T1547.001")
-      - technique_name
-      - report (filename)
-      - confidence (0..1) — optional
-      - procedure (free text)
-      - entities (dict)
-    Missing fields are tolerated.
+    AttacKG `output_techniques.json` schemas observed in the wild:
+
+      Schema A (template-mode, what the archived 2024 repo actually ships):
+          {
+            "T1071": { "<node_id>": {"type": "...", "nlp": [...], "ioc": [...]}, ... },
+            "T1098": { ... },
+            ...
+          }
+        → 20 T-IDs, each value is the technique template graph (entity-keyed).
+          We emit one entry per T-ID, summarising the template into the AttacKG
+          fields downstream code expects.
+
+      Schema B (instance-mode, used by some forks / community dumps):
+          [
+            {"technique_id": "T1547.001", "report": "...", "confidence": 0.93,
+             "procedure": "..."},
+            ...
+          ]
+        → flat list, one entry per technique instance.
+
+      Schema C (report-keyed map):
+          {"report_name": [ {technique_id, ...}, ... ]}
+
+    All three are accepted transparently.
     """
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    # The actual AttacKG output may be a list or {report: [techniques]} map
+    # Schema B: flat list
     if isinstance(data, list):
         for item in data:
             yield item
-    elif isinstance(data, dict):
-        for report_name, techniques in data.items():
-            if isinstance(techniques, list):
-                for t in techniques:
-                    if isinstance(t, dict):
-                        t.setdefault("report", report_name)
-                        yield t
+        return
+
+    if not isinstance(data, dict) or not data:
+        return
+
+    # Distinguish A vs C by inspecting the first value
+    first_key = next(iter(data))
+    first_val = data[first_key]
+
+    # Schema A: key looks like a T-ID and value is a dict (template entity map)
+    is_schema_a = bool(T_ID_REGEX.fullmatch(first_key)) and isinstance(first_val, dict)
+
+    if is_schema_a:
+        for tid, template_nodes in data.items():
+            if not T_ID_REGEX.fullmatch(tid):
+                continue
+            # Summarise template entities into the AttacKG fields the
+            # downstream code expects.
+            entity_types = sorted({
+                v.get("type", "") for v in template_nodes.values()
+                if isinstance(v, dict)
+            } - {""})
+            nlp_terms = sorted({
+                term for v in template_nodes.values()
+                if isinstance(v, dict)
+                for term in v.get("nlp", [])
+                if isinstance(term, str)
+            })
+            yield {
+                "technique_id": tid,
+                "technique_name": "",
+                "report": "attackg-template-corpus",
+                "confidence": 1.0,  # template entries are authoritative
+                "procedure": "; ".join(nlp_terms[:8]),
+                "entity_types": entity_types,
+                "schema_source": "template",
+            }
+        return
+
+    # Schema C: report-keyed map
+    for report_name, techniques in data.items():
+        if isinstance(techniques, list):
+            for t in techniques:
+                if isinstance(t, dict):
+                    t.setdefault("report", report_name)
+                    yield t
 
 
 def parse_gml_dir(directory: Path) -> Iterable[dict]:
