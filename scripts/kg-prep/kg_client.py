@@ -38,20 +38,41 @@ from typing import Iterable, Optional
 class AgentState:
     """The slice of MARS-2 reasoning state the KG needs to answer planning
     queries. Designed to be a minimal contract — MARS-2 maintains its own
-    rich state model; we only pull the fields relevant to KG inference."""
+    rich state model; we only pull the fields relevant to KG inference.
+
+    Note: `completed_techniques` is a set for O(1) membership tests, and
+    `completed_sequence` preserves insertion order so `last_completed`
+    is deterministic. Use `mark_completed()` to keep both in sync.
+    """
     completed_techniques: set[str] = field(default_factory=set)
+    completed_sequence: list[str] = field(default_factory=list)
     current_privilege: str = "user"            # none / user / admin / root / domain_admin
     has_network_access: bool = True
     has_outbound_http: bool = True
     compromised_hosts: list[str] = field(default_factory=list)
 
+    def mark_completed(self, tid: str) -> None:
+        """Record a technique as just completed. Idempotent for the set, but
+        the sequence list records every call so `last_completed` always
+        returns the most recently completed technique even when re-executing
+        the same T-ID."""
+        if tid in self.completed_techniques:
+            # already done — record only if different from current tail
+            if not self.completed_sequence or self.completed_sequence[-1] != tid:
+                self.completed_sequence.append(tid)
+            return
+        self.completed_techniques.add(tid)
+        self.completed_sequence.append(tid)
+
     @property
     def last_completed(self) -> Optional[str]:
         """Most recently completed technique — drives LEADS_TO traversal."""
-        if not self.completed_techniques:
-            return None
-        # MARS-2 should track insertion order via a list; fall back here
-        return next(iter(self.completed_techniques))
+        if self.completed_sequence:
+            return self.completed_sequence[-1]
+        if self.completed_techniques:
+            # Caller bypassed mark_completed() — degrade gracefully
+            return next(iter(self.completed_techniques))
+        return None
 
 
 @dataclass
@@ -78,8 +99,11 @@ class ActionCandidate:
 
 # Q1: Tactic-loop main query — given last_completed, find next techniques
 #     and their cheapest implementing actions, ranked by composite cost.
+# Filters out actions whose target technique is already in completed_techniques
+# (prevents the agent from looping on its own progress).
 Q_NEXT_ACTIONS = """
 MATCH (current:Technique {id: $last_tid})-[:LEADS_TO]->(next:Technique)
+WHERE NOT next.id IN $completed
 OPTIONAL MATCH (next)<-[:IMPLEMENTS]-(a:AttackAction)
 WHERE a.privilege IN $allowed_privs
 RETURN a.uuid AS uuid,
@@ -187,11 +211,13 @@ class KGClient:
         """
         allowed = list(PRIVILEGE_REACHABLE.get(state.current_privilege, {"user"}))
         last = state.last_completed
+        completed = list(state.completed_techniques)
 
         with self._driver.session() as session:
             if last:
                 result = session.run(Q_NEXT_ACTIONS,
                                      last_tid=last,
+                                     completed=completed,
                                      allowed_privs=allowed,
                                      limit=limit)
             else:
