@@ -70,6 +70,25 @@ TACTIC_PREFIXES: dict[str, set[str]] = {
     # Add more as KG grows.
 }
 
+# ─── Privilege upgrade table ─────────────────────────────────────────────────
+# Maps technique ID → the privilege level a successful execution grants.
+# Only techniques whose success genuinely implies a new security boundary are
+# listed; the run-loop upgrades current_privilege only when the new level is
+# strictly higher than the current one (monotonic upgrade, never downgrade).
+
+TECHNIQUE_PRIVILEGE_UPGRADES: dict[str, str] = {
+    "T1190":     "admin",         # code exec on target → admin
+    "T1068":     "admin",         # kernel/service exploit → admin/root
+    "T1548.002": "admin",         # UAC bypass → high integrity
+    "T1649":     "domain_admin",  # ADCS cert → domain admin
+    "T1098":     "domain_admin",  # successfully added DA account
+    "T1003.006": "domain_admin",  # DCSync needs DA (already had it)
+}
+
+# Strict ordering: index higher → more privileged.
+# Upgrades are only applied when new_idx > cur_idx.
+PRIVILEGE_ORDER: list[str] = ["none", "user", "admin", "root", "domain_admin"]
+
 
 # ─── Agent ──────────────────────────────────────────────────────────────────
 
@@ -112,10 +131,25 @@ class APTGPTAgent:
 
             result = self.router.dispatch(chosen, self.target)
             log = self._record_step(step, chosen, result)
-            self._log(f"           result: success={log.success} "
-                      f"{log.skipped_reason or ''}")
+            detail = log.skipped_reason or ""
+            if not result.success and result.stderr:
+                detail += f" | stderr: {result.stderr[:200].strip()}"
+            self._log(f"           result: success={log.success} {detail}")
 
             self.state.mark_completed(chosen.next_technique_id)
+            # Privilege upgrade: only when execution produced real output
+            # (stdout non-empty). Empty stdout + success=True usually means
+            # a local no-op false positive from the bash executor.
+            real_execution = result.success and bool(result.stdout.strip())
+            if real_execution:
+                new_priv = TECHNIQUE_PRIVILEGE_UPGRADES.get(chosen.next_technique_id)
+                if new_priv:
+                    cur_idx = PRIVILEGE_ORDER.index(self.state.current_privilege) \
+                              if self.state.current_privilege in PRIVILEGE_ORDER else 0
+                    new_idx = PRIVILEGE_ORDER.index(new_priv)
+                    if new_idx > cur_idx:
+                        self.state.current_privilege = new_priv
+                        self._log(f"           [priv upgrade] {self.state.current_privilege}")
             if not result.success:
                 self._recent_failures.append(chosen.action_name)
                 # Keep last 3 failures; the picker can use them next round.
@@ -180,8 +214,8 @@ class APTGPTAgent:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--target", required=True,
-                    help="Target host IP or hostname")
+    ap.add_argument("--target", default=None,
+                    help="Target host IP or hostname (default 192.168.56.11 when --goad-mode)")
     ap.add_argument("--ssh-user", default=None)
     ap.add_argument("--ssh-password", default=None)
     ap.add_argument("--ssh-key", default=None)
@@ -200,14 +234,56 @@ def main() -> int:
                     choices=["none", "user", "admin", "root", "domain_admin"])
     ap.add_argument("--summary-out", default=None,
                     help="Write summary JSON to this path")
+    ap.add_argument("--winrm-user", default=None,
+                    help="WinRM username for cmd/powershell executor (default: same as --ssh-user)")
+    ap.add_argument("--winrm-password", default=None,
+                    help="WinRM password for cmd/powershell executor")
+    ap.add_argument("--goad-mode", action="store_true",
+                    help="Pre-fill GOAD lab runtime_vars and WinRM defaults. "
+                         "Target defaults to 192.168.56.11 (winterfell DC) if --target not given.")
     args = ap.parse_args()
 
+    # --goad-mode: pre-fill runtime_vars with GOAD north.sevenkingdoms.local defaults.
+    # Bash techniques run locally (impacket/crackmapexec on attacker GCP VM).
+    # Cmd/PowerShell techniques connect via WinRM to the target DC.
+    _GOAD_VARS: dict = {
+        "dc_ip":             "192.168.56.11",
+        "domain":            "north.sevenkingdoms.local",
+        "kerberoast_user":   "samwell.tarly",
+        "kerberoast_pass":   "Heartsbane",
+        "username":          "aptgptbackdoor",
+        "password":          "P@ssw0rd123!",
+        "task_name":         "WindowsUpdateSvc",
+        "payload_path":      "C:\\Windows\\System32\\cmd.exe",
+        "name":              "WinDefender",
+        "service_name":      "Spooler",
+        "target_user":       "samwell.tarly",
+        "attacker_ip":       "192.168.56.1",
+        "c2_port":           "8080",
+        "base64_payload":    "R2V0LVByb2Nlc3M=",
+        "tool_url":          "http://192.168.56.1:8000/chisel",
+        "tool_path":         "/tmp/chisel",
+        "shell_path":        "/tmp/shell.aspx",
+        "target_upload_url": "http://192.168.56.22/uploads/",
+        "exploit_url":       "https://example.com/exploit.exe",
+        "exploit_binary":    "exploit.exe",
+        "c2_ip":             "10.140.0.2",
+        "nonstandard_port":  "4444",
+    }
+
+    resolved_target = args.target or ("192.168.56.11" if args.goad_mode else None)
+    if not resolved_target:
+        ap.error("--target is required unless --goad-mode is set")
+
     target = TargetContext(
-        host=args.target,
+        host=resolved_target,
         ssh_user=args.ssh_user,
         ssh_password=args.ssh_password,
         ssh_key_path=args.ssh_key,
         ssh_port=args.ssh_port,
+        winrm_user=args.winrm_user or (args.ssh_user if not args.goad_mode else "vagrant"),
+        winrm_password=args.winrm_password or (args.ssh_password if not args.goad_mode else "vagrant"),
+        runtime_vars=_GOAD_VARS if args.goad_mode else {},
     )
 
     router = ExecutorRouter.with_defaults(dry_run=args.dry_run)

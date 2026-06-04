@@ -36,6 +36,10 @@ class TargetContext:
     ssh_password: Optional[str] = None
     ssh_key_path: Optional[str] = None
     ssh_port: int = 22
+    # WinRM credentials (separate from SSH so bash/winrm can coexist).
+    # CmdExecutor/PowerShellExecutor prefer these; fall back to ssh_user/pass.
+    winrm_user: Optional[str] = None
+    winrm_password: Optional[str] = None
     # Free-form bag the agent can fill at runtime (e.g. URLs discovered,
     # credentials cracked, etc.). Templates reference these via {key}.
     runtime_vars: dict[str, Any] = field(default_factory=dict)
@@ -138,15 +142,20 @@ class BashExecutor(Executor):
         try:
             cp = subprocess.run(command, shell=True, capture_output=True,
                                 text=True, timeout=timeout)
+            # Treat "command not found" stdout as failure even if exit=0
+            # (happens when piping: `missing-cmd ... | head -n` exits 0).
+            not_found = (cp.returncode == 0
+                         and ("not found" in cp.stdout.lower()
+                              or "no such file" in cp.stdout.lower()))
             return ExecutionResult(
-                success=cp.returncode == 0,
+                success=cp.returncode == 0 and not not_found,
                 stdout=cp.stdout,
                 stderr=cp.stderr,
-                returncode=cp.returncode,
+                returncode=cp.returncode if not not_found else 127,
                 duration_sec=time.time() - t0,
                 executor_name=self.name,
             )
-        except subprocess.TimeoutExpired as e:
+        except subprocess.TimeoutExpired:
             return ExecutionResult(
                 success=False, stderr=f"timeout after {timeout}s",
                 duration_sec=time.time() - t0, executor_name=self.name,
@@ -193,7 +202,14 @@ class BashExecutor(Executor):
 # ─── CmdExecutor / PowerShellExecutor — Windows ──────────────────────────────
 
 class CmdExecutor(Executor):
-    """Windows cmd.exe via WinRM, evil-winrm-style. Stub on Linux dev hosts."""
+    """Windows cmd.exe via WinRM (pywinrm).
+
+    Connection precedence:
+      1. WINRM_ENDPOINT env var (full URL, e.g. http://192.168.56.11:5985/wsman)
+      2. http://{target.host}:5985/wsman
+    Auth: target.winrm_user / target.winrm_password, fallback to ssh_user/password.
+    Transport: WINRM_TRANSPORT env var (default: ntlm).
+    """
     name = "cmd"
 
     def __init__(self, dry_run: bool = False) -> None:
@@ -206,25 +222,110 @@ class CmdExecutor(Executor):
                 f"dry-run: would run via cmd on {target.host}: {command[:80]}",
                 executor=self.name,
             )
-        # Real implementation would use pywinrm; left as stub for W3.
-        return ExecutionResult(
-            success=False,
-            stderr=("CmdExecutor not yet implemented; install pywinrm and "
-                    "fill in WinRM session. Stub returns failure to surface "
-                    "this in tests."),
-            executor_name=self.name,
+        try:
+            import winrm
+        except ImportError:
+            return ExecutionResult(
+                success=False,
+                stderr="pywinrm not installed: pip install pywinrm[ntlm]",
+                executor_name=self.name,
+            )
+
+        endpoint = os.environ.get(
+            "WINRM_ENDPOINT", f"http://{target.host}:5985/wsman"
         )
+        transport = os.environ.get("WINRM_TRANSPORT", "ntlm")
+        user = getattr(target, "winrm_user", None) or target.ssh_user or "vagrant"
+        password = getattr(target, "winrm_password", None) or target.ssh_password or "vagrant"
+
+        t0 = time.time()
+        try:
+            session = winrm.Session(
+                endpoint,
+                auth=(user, password),
+                transport=transport,
+                server_cert_validation="ignore",
+                read_timeout_sec=max(timeout, 30) + 10,
+                operation_timeout_sec=max(timeout, 30),
+            )
+            result = session.run_cmd(command)
+            return ExecutionResult(
+                success=result.status_code == 0,
+                stdout=result.std_out.decode("utf-8", errors="replace"),
+                stderr=result.std_err.decode("utf-8", errors="replace"),
+                returncode=result.status_code,
+                duration_sec=time.time() - t0,
+                executor_name=self.name,
+            )
+        except Exception as e:
+            return ExecutionResult(
+                success=False,
+                stderr=f"winrm error: {type(e).__name__}: {e}",
+                duration_sec=time.time() - t0,
+                executor_name=self.name,
+            )
 
 
-class PowerShellExecutor(CmdExecutor):
-    """Same WinRM channel as cmd, but invokes powershell -EncodedCommand."""
+class PowerShellExecutor(Executor):
+    """PowerShell via WinRM (pywinrm session.run_ps).
+
+    Same connection logic as CmdExecutor; uses run_ps() so multi-line
+    scripts and cmdlet output work correctly.
+    """
     name = "powershell"
+
+    def __init__(self, dry_run: bool = False) -> None:
+        self.dry_run = dry_run
 
     def execute(self, command: str, target: TargetContext,
                 timeout: int = 60) -> ExecutionResult:
-        # Wrap as PowerShell call so encoded-command techniques work.
-        wrapped = f"powershell -NoProfile -Command {shlex.quote(command)}"
-        return super().execute(wrapped, target, timeout)
+        if self.dry_run:
+            return ExecutionResult.skipped(
+                f"dry-run: would run via powershell on {target.host}: {command[:80]}",
+                executor=self.name,
+            )
+        try:
+            import winrm
+        except ImportError:
+            return ExecutionResult(
+                success=False,
+                stderr="pywinrm not installed: pip install pywinrm[ntlm]",
+                executor_name=self.name,
+            )
+
+        endpoint = os.environ.get(
+            "WINRM_ENDPOINT", f"http://{target.host}:5985/wsman"
+        )
+        transport = os.environ.get("WINRM_TRANSPORT", "ntlm")
+        user = getattr(target, "winrm_user", None) or target.ssh_user or "vagrant"
+        password = getattr(target, "winrm_password", None) or target.ssh_password or "vagrant"
+
+        t0 = time.time()
+        try:
+            session = winrm.Session(
+                endpoint,
+                auth=(user, password),
+                transport=transport,
+                server_cert_validation="ignore",
+                read_timeout_sec=max(timeout, 30) + 10,
+                operation_timeout_sec=max(timeout, 30),
+            )
+            result = session.run_ps(command)
+            return ExecutionResult(
+                success=result.status_code == 0,
+                stdout=result.std_out.decode("utf-8", errors="replace"),
+                stderr=result.std_err.decode("utf-8", errors="replace"),
+                returncode=result.status_code,
+                duration_sec=time.time() - t0,
+                executor_name=self.name,
+            )
+        except Exception as e:
+            return ExecutionResult(
+                success=False,
+                stderr=f"winrm error: {type(e).__name__}: {e}",
+                duration_sec=time.time() - t0,
+                executor_name=self.name,
+            )
 
 
 # ─── Other channels: stubs to be filled in W3 ────────────────────────────────

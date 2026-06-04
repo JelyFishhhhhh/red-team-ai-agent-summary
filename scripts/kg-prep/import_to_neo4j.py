@@ -96,6 +96,23 @@ DEFAULT_LEADS_TO_EDGES: list[tuple[str, str]] = [
     ("T1098", "T1489"),         # AD backdoor → service stop (revenge)
     ("T1098", "T1531"),         # AD backdoor → disable victim accounts
     ("T1547.001", "T1489"),     # Reg run persistence → impact
+
+    # GOAD lateral movement paths
+    ("T1078", "T1021.006"),     # valid creds → WinRM lateral movement
+    ("T1021.006", "T1059.001"), # WinRM shell → PowerShell execution
+    ("T1059.001", "T1087.002"), # PowerShell → domain account discovery
+    ("T1087.002", "T1098"),     # domain info gathered → account manipulation
+    ("T1190", "T1021.006"),     # initial web access → WinRM lateral movement
+
+    # GOAD MSSQL + ADCS paths
+    ("T1558.003", "T1110.002"),  # Kerberoast hash → crack it
+    ("T1110.002", "T1078"),      # cracked hash → valid account
+    ("T1078", "T1190"),          # valid creds → MSSQL exploit
+    ("T1190", "T1059.001"),      # MSSQL shell → PowerShell exec
+    ("T1078", "T1649"),          # valid creds → ADCS exploit
+    ("T1649", "T1098"),          # DA cert → account manipulation
+    ("T1098", "T1003.006"),      # DA backdoor → DCSync all hashes
+    ("T1003.006", "T1110.002"),  # dump → crack more hashes
 ]
 
 DEFAULT_REQUIRES_EDGES: list[tuple[str, str]] = [
