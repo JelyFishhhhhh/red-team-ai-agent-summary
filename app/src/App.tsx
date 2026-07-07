@@ -8,6 +8,7 @@ import { KgSchema } from './components/KgSchema'
 import { Bottlenecks } from './components/Bottlenecks'
 import { HomePage } from './pages/HomePage'
 import { AgentPage } from './pages/AgentPage'
+import { ArsenalPage } from './pages/ArsenalPage'
 
 export default function App() {
   const { papers, attack, loading, error } = useData()
@@ -43,6 +44,9 @@ export default function App() {
           </NavLink>
           <NavLink to="/attack-chain" className={({ isActive }) => `topbar-link topbar-link--accent${isActive ? ' active' : ''}`}>
             Attack Chain Demo
+          </NavLink>
+          <NavLink to="/arsenal" className={({ isActive }) => `topbar-link topbar-link--accent${isActive ? ' active' : ''}`}>
+            Starred Arsenal
           </NavLink>
         </nav>
       </header>
@@ -94,6 +98,8 @@ export default function App() {
           <Route path="/bottlenecks" element={<Bottlenecks />} />
           <Route path="/kg-schema" element={<KgSchema />} />
           <Route path="/attack-chain" element={<AttackChainDemo />} />
+          <Route path="/arsenal" element={<ArsenalPage tactics={attack.tactics} />} />
+          <Route path="/arsenal/:id" element={<ArsenalPage tactics={attack.tactics} />} />
           <Route
             path="/:agentId"
             element={<AgentPage papers={papers} attack={attack} />}

@@ -1,18 +1,21 @@
-import type { Agent, Tactic, OverviewCell, CoverageLevel } from '../types'
+import type { Tactic, OverviewCell, CoverageLevel, TechniqueMapping } from '../types'
 
-/** Get the coverage level for a technique ID, or undefined if not in agent's list */
-export function getCoverage(agent: Agent, techniqueId: string): CoverageLevel | undefined {
+/** Anything with a rubric-labeled technique list — Agent and ArsenalItem both satisfy this. */
+type HasTechniques = { techniques: TechniqueMapping[] }
+
+/** Get the coverage level for a technique ID, or undefined if not in the list */
+export function getCoverage(agent: HasTechniques, techniqueId: string): CoverageLevel | undefined {
   return agent.techniques.find((t) => t.id === techniqueId)?.coverage
 }
 
-/** Returns true if the agent has any coverage (covered/partial/tool-dep) — NOT 'not-covered' */
-export function isCovered(agent: Agent, techniqueId: string): boolean {
+/** Returns true if there is any coverage (covered/partial/tool-dep) — NOT 'not-covered' */
+export function isCovered(agent: HasTechniques, techniqueId: string): boolean {
   const level = getCoverage(agent, techniqueId)
   return level !== undefined && level !== 'not-covered'
 }
 
 /** Returns a Set of all technique IDs that have any active coverage */
-export function getCoveredIds(agent: Agent): Set<string> {
+export function getCoveredIds(agent: HasTechniques): Set<string> {
   return new Set(
     agent.techniques
       .filter((t) => t.coverage !== 'not-covered')
@@ -21,21 +24,21 @@ export function getCoveredIds(agent: Agent): Set<string> {
 }
 
 /** Count top-level techniques in a tactic that have coverage = 'covered' (not partial/tool-dep) */
-export function countCoveredInTactic(agent: Agent, tactic: Tactic): number {
+export function countCoveredInTactic(agent: HasTechniques, tactic: Tactic): number {
   return tactic.techniques.filter(
     (t) => getCoverage(agent, t.id) === 'covered'
   ).length
 }
 
 /** Count top-level techniques in a tactic with coverage = 'partial' */
-export function countPartialInTactic(agent: Agent, tactic: Tactic): number {
+export function countPartialInTactic(agent: HasTechniques, tactic: Tactic): number {
   return tactic.techniques.filter(
     (t) => getCoverage(agent, t.id) === 'partial'
   ).length
 }
 
 /** Count top-level techniques in a tactic with coverage = 'tool-dep' */
-export function countToolDepInTactic(agent: Agent, tactic: Tactic): number {
+export function countToolDepInTactic(agent: HasTechniques, tactic: Tactic): number {
   return tactic.techniques.filter(
     (t) => getCoverage(agent, t.id) === 'tool-dep'
   ).length
@@ -49,7 +52,7 @@ export interface TechniqueInfo {
 }
 
 /** Get all actively-covered techniques + sub-techniques in a tactic for tooltip display */
-export function getCoveredTechniquesInTactic(agent: Agent, tactic: Tactic): TechniqueInfo[] {
+export function getCoveredTechniquesInTactic(agent: HasTechniques, tactic: Tactic): TechniqueInfo[] {
   const results: TechniqueInfo[] = []
   for (const tech of tactic.techniques) {
     const mapping = agent.techniques.find((t) => t.id === tech.id)
@@ -66,8 +69,11 @@ export function getCoveredTechniquesInTactic(agent: Agent, tactic: Tactic): Tech
   return results
 }
 
-/** Build overview matrix: one OverviewCell per agent×tactic combination */
-export function buildOverviewMatrix(agents: Agent[], tactics: Tactic[]): OverviewCell[] {
+/** Build overview matrix: one OverviewCell per item×tactic combination */
+export function buildOverviewMatrix(
+  agents: (HasTechniques & { id: string })[],
+  tactics: Tactic[],
+): OverviewCell[] {
   const cells: OverviewCell[] = []
   for (const agent of agents) {
     for (const tactic of tactics) {

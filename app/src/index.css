@@ -1808,3 +1808,42 @@ a:hover { text-decoration: underline; }
   color: var(--text-muted);
   line-height: 1.5;
 }
+
+/* --- Starred Arsenal --- */
+.arsenal-page { flex: 1; overflow: auto; padding: 20px 28px; }
+.arsenal-viewswitch { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
+.arsenal-count { color: var(--text-muted); font-size: 12px; margin-left: auto; }
+.arsenal-back { color: var(--accent-blue); text-decoration: none; font-size: 13px; display: inline-block; margin-bottom: 12px; }
+.arsenal-viewswitch button,
+.arsenal-filters button {
+  background: var(--bg-card); color: var(--text-muted);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 5px 12px; font-size: 13px; cursor: pointer;
+}
+.arsenal-viewswitch button.active,
+.arsenal-filters button.active {
+  background: var(--accent-blue-bg); color: var(--accent-blue); border-color: var(--accent-blue);
+}
+.arsenal-filters { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.arsenal-table, .overview-matrix { border-collapse: collapse; width: 100%; font-size: 13px; }
+.arsenal-table th, .overview-matrix th {
+  text-align: left; color: var(--text-muted); font-weight: 600;
+  padding: 6px 10px; border-bottom: 1px solid var(--border-light);
+  cursor: pointer; user-select: none; white-space: nowrap;
+}
+.arsenal-table th.sorted { color: var(--accent-blue); }
+.arsenal-table td, .overview-matrix td { padding: 6px 10px; border-bottom: 1px solid var(--border); }
+.arsenal-table tr:hover td { background: var(--bg-hover); }
+.arsenal-table a { color: var(--accent-blue); text-decoration: none; }
+.overview-matrix td { text-align: center; color: var(--text-muted); }
+.overview-matrix .cov-1 { background: var(--cell-1); color: var(--text); }
+.overview-matrix .cov-2 { background: var(--cell-2); color: var(--text); }
+.overview-matrix .cov-3 { background: var(--cell-3); color: #0d1117; }
+.overview-matrix .cov-4 { background: var(--cell-4); color: #0d1117; }
+.arsenal-detail { max-width: 820px; }
+.arsenal-detail h2 { margin-bottom: 4px; }
+.arsenal-detail .arsenal-meta { color: var(--text-muted); font-size: 13px; margin-bottom: 12px; }
+.arsenal-detail h3 { color: var(--accent-orange); font-size: 14px; margin: 16px 0 6px; }
+.arsenal-detail code { font-family: var(--font-mono); color: var(--accent-blue); }
+.arsenal-detail ul { list-style: none; padding: 0; }
+.arsenal-detail li { padding: 4px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
