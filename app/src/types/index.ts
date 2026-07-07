@@ -89,3 +89,31 @@ export interface OverviewCell {
   partialCount: number      // techniques with coverage = 'partial'
   toolDepCount: number      // techniques with coverage = 'tool-dep'
 }
+
+// --- Starred Arsenal (starred red-team/AI repos, coverage-scored) ---
+
+export type ItemKind = 'ai-agent' | 'agent-framework' | 'tool' | 'lab-dataset'
+
+// Superset of Agent + tool schemas so one render path handles all.
+export interface ArsenalItem {
+  id: string
+  repo: string
+  name: string
+  url: string
+  stars: number
+  language: string | null
+  kind: ItemKind
+  category: string
+  description: string
+  topics: string[]
+  autonomy: 'L1' | 'L2' | 'L3' | null   // null for pure tools
+  has_paper: boolean
+  techniques: TechniqueMapping[]         // reuses rubric-labeled mapping
+  benchmark: Benchmark | null
+}
+
+export interface ArsenalData {
+  version: string
+  lastUpdated: string
+  items: ArsenalItem[]
+}

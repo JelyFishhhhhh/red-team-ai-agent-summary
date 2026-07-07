@@ -1,0 +1,716 @@
+{
+  "version": "1",
+  "lastUpdated": "2026-07-07",
+  "items": [
+    {
+      "id": "nmap",
+      "repo": "",
+      "name": "nmap",
+      "url": "",
+      "stars": 0,
+      "language": null,
+      "kind": "tool",
+      "category": "recon",
+      "description": "XML output parseable; standard first step in nearly all agents; service version detection via -sV flag",
+      "topics": [],
+      "autonomy": null,
+      "has_paper": false,
+      "techniques": [
+        {
+          "id": "T1595",
+          "coverage": "tool-dep",
+          "notes": "nmap executes Active Scanning; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — nmap"
+          }
+        },
+        {
+          "id": "T1595.001",
+          "coverage": "tool-dep",
+          "notes": "nmap executes Scanning IP Blocks; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — nmap"
+          }
+        },
+        {
+          "id": "T1046",
+          "coverage": "tool-dep",
+          "notes": "nmap executes Network Service Discovery; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — nmap"
+          }
+        }
+      ],
+      "benchmark": null
+    },
+    {
+      "id": "sqlmap",
+      "repo": "",
+      "name": "sqlmap",
+      "url": "",
+      "stars": 0,
+      "language": null,
+      "kind": "tool",
+      "category": "exploitation",
+      "description": "Automated SQL injection discovery and exploitation; Python-based; output parseable but verbose",
+      "topics": [],
+      "autonomy": null,
+      "has_paper": false,
+      "techniques": [
+        {
+          "id": "T1190",
+          "coverage": "tool-dep",
+          "notes": "sqlmap executes Exploit Public-Facing Application; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — sqlmap"
+          }
+        },
+        {
+          "id": "T1059.006",
+          "coverage": "tool-dep",
+          "notes": "sqlmap executes Python; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — sqlmap"
+          }
+        }
+      ],
+      "benchmark": null
+    },
+    {
+      "id": "metasploit",
+      "repo": "",
+      "name": "Metasploit Framework",
+      "url": "",
+      "stars": 0,
+      "language": null,
+      "kind": "tool",
+      "category": "exploitation",
+      "description": "Interactive msfconsole requires tmux+prompt detection for autonomous use (Decepticon pattern); covers exploitation through post-exploitation",
+      "topics": [],
+      "autonomy": null,
+      "has_paper": false,
+      "techniques": [
+        {
+          "id": "T1190",
+          "coverage": "tool-dep",
+          "notes": "Metasploit Framework executes Exploit Public-Facing Application; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — Metasploit Framework"
+          }
+        },
+        {
+          "id": "T1059",
+          "coverage": "tool-dep",
+          "notes": "Metasploit Framework executes Command and Scripting Interpreter; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — Metasploit Framework"
+          }
+        },
+        {
+          "id": "T1548",
+          "coverage": "tool-dep",
+          "notes": "Metasploit Framework executes Abuse Elevation Control Mechanism; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — Metasploit Framework"
+          }
+        },
+        {
+          "id": "T1021",
+          "coverage": "tool-dep",
+          "notes": "Metasploit Framework executes Remote Services; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — Metasploit Framework"
+          }
+        },
+        {
+          "id": "T1003",
+          "coverage": "tool-dep",
+          "notes": "Metasploit Framework executes OS Credential Dumping; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — Metasploit Framework"
+          }
+        }
+      ],
+      "benchmark": null
+    },
+    {
+      "id": "bloodhound",
+      "repo": "",
+      "name": "BloodHound / SharpHound",
+      "url": "",
+      "stars": 0,
+      "language": null,
+      "kind": "tool",
+      "category": "AD-recon",
+      "description": "Neo4j graph backend; outputs attack paths; requires domain credentials to run; results fed to lateral movement planning",
+      "topics": [],
+      "autonomy": null,
+      "has_paper": false,
+      "techniques": [
+        {
+          "id": "T1087",
+          "coverage": "tool-dep",
+          "notes": "BloodHound / SharpHound executes Account Discovery; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — BloodHound / SharpHound"
+          }
+        },
+        {
+          "id": "T1482",
+          "coverage": "tool-dep",
+          "notes": "BloodHound / SharpHound executes Domain Trust Discovery; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — BloodHound / SharpHound"
+          }
+        },
+        {
+          "id": "T1069",
+          "coverage": "tool-dep",
+          "notes": "BloodHound / SharpHound executes Permission Groups Discovery; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — BloodHound / SharpHound"
+          }
+        }
+      ],
+      "benchmark": null
+    },
+    {
+      "id": "certipy",
+      "repo": "",
+      "name": "certipy",
+      "url": "",
+      "stars": 0,
+      "language": null,
+      "kind": "tool",
+      "category": "AD-exploitation",
+      "description": "ADCS abuse: ESC1–ESC15 attack vectors; requires CA enumeration and template misconfiguration; Decepticon AD Operator agent",
+      "topics": [],
+      "autonomy": null,
+      "has_paper": false,
+      "techniques": [
+        {
+          "id": "T1649",
+          "coverage": "tool-dep",
+          "notes": "certipy executes Steal or Forge Authentication Certificates; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — certipy"
+          }
+        }
+      ],
+      "benchmark": null
+    },
+    {
+      "id": "mimikatz",
+      "repo": "",
+      "name": "mimikatz",
+      "url": "",
+      "stars": 0,
+      "language": null,
+      "kind": "tool",
+      "category": "credential-dumping",
+      "description": "Windows credential dumping; requires LSASS access; detected by modern AV/EDR; Decepticon Post-Exploit agent",
+      "topics": [],
+      "autonomy": null,
+      "has_paper": false,
+      "techniques": [
+        {
+          "id": "T1003",
+          "coverage": "tool-dep",
+          "notes": "mimikatz executes OS Credential Dumping; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — mimikatz"
+          }
+        },
+        {
+          "id": "T1003.001",
+          "coverage": "tool-dep",
+          "notes": "mimikatz executes LSASS Memory; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — mimikatz"
+          }
+        }
+      ],
+      "benchmark": null
+    },
+    {
+      "id": "evil-winrm",
+      "repo": "",
+      "name": "evil-winrm",
+      "url": "",
+      "stars": 0,
+      "language": null,
+      "kind": "tool",
+      "category": "lateral-movement",
+      "description": "WinRM interactive shell; requires valid credentials; tmux integration in Decepticon for prompt detection",
+      "topics": [],
+      "autonomy": null,
+      "has_paper": false,
+      "techniques": [
+        {
+          "id": "T1021.006",
+          "coverage": "tool-dep",
+          "notes": "evil-winrm executes Remote Services: Windows Remote Management; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — evil-winrm"
+          }
+        }
+      ],
+      "benchmark": null
+    },
+    {
+      "id": "nuclei",
+      "repo": "",
+      "name": "Nuclei",
+      "url": "",
+      "stars": 0,
+      "language": null,
+      "kind": "tool",
+      "category": "vuln-scan",
+      "description": "Template-based scanner; fast; covers CVE detection and exploit PoCs; YAML template library; output parseable",
+      "topics": [],
+      "autonomy": null,
+      "has_paper": false,
+      "techniques": [
+        {
+          "id": "T1595.002",
+          "coverage": "tool-dep",
+          "notes": "Nuclei executes Vulnerability Scanning; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — Nuclei"
+          }
+        },
+        {
+          "id": "T1190",
+          "coverage": "tool-dep",
+          "notes": "Nuclei executes Exploit Public-Facing Application; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — Nuclei"
+          }
+        }
+      ],
+      "benchmark": null
+    },
+    {
+      "id": "gobuster",
+      "repo": "",
+      "name": "gobuster / dirbuster",
+      "url": "",
+      "stars": 0,
+      "language": null,
+      "kind": "tool",
+      "category": "recon",
+      "description": "Wordlist-based directory brute forcing; PentestGPT context explosion documented (thousands of tokens per run)",
+      "topics": [],
+      "autonomy": null,
+      "has_paper": false,
+      "techniques": [
+        {
+          "id": "T1595.003",
+          "coverage": "tool-dep",
+          "notes": "gobuster / dirbuster executes Wordlist Scanning; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — gobuster / dirbuster"
+          }
+        },
+        {
+          "id": "T1083",
+          "coverage": "tool-dep",
+          "notes": "gobuster / dirbuster executes File and Directory Discovery; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — gobuster / dirbuster"
+          }
+        }
+      ],
+      "benchmark": null
+    },
+    {
+      "id": "rustscan",
+      "repo": "",
+      "name": "RustScan",
+      "url": "",
+      "stars": 0,
+      "language": null,
+      "kind": "tool",
+      "category": "recon",
+      "description": "Faster than nmap for initial port discovery; typically used before nmap for service detection; ARTEMIS pipeline",
+      "topics": [],
+      "autonomy": null,
+      "has_paper": false,
+      "techniques": [
+        {
+          "id": "T1595.001",
+          "coverage": "tool-dep",
+          "notes": "RustScan executes Scanning IP Blocks; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — RustScan"
+          }
+        },
+        {
+          "id": "T1046",
+          "coverage": "tool-dep",
+          "notes": "RustScan executes Network Service Discovery; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — RustScan"
+          }
+        }
+      ],
+      "benchmark": null
+    },
+    {
+      "id": "netexec",
+      "repo": "",
+      "name": "NetExec (CrackMapExec)",
+      "url": "",
+      "stars": 0,
+      "language": null,
+      "kind": "tool",
+      "category": "AD-lateral",
+      "description": "SMB/LDAP/WinRM enumeration; 100% usage in cochise; pass-the-hash and credential spraying capable",
+      "topics": [],
+      "autonomy": null,
+      "has_paper": false,
+      "techniques": [
+        {
+          "id": "T1021.002",
+          "coverage": "tool-dep",
+          "notes": "NetExec (CrackMapExec) executes SMB/Windows Admin Shares; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — NetExec (CrackMapExec)"
+          }
+        },
+        {
+          "id": "T1110",
+          "coverage": "tool-dep",
+          "notes": "NetExec (CrackMapExec) executes Brute Force; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — NetExec (CrackMapExec)"
+          }
+        },
+        {
+          "id": "T1135",
+          "coverage": "tool-dep",
+          "notes": "NetExec (CrackMapExec) executes Network Share Discovery; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — NetExec (CrackMapExec)"
+          }
+        }
+      ],
+      "benchmark": null
+    },
+    {
+      "id": "impacket",
+      "repo": "",
+      "name": "Impacket suite",
+      "url": "",
+      "stars": 0,
+      "language": null,
+      "kind": "tool",
+      "category": "AD-exploitation",
+      "description": "30+ Python scripts; GetUserSPNs (Kerberoasting), GetNPUsers (AS-REP roasting); cochise at 100%/83% usage respectively",
+      "topics": [],
+      "autonomy": null,
+      "has_paper": false,
+      "techniques": [
+        {
+          "id": "T1558",
+          "coverage": "tool-dep",
+          "notes": "Impacket suite executes Steal or Forge Kerberos Tickets; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — Impacket suite"
+          }
+        },
+        {
+          "id": "T1558.003",
+          "coverage": "tool-dep",
+          "notes": "Impacket suite executes Kerberoasting; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — Impacket suite"
+          }
+        },
+        {
+          "id": "T1558.004",
+          "coverage": "tool-dep",
+          "notes": "Impacket suite executes AS-REP Roasting; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — Impacket suite"
+          }
+        },
+        {
+          "id": "T1021.002",
+          "coverage": "tool-dep",
+          "notes": "Impacket suite executes SMB/Windows Admin Shares; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — Impacket suite"
+          }
+        }
+      ],
+      "benchmark": null
+    },
+    {
+      "id": "hydra",
+      "repo": "",
+      "name": "Hydra",
+      "url": "",
+      "stars": 0,
+      "language": null,
+      "kind": "tool",
+      "category": "credential-attack",
+      "description": "Network protocol brute forcer; SSH, FTP, HTTP, SMB; VulnBot Exploitation phase",
+      "topics": [],
+      "autonomy": null,
+      "has_paper": false,
+      "techniques": [
+        {
+          "id": "T1110",
+          "coverage": "tool-dep",
+          "notes": "Hydra executes Brute Force; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — Hydra"
+          }
+        },
+        {
+          "id": "T1110.001",
+          "coverage": "tool-dep",
+          "notes": "Hydra executes Password Guessing; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — Hydra"
+          }
+        }
+      ],
+      "benchmark": null
+    },
+    {
+      "id": "hashcat",
+      "repo": "",
+      "name": "hashcat / john",
+      "url": "",
+      "stars": 0,
+      "language": null,
+      "kind": "tool",
+      "category": "credential-attack",
+      "description": "Offline hash cracking; hashcat GPU-accelerated; john CPU; cochise: hashcat 94% failure rate with auto-repair",
+      "topics": [],
+      "autonomy": null,
+      "has_paper": false,
+      "techniques": [
+        {
+          "id": "T1110.002",
+          "coverage": "tool-dep",
+          "notes": "hashcat / john executes Password Cracking; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — hashcat / john"
+          }
+        }
+      ],
+      "benchmark": null
+    },
+    {
+      "id": "ffuf",
+      "repo": "",
+      "name": "ffuf",
+      "url": "",
+      "stars": 0,
+      "language": null,
+      "kind": "tool",
+      "category": "web-fuzzing",
+      "description": "Fast web fuzzer; directory and parameter fuzzing; output JSON-parseable; dominant tool in MAPTA per Figure 6",
+      "topics": [],
+      "autonomy": null,
+      "has_paper": false,
+      "techniques": [
+        {
+          "id": "T1595.003",
+          "coverage": "tool-dep",
+          "notes": "ffuf executes Wordlist Scanning; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — ffuf"
+          }
+        },
+        {
+          "id": "T1083",
+          "coverage": "tool-dep",
+          "notes": "ffuf executes File and Directory Discovery; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — ffuf"
+          }
+        }
+      ],
+      "benchmark": null
+    },
+    {
+      "id": "nikto",
+      "repo": "",
+      "name": "Nikto",
+      "url": "",
+      "stars": 0,
+      "language": null,
+      "kind": "tool",
+      "category": "vuln-scan",
+      "description": "Web server vulnerability scanner; identifies misconfigurations and known CVEs; VulnBot Scanning phase",
+      "topics": [],
+      "autonomy": null,
+      "has_paper": false,
+      "techniques": [
+        {
+          "id": "T1046",
+          "coverage": "tool-dep",
+          "notes": "Nikto executes Network Service Discovery; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — Nikto"
+          }
+        },
+        {
+          "id": "T1595.002",
+          "coverage": "tool-dep",
+          "notes": "Nikto executes Vulnerability Scanning; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — Nikto"
+          }
+        }
+      ],
+      "benchmark": null
+    },
+    {
+      "id": "wpscan",
+      "repo": "",
+      "name": "WPScan",
+      "url": "",
+      "stars": 0,
+      "language": null,
+      "kind": "tool",
+      "category": "vuln-scan",
+      "description": "WordPress-specific vulnerability scanner; plugin/theme enumeration; VulnBot Scanning phase",
+      "topics": [],
+      "autonomy": null,
+      "has_paper": false,
+      "techniques": [
+        {
+          "id": "T1046",
+          "coverage": "tool-dep",
+          "notes": "WPScan executes Network Service Discovery; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — WPScan"
+          }
+        },
+        {
+          "id": "T1595.002",
+          "coverage": "tool-dep",
+          "notes": "WPScan executes Vulnerability Scanning; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — WPScan"
+          }
+        }
+      ],
+      "benchmark": null
+    },
+    {
+      "id": "chisel",
+      "repo": "",
+      "name": "Chisel",
+      "url": "",
+      "stars": 0,
+      "language": null,
+      "kind": "tool",
+      "category": "tunneling",
+      "description": "TCP/UDP tunneling over HTTP; typically used for firewall bypass in post-exploitation; no agent confirmed to use autonomously",
+      "topics": [],
+      "autonomy": null,
+      "has_paper": false,
+      "techniques": [
+        {
+          "id": "T1090",
+          "coverage": "tool-dep",
+          "notes": "Chisel executes Proxy; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — Chisel"
+          }
+        },
+        {
+          "id": "T1572",
+          "coverage": "tool-dep",
+          "notes": "Chisel executes Protocol Tunneling; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — Chisel"
+          }
+        }
+      ],
+      "benchmark": null
+    },
+    {
+      "id": "kubescape",
+      "repo": "",
+      "name": "Kubescape / kubectl",
+      "url": "",
+      "stars": 0,
+      "language": null,
+      "kind": "tool",
+      "category": "cloud-recon",
+      "description": "Kubernetes cluster security assessment; RBAC enumeration; misconfiguration discovery; Dark-Moon Kubernetes agent",
+      "topics": [],
+      "autonomy": null,
+      "has_paper": false,
+      "techniques": [
+        {
+          "id": "T1526",
+          "coverage": "tool-dep",
+          "notes": "Kubescape / kubectl executes Cloud Service Discovery; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — Kubescape / kubectl"
+          }
+        },
+        {
+          "id": "T1613",
+          "coverage": "tool-dep",
+          "notes": "Kubescape / kubectl executes Container and Resource Discovery; agent-agnostic tool logic.",
+          "source": {
+            "tier": "T2",
+            "ref": "papers.json tools[] curated — Kubescape / kubectl"
+          }
+        }
+      ],
+      "benchmark": null
+    }
+  ]
+}
