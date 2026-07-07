@@ -1,0 +1,319 @@
+[
+  {
+    "id": "t3mp3st",
+    "repo": "elder-plinius/T3MP3ST",
+    "name": "T3MP3ST",
+    "url": "https://github.com/elder-plinius/T3MP3ST",
+    "stars": 2648,
+    "language": null,
+    "kind": "ai-agent",
+    "category": "autonomous-redteam",
+    "description": "Multi-agent offensive-security framework that turns a connected AI coding agent into a recon->exploit->report kill chain across web, CTF, source-code, and OSS/embedded targets. Ships an 8-operator cell (Recon, Scanner, Exploiter, Infiltrator, Exfiltrator, Ghost, Coordinator, Analyst) mapped to MITRE ATT&CK phases; recon is a live tool-backed ReAct engine while later operators are experimental/scaffolded.",
+    "topics": [],
+    "autonomy": "L3",
+    "has_paper": false,
+    "techniques": [
+      {
+        "id": "T1595",
+        "coverage": "covered",
+        "notes": "Recon operator (TA0043) autonomously drives nmap / DNS / HTTP / fingerprinting in a live ReAct loop; README calls the recon engine 'Stable' and states every finding traces to real tool output, i.e. the agent decides scans and interprets results, not a fixed script.",
+        "source": { "tier": "T2", "ref": "github.com/elder-plinius/T3MP3ST README — What ships today: Recon engine (Stable); Architecture: Recon->TA0043" }
+      },
+      {
+        "id": "T1046",
+        "coverage": "covered",
+        "notes": "Scanner operator maps to Discovery (TA0007) doing vulnerability scanning + service/stack fingerprinting; the live recon/scanner engine enumerates network services and stack via nmap and its own reasoning over the output.",
+        "source": { "tier": "T2", "ref": "github.com/elder-plinius/T3MP3ST README — Architecture: Scanner->TA0007 Discovery; Coverage by domain: Network/Infra recon live" }
+      },
+      {
+        "id": "T1190",
+        "coverage": "covered",
+        "notes": "Web domain is the benchmarked core: black-box external-attacker recon->exploit against public-facing apps, XBEN 90.1% pass@1 (Wilson-95 86.2-92.9). Exploiter runs a real tool-backed ReAct loop; the agent chains findings into working web exploits with a graded oracle.",
+        "source": { "tier": "T2", "ref": "github.com/elder-plinius/T3MP3ST README — What it hunts: Web apps (Stable); Benchmarks: XBEN black-box pass@1 90.1%" }
+      },
+      {
+        "id": "T1059",
+        "coverage": "partial",
+        "notes": "Exploiter/Infiltrator run a real tool-backed ReAct loop that issues commands/payloads (CTF sandbox solves, Cybench 23/40 hint-free). Marked partial because the README explicitly flags exploitation/post-ex operators as Experimental and end-to-end swarm exploitation as unbenchmarked/unreliable.",
+        "source": { "tier": "T2", "ref": "github.com/elder-plinius/T3MP3ST README — What ships today: Exploiter/Infiltrator (Experimental); Benchmarks: Cybench 23/40 hint-free" }
+      },
+      {
+        "id": "T1592",
+        "coverage": "partial",
+        "notes": "White-box source-code audit / SAST-style hunting: single-agent found 8/10 held-out post-cutoff CVEs at exact file/line/CWE across 7 languages. Repo-ingest engine itself is flagged Experimental (Python-only regex ingest), so victim-host-information gathering via code is partial.",
+        "source": { "tier": "T2", "ref": "github.com/elder-plinius/T3MP3ST README — Coverage by domain: Code (Proven hunt result, engine Experimental); CVE-Zero 8/10 exact file/line/CWE" }
+      },
+      {
+        "id": "T1210",
+        "coverage": "partial",
+        "notes": "OSS/embedded/robotics coordinated-disclosure pipeline (OSV novelty + live PoC + refuter panel) produces reproducible exploits of remote-service vulnerabilities in OSS, with drafts held for vendor coordination. Directional (n small) and single-agent, not the coordinated swarm, so partial.",
+        "source": { "tier": "T2", "ref": "github.com/elder-plinius/T3MP3ST README — What it hunts: Robotics/OT/embedded (Pipeline stable); coordinated-disclosure pipeline" }
+      }
+    ],
+    "benchmark": "XBEN black-box pass@1 90.1% (Wilson-95 86.2-92.9), 91/104 floor; XBEN white-box pass@1 98.7%; Cybench 23/40 (58%) hint-free single-run; CVE-Zero 8/10 exact file/line/CWE, 10/10 found (self-reported, verify-claims re-derivable)"
+  },
+  {
+    "id": "metatron",
+    "repo": "sooryathejas/METATRON",
+    "name": "METATRON",
+    "url": "https://github.com/sooryathejas/METATRON",
+    "stars": 3280,
+    "language": "Python",
+    "kind": "ai-agent",
+    "category": "pentest-assistant",
+    "description": "CLI AI penetration-testing assistant running a local abliterated Qwen model via Ollama on Parrot OS. Given a target it runs recon tools (nmap, whois, whatweb, curl, dig, nikto), feeds output to the local LLM which analyzes the target, identifies vulnerabilities and suggests exploits, with an agentic loop that can request more tool runs mid-analysis; results persist to MariaDB.",
+    "topics": [],
+    "autonomy": "L2",
+    "has_paper": false,
+    "techniques": [
+      {
+        "id": "T1595",
+        "coverage": "partial",
+        "notes": "The agentic loop lets the local LLM request recon-tool runs (nmap, whatweb, curl, dig) mid-analysis, so it decides to scan the target. Human still selects the initial tool set from a menu and confirms; no benchmark, single-target scenarios only -> partial.",
+        "source": { "tier": "T2", "ref": "github.com/sooryathejas/METATRON README — Features: Agentic Loop (AI can request more tool runs mid-analysis); Walkthrough: recon tool selection" }
+      },
+      {
+        "id": "T1046",
+        "coverage": "tool-dep",
+        "notes": "nmap performs the network service discovery; the agent invokes it and parses the port/service output for its analysis but contributes no service-discovery-specific reasoning beyond running the wrapped tool.",
+        "source": { "tier": "T2", "ref": "github.com/sooryathejas/METATRON README — Features: Automated Recon (nmap ...); Project Structure: tools.py recon runners" }
+      },
+      {
+        "id": "T1595.002",
+        "coverage": "tool-dep",
+        "notes": "nikto and whatweb perform vulnerability/tech scanning of the web app; the agent runs the wrappers and reads results. Core scanning logic is the external tool's, not agent reasoning.",
+        "source": { "tier": "T2", "ref": "github.com/sooryathejas/METATRON README — Features: nikto, whatweb recon; DB schema: vulnerabilities table" }
+      }
+    ],
+    "benchmark": null
+  },
+  {
+    "id": "guardian-cli",
+    "repo": "zakirkun/guardian-cli",
+    "name": "Guardian",
+    "url": "https://github.com/zakirkun/guardian-cli",
+    "stars": 1731,
+    "language": "Python",
+    "kind": "ai-agent",
+    "category": "pentest-automation",
+    "description": "AI-powered penetration-testing automation platform with a multi-agent pipeline (Planner -> Tool Agent -> Analyst -> Reporter, plus red/blue/judge debate triage) over 50 integrated security tools across 10+ categories. A DAG workflow engine schedules tools; the AI adapts tactics based on discovered vulns and prior tool yields, with RAG grounding over CVE/CWE/MITRE feeds.",
+    "topics": [],
+    "autonomy": "L2",
+    "has_paper": false,
+    "techniques": [
+      {
+        "id": "T1595",
+        "coverage": "partial",
+        "notes": "Planner + Tool Agent autonomously select and sequence recon tools (nmap, masscan, httpx, subfinder, amass); README states the AI adapts tactics based on discovered vulnerabilities and prior tool yields. Confirmation gate + safe_mode add HITL and there is no success benchmark -> partial (L2).",
+        "source": { "tier": "T2", "ref": "github.com/zakirkun/guardian-cli README — Features: Adaptive Testing; Multi-Agent Architecture (Planner/Tool Selector)" }
+      },
+      {
+        "id": "T1046",
+        "coverage": "tool-dep",
+        "notes": "Network service discovery is executed by nmap/masscan wrappers; the Tool Agent chooses to run them but the enumeration logic is the tool's, not agent-specific reasoning.",
+        "source": { "tier": "T2", "ref": "github.com/zakirkun/guardian-cli README — Extensive Tool Arsenal: Network nmap, masscan; tools/ wrappers" }
+      },
+      {
+        "id": "T1190",
+        "coverage": "tool-dep",
+        "notes": "Public-facing app exploitation is delegated to sqlmap / nuclei / nikto / xsstrike wrappers; these carry the exploit logic. The agent selects and chains them (Active+ intrusive tools gated behind explicit user approval), but the technique's core is the tool's.",
+        "source": { "tier": "T2", "ref": "github.com/zakirkun/guardian-cli README — Vulnerability Scanning: nuclei, nikto, sqlmap, wpscan; Confirmation Gate for active tools" }
+      },
+      {
+        "id": "T1110",
+        "coverage": "tool-dep",
+        "notes": "AD track (B8) adds kerbrute and crackmapexec for password attacks; Guardian runs the wrappers as workflow steps. Brute-force/spray logic is the tool's; no agent-specific credential reasoning documented.",
+        "source": { "tier": "T2", "ref": "github.com/zakirkun/guardian-cli README — Track B / B8 Active Directory: crackmapexec, kerbrute" }
+      },
+      {
+        "id": "T1003",
+        "coverage": "tool-dep",
+        "notes": "impacket-secretsdump wrapper enables OS credential dumping in the AD workflow; the agent invokes it via a workflow step. Dumping is entirely the external tool's logic.",
+        "source": { "tier": "T2", "ref": "github.com/zakirkun/guardian-cli README — B8 Active Directory: impacket-secretsdump; bloodhound" }
+      }
+    ],
+    "benchmark": null
+  },
+  {
+    "id": "burp-ai-agent",
+    "repo": "six2dez/burp-ai-agent",
+    "name": "Custom AI Agent (burp-ai-agent)",
+    "url": "https://github.com/six2dez/burp-ai-agent",
+    "stars": 1328,
+    "language": "Java",
+    "kind": "ai-agent",
+    "category": "web",
+    "description": "Burp Suite extension that integrates AI into the web-testing workflow via 11 backends and up to 59 MCP tools, letting an external AI client (e.g. Claude Desktop/Code) drive Burp autonomously. Ships passive/active AI scanners across 62 vulnerability classes plus a burp-scan skill with a 200+ payload library and an end-to-end scope->passive->active->OOB->report workflow.",
+    "topics": [],
+    "autonomy": "L2",
+    "has_paper": false,
+    "techniques": [
+      {
+        "id": "T1190",
+        "coverage": "partial",
+        "notes": "Active AI scanner and the burp-scan skill test public-facing web apps across 62 vuln classes (injection, auth, crypto) using a 200+ payload library with detection patterns; the AI reasons over proxy traffic and sends crafted requests. Web-app scope only, no success benchmark, HITL analyst-guided -> partial.",
+        "source": { "tier": "T2", "ref": "github.com/six2dez/burp-ai-agent README — Highlights: 62 Vulnerability Classes (Passive and Active AI scanners); Burp Scan Skill payload library" }
+      },
+      {
+        "id": "T1213",
+        "coverage": "partial",
+        "notes": "IDOR/BOLA discovery example: AI pulls proxy_http_history, identifies endpoints with numeric IDs, sends ID+1/ID-1 requests, compares responses for other users' data, and files a confirmed issue -> autonomous access to data via authorization abuse. Documented as an example flow, not benchmarked -> partial.",
+        "source": { "tier": "T2", "ref": "github.com/six2dez/burp-ai-agent README — Burp Scan Skill Usage Example: IDOR scan via proxy_http_history + http1_request" }
+      },
+      {
+        "id": "T1602",
+        "coverage": "tool-dep",
+        "notes": "The extension turns Burp into an MCP tool source (proxy history, request replay); passive scanning analyzes captured traffic. The traffic capture/interception is Burp's core, exposed to the agent rather than agent-implemented -> tool-dep.",
+        "source": { "tier": "T2", "ref": "github.com/six2dez/burp-ai-agent README — 59 MCP Tools; Passive analysis protocol (traffic analysis without sending requests)" }
+      }
+    ],
+    "benchmark": null
+  },
+  {
+    "id": "pentest-ai",
+    "repo": "0xSteph/pentest-ai",
+    "name": "pentest-ai (ptai)",
+    "url": "https://github.com/0xSteph/pentest-ai",
+    "stars": 1235,
+    "language": "Python",
+    "kind": "ai-agent",
+    "category": "mcp-orchestration",
+    "description": "AI-driven pentest tool / MCP server with 17 specialized agents (recon, web, API, AD, cloud, credential, privesc, chaining, PoC, etc.) orchestrating 200+ wrapped tools and 60 curated web probes. LLM-coordinated (not LLM-dependent): the LLM runs the phase loop and reasons about results while deterministic probes detect; every finding is re-run against a machine oracle before earning a VERIFIED badge.",
+    "topics": [],
+    "autonomy": "L2",
+    "has_paper": false,
+    "techniques": [
+      {
+        "id": "T1595",
+        "coverage": "covered",
+        "notes": "recon agent (phase 1) autonomously does port scan, DNS/subdomain enum and service fingerprinting as the engagement entry point; the LLM drives the phase loop and reasons about results, chaining recon into downstream phases. Documented agent roster + how-it-works phase diagram -> covered (L2).",
+        "source": { "tier": "T2", "ref": "github.com/0xSteph/pentest-ai README — Agents table: recon phase 1; How it works phase diagram" }
+      },
+      {
+        "id": "T1190",
+        "coverage": "covered",
+        "notes": "web agent runs an authenticated OWASP Testing Guide v4 pass; on stock OWASP Juice Shop ptai oracle-verifies 12 findings in one scan (JWT alg:none accepted on protected endpoints, BOLA cross-user reads, sequential IDOR, type confusion), each re-proven by a machine oracle not asserted. Case study with step trace = T3.",
+        "source": { "tier": "T3", "ref": "github.com/0xSteph/pentest-ai README — On a real target: OWASP Juice Shop (12 oracle-verified in a single scan); benchmarks/results" }
+      },
+      {
+        "id": "T1213",
+        "coverage": "covered",
+        "notes": "BOLA/IDOR is an oracle-verified class: sequential IDOR and BOLA cross-user reads verified on Juice Shop with named machine oracles (control must fail on a safe target). Autonomous decide+execute+verify with a step trace -> covered (T3).",
+        "source": { "tier": "T3", "ref": "github.com/0xSteph/pentest-ai README — What's new 1.1.0: sequential IDOR, BOLA/IDOR oracle classes; Juice Shop BOLA cross-user reads verified" }
+      },
+      {
+        "id": "T1190.001",
+        "coverage": "partial",
+        "notes": "SQLi is an oracle class (boolean/blind + SQLi login-bypass); README reports SQLi auth-bypass on /rest/user/login and UNION SQLi on /rest/products/search were detected on Juice Shop but only the verified subset reached the report, and detection leans on the curated probe library. SQLi exploitation of the app -> partial.",
+        "source": { "tier": "T3", "ref": "github.com/0xSteph/pentest-ai README — Juice Shop: SQLi auth-bypass /rest/user/login, UNION SQLi /rest/products/search (detected)" }
+      },
+      {
+        "id": "T1110.003",
+        "coverage": "partial",
+        "notes": "credential_tester agent (phase 4) does password spraying, credential stuffing and MFA-bypass checks; documented as an agent role in the roster. No success benchmark and it is an advisory/probe-driven check -> partial.",
+        "source": { "tier": "T2", "ref": "github.com/0xSteph/pentest-ai README — Agents table: credential_tester (password spraying, credential stuffing, MFA bypass checks)" }
+      },
+      {
+        "id": "T1558.003",
+        "coverage": "tool-dep",
+        "notes": "ad agent runs Kerberoasting via impacket-getuserspns (playbook example) and BloodHound pathfinding; the Kerberoast ticket extraction is the impacket tool's core logic invoked as a playbook step. Agent decides when but the technique execution is the tool's -> tool-dep.",
+        "source": { "tier": "T2", "ref": "github.com/0xSteph/pentest-ai README — Agents: ad (Kerberoasting, BloodHound); Playbooks: impacket-getuserspns kerberoast step" }
+      }
+    ],
+    "benchmark": "OWASP Juice Shop (n=1 single-shot): ptai 0.13.0 88 findings, 46 Critical+High, 5 OWASP buckets, 0% FP; honeypot 23 verified across 14 oracle classes at 100% precision / zero FP (self-reported, reproducible harness in repo)"
+  },
+  {
+    "id": "autocve",
+    "repo": "larlarua/AutoCVE",
+    "name": "AutoCVE",
+    "url": "https://github.com/larlarua/AutoCVE",
+    "stars": 1041,
+    "language": "Python",
+    "kind": "ai-agent",
+    "category": "vuln-discovery",
+    "description": "Agent-driven automated CVE-discovery platform for source code. An Orchestrator schedules Recon/Scan/Triage/Finding/Verification agents through a ReAct-loop state machine to filter projects, audit source, deep-mine and dynamically verify vulnerabilities, then generate CVE-submission reports. The Finding agent is purpose-built for CVE mining via source analysis, tool calls, nudge correction and a FinalizeFinding termination mechanism.",
+    "topics": [],
+    "autonomy": "L3",
+    "has_paper": false,
+    "techniques": [
+      {
+        "id": "T1592.002",
+        "coverage": "covered",
+        "notes": "White-box source-code audit is the core: the Finding agent analyzes project source via a ReAct loop to deep-mine high-value vulns. In a one-week test it found+submitted 30 vulns across 14 OSS projects, all issued real CVE IDs (e.g. CVE-2026-48765 authz bypass CVSS 9.9) with public reports -> autonomous multi-step vuln discovery with step-traced evidence.",
+        "source": { "tier": "T3", "ref": "github.com/larlarua/AutoCVE README — CVE 挖掘成果: 30 CVEs / 14 projects with CVE IDs + reports (larlarua/vulnerability-reports); Finding Agent design" }
+      },
+      {
+        "id": "T1190",
+        "coverage": "covered",
+        "notes": "Multiple discovered+assigned CVEs are exploitable public-facing-app authorization/access-control flaws found and verified by the agents (e.g. CVE-2026-48765 Authorization Bypass 9.9, CVE-2026-40904 Improper Access Control 8.1, CVE-2026-40601 Missing Authorization). Verification agent dynamically re-proves findings -> covered (T3, real CVE records).",
+        "source": { "tier": "T3", "ref": "github.com/larlarua/AutoCVE README — CVE table: CVE-2026-48765 (Authorization Bypass 9.9), CVE-2026-40904 (Improper Access Control); Verification agent" }
+      },
+      {
+        "id": "T1190.002",
+        "coverage": "covered",
+        "notes": "Several assigned CVEs are SSRF discovered by the agents (e.g. CVE-2026-43986 SSRF 9.9 on Tautulli, CVE-2026-46372 SSRF 8.5 on SillyTavern, CVE-2026-42181 SSRF on Lemmy). Agent identified and dynamically verified them in source -> covered (T3).",
+        "source": { "tier": "T3", "ref": "github.com/larlarua/AutoCVE README — CVE table: CVE-2026-43986 / 46372 / 42181 SSRF entries" }
+      },
+      {
+        "id": "T1059",
+        "coverage": "partial",
+        "notes": "The agent discovered command-execution class CVEs by source audit (CVE-2026-7292 RCE 5.6 on o2oa; SQL Injection CVE-2026-7290 on JeecgBoot). It reasons about and verifies injection sinks in code rather than operationally executing commands on a live host -> partial for the command/script-interpreter behavior.",
+        "source": { "tier": "T3", "ref": "github.com/larlarua/AutoCVE README — CVE table: CVE-2026-7292 (RCE), CVE-2026-7290 (SQL Injection)" }
+      }
+    ],
+    "benchmark": "Self-reported 7-day run: 30 CVEs found and submitted across 14 open-source projects, max CVSS 9.9; all with public CVE records + reports at larlarua/vulnerability-reports"
+  },
+  {
+    "id": "hexstrike-ai",
+    "repo": "0x4m4/hexstrike-ai",
+    "name": "HexStrike AI",
+    "url": "https://github.com/0x4m4/hexstrike-ai",
+    "stars": 10182,
+    "language": "Python",
+    "kind": "agent-framework",
+    "category": "mcp-orchestration",
+    "description": "MCP server / framework (v6.0) that lets MCP-compatible AI agents (Claude, GPT, Copilot) autonomously run 150+ security tools via 12+ specialized agents. An Intelligent Decision Engine handles tool selection, parameter optimization and attack-chain discovery; agents cover bug bounty, CTF, CVE intelligence and exploit generation across network, web, cloud, binary, CTF and OSINT tooling.",
+    "topics": [],
+    "autonomy": "L3",
+    "has_paper": false,
+    "techniques": [
+      {
+        "id": "T1595",
+        "coverage": "partial",
+        "notes": "Decision Engine selects and parameter-optimizes recon tools (nmap, rustscan, masscan, amass, subfinder) via the analyze-target endpoint, and the connected AI agent drives active scanning autonomously. README claims strong recon speedups but the '98.7% detection' figures are self-reported with no reproducible harness -> partial.",
+        "source": { "tier": "T2", "ref": "github.com/0x4m4/hexstrike-ai README — Common MCP Tools: nmap_scan/rustscan/masscan/amass_enum; Intelligent Decision Engine: Tool Selection + Parameter Optimization" }
+      },
+      {
+        "id": "T1046",
+        "coverage": "tool-dep",
+        "notes": "Network service discovery is executed by the nmap/rustscan/masscan/enum4linux wrappers exposed as MCP tools; the connected agent chooses to run them but the enumeration logic is the tool's.",
+        "source": { "tier": "T2", "ref": "github.com/0x4m4/hexstrike-ai README — Network Reconnaissance & Scanning (25+ tools); nmap_scan()/rustscan_scan()" }
+      },
+      {
+        "id": "T1190",
+        "coverage": "partial",
+        "notes": "AIExploitGenerator + VulnerabilityCorrelator agents plus sqlmap/nuclei/nikto/dalfox wrappers let the agent test and exploit public-facing apps and correlate findings into attack chains. Attack-chain discovery is agent reasoning; but exploit primitives are tool-driven and results self-reported -> partial.",
+        "source": { "tier": "T2", "ref": "github.com/0x4m4/hexstrike-ai README — AI Agents: AIExploitGenerator, VulnerabilityCorrelator (Attack chain discovery); Web tools sqlmap/nuclei/dalfox" }
+      },
+      {
+        "id": "T1059",
+        "coverage": "tool-dep",
+        "notes": "commix (command injection) and sqlmap execute the injection/command logic; the /api/command endpoint runs arbitrary commands. The agent invokes these wrappers but does not contribute technique-specific injection reasoning beyond selection.",
+        "source": { "tier": "T2", "ref": "github.com/0x4m4/hexstrike-ai README — Web tools: Commix (command injection), SQLMap; API: /api/command execute arbitrary commands" }
+      },
+      {
+        "id": "T1110",
+        "coverage": "tool-dep",
+        "notes": "hydra/john/hashcat/medusa/patator/netexec wrappers perform brute-force and password cracking; the agent selects/runs them as MCP tools. Brute-force logic is entirely the external tool's -> tool-dep.",
+        "source": { "tier": "T2", "ref": "github.com/0x4m4/hexstrike-ai README — Authentication & Password Security (12+ tools): Hydra, John, Hashcat, Medusa, Patator" }
+      },
+      {
+        "id": "T1068",
+        "coverage": "tool-dep",
+        "notes": "Binary/RE arsenal (gdb, radare2, ghidra, pwntools, angr, ROPgadget, one-gadget) drives exploit development for privilege escalation / RCE gadgets; the agent orchestrates these but the exploitation primitives are the tools'. AIExploitGenerator adds selection, not core logic -> tool-dep.",
+        "source": { "tier": "T2", "ref": "github.com/0x4m4/hexstrike-ai README — Binary Analysis & Reverse Engineering (25+ tools): ROPgadget, One-Gadget, pwntools, angr; ghidra_analyze()/pwntools_exploit()" }
+      }
+    ],
+    "benchmark": null
+  }
+]
