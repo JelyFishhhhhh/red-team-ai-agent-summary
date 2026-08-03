@@ -59,6 +59,45 @@ export interface Benchmark {
   notes: string
 }
 
+// --- Two-axis taxonomy (design intent x evaluation target), added 2026-08-03 ---
+// Deliberately NOT single- vs multi-agent: that describes implementation, not
+// research position, and cannot explain why post-exploitation is uncovered.
+
+export type TaxonomyGroup = 'G1' | 'G2' | 'G3' | 'G4'
+
+// Whether the post-exploitation phase could have been measured at all.
+export type PostExMeasured =
+  | 'yes'                          // multi-host / AD target — it was measurable
+  | 'no-target'                    // benchmark has no such phase
+  | 'claimed-unmeasured'           // claimed, but no public measurement
+  | 'out-of-scope-by-definition'   // task ends at a single proven vulnerability
+
+// Why this backend was chosen — it tracks the research goal, not the state of the art.
+export type ModelStance =
+  | 'capability-first'   // strongest closed model, to show it CAN be done
+  | 'cost-first'         // open weights on purpose, to show frontier is NOT required
+  | 'model-as-subject'   // sweeps backends; the model is the independent variable
+  | 'byo-llm'            // repo-only product: the model is the user's choice
+  | 'not-disclosed'
+
+// Attribution for the absence of post-exploitation coverage.
+// null where this agent was not individually adjudicated.
+export type Bottleneck = 'B1' | 'B2' | 'B3' | 'measured' | null
+
+export interface AgentClassification {
+  group: TaxonomyGroup
+  group_label: string
+  design_intent: string
+  eval_target: string
+  postex_measured: PostExMeasured
+  model_stance: ModelStance
+  primary_model: string
+  // 'n/a' for repo-only projects: a hardcoded default is not an experimental model,
+  // so these must NOT be pooled with the paper-backed group.
+  param_count: 'available' | 'unavailable' | 'partial' | 'mixed' | 'unknown' | 'n/a'
+  bottleneck: Bottleneck
+}
+
 // Agent — matches actual papers.json schema
 export interface Agent {
   id: string
@@ -68,6 +107,7 @@ export interface Agent {
   benchmark?: Benchmark
   limitations?: string[]
   techniques: TechniqueMapping[]
+  classification?: AgentClassification
 }
 
 // Top-level papers.json structure

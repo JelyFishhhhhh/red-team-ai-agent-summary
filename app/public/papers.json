@@ -1,10 +1,80 @@
 {
-  "version": "1.0",
-  "lastUpdated": "2026-05-19",
+  "version": "1.1",
+  "lastUpdated": "2026-08-03",
+  "taxonomy": {
+    "version": "1.0",
+    "added": "2026-08-03",
+    "rationale": "Agents are NOT classified by single- vs multi-agent architecture. That describes implementation, not research position, and it cannot explain why post-exploitation is uncovered. The two axes used here — original design intent and evaluation target — between them determine whether the post-exploitation phase could have been measured at all, which makes the classification itself part of the argument.",
+    "axes": {
+      "design_intent": "What the system was built to achieve.",
+      "eval_target": "The environment in which it was actually validated."
+    },
+    "groups": {
+      "G1": {
+        "label": "Academic-benchmark oriented",
+        "intent": "Raise the success rate on an existing benchmark and offer a mechanism as the contribution.",
+        "target": "XBOW / VulHub / VulnHub / CTF — mostly web-application layer or single host.",
+        "postex_measured": "no-target",
+        "count": 8
+      },
+      "G2": {
+        "label": "Real-environment validation",
+        "intent": "Reject synthetic benchmarks; require a live testbed.",
+        "target": "Enterprise network or Active Directory range.",
+        "postex_measured": "yes",
+        "count": 2
+      },
+      "G3": {
+        "label": "Production tooling",
+        "intent": "Let more people, or the same people better, run real red-team work.",
+        "target": "Custom / product-driven.",
+        "postex_measured": "claimed-unmeasured",
+        "count": 8
+      },
+      "G4": {
+        "label": "Single-vulnerability proof",
+        "intent": "Finding and PROVING one vulnerability completes the task.",
+        "target": "Scan surface / codebase.",
+        "postex_measured": "out-of-scope-by-definition",
+        "count": 4
+      }
+    },
+    "bottleneck_codes": {
+      "B1": "Out of scope — the phase is absent from the system's own task definition.",
+      "B2": "Unmeasured — no multi-host target, so capability is unknown either way.",
+      "B3": "Measured and failed — the only category that can support a capability claim."
+    },
+    "model_stance_codes": {
+      "capability-first": "Picks the strongest available closed model, to show the task CAN be done.",
+      "cost-first": "Deliberately picks open weights, to show the task does NOT require a frontier model.",
+      "model-as-subject": "Sweeps many backends; the model is the independent variable, not a tool.",
+      "byo-llm": "Repo-only product: the model is the user's choice, so it is not a research decision.",
+      "not-disclosed": "The model actually used is not published."
+    },
+    "honest_boundaries": [
+      "Convenience sample (public artefact, 2024 onward, retrievable at survey time) — not exhaustive.",
+      "VulnBot and Pentest-R1 share a laboratory and authors — not independent samples.",
+      "Vigolium and OpenHack are arguably better excluded from any coverage denominator: post-exploitation is absent from their task definition, so counting them turns a scope difference into a capability decay.",
+      "Decepticon is not peer-reviewed.",
+      "Parameter counts for the repo-only group are hardcoded defaults, NOT experimental models — do not pool the two groups.",
+      "Per-agent B1/B2/B3 adjudication exists only for the batch that was examined for it; other agents carry null."
+    ]
+  },
   "agents": [
     {
       "id": "pentestgpt",
       "name": "PentestGPT",
+      "classification": {
+        "group": "G1",
+        "group_label": "Academic-benchmark oriented",
+        "design_intent": "Build a benchmark first to test whether LLMs can do this at all, then propose PTT to fix context loss.",
+        "eval_target": "Self-built 13 machines + HTB active 10 + picoMini",
+        "postex_measured": "no-target",
+        "model_stance": "capability-first",
+        "primary_model": "GPT-4 (system also integrates GPT-3.5)",
+        "param_count": "unavailable",
+        "bottleneck": "B1"
+      },
       "has_paper": true,
       "paper": {
         "title": "PentestGPT: An LLM Empowered Automatic Penetration Testing",
@@ -77,6 +147,17 @@
     {
       "id": "decepticon",
       "name": "Decepticon",
+      "classification": {
+        "group": "G3",
+        "group_label": "Production tooling",
+        "design_intent": "Production red-team tooling: full kill chain plus engagement discipline (RoE/ConOps before acting). Not an academic artefact.",
+        "eval_target": "XBOW validation-benchmarks 102/104",
+        "postex_measured": "claimed-unmeasured",
+        "model_stance": "not-disclosed",
+        "primary_model": "not disclosed",
+        "param_count": "unknown",
+        "bottleneck": null
+      },
       "has_paper": true,
       "paper": {
         "title": "Decepticon — Autonomous Red Team Agent",
@@ -233,6 +314,17 @@
     {
       "id": "cai",
       "name": "CAI",
+      "classification": {
+        "group": "G3",
+        "group_label": "Production tooling",
+        "design_intent": "Democratise bug bounty — break the oligopolistic ecosystem held by a few well-resourced firms; proposes autonomy levels.",
+        "eval_target": "HTB, official CTFs, real bug bounty, robotics/OT",
+        "postex_measured": "claimed-unmeasured",
+        "model_stance": "capability-first",
+        "primary_model": "claude-3-7-sonnet-2025-02-19",
+        "param_count": "unavailable",
+        "bottleneck": null
+      },
       "has_paper": true,
       "paper": {
         "title": "CAI: An Open, Bug Bounty-Ready Cybersecurity AI",
@@ -305,6 +397,17 @@
     {
       "id": "artemis",
       "name": "ARTEMIS",
+      "classification": {
+        "group": "G2",
+        "group_label": "Real-environment validation",
+        "design_intent": "Run the first head-to-head of AI agents against human security professionals on a real enterprise network.",
+        "eval_target": "Real university enterprise network, ~8,000 hosts across 12 subnets",
+        "postex_measured": "yes",
+        "model_stance": "capability-first",
+        "primary_model": "GPT-5; ensemble supervisor + Claude Sonnet 4",
+        "param_count": "unavailable",
+        "bottleneck": "measured"
+      },
       "has_paper": true,
       "paper": {
         "title": "Comparing AI Agents to Cybersecurity Professionals in Real-World Penetration Testing",
@@ -383,6 +486,17 @@
     {
       "id": "hacksynth",
       "name": "HackSynth",
+      "classification": {
+        "group": "G1",
+        "group_label": "Academic-benchmark oriented",
+        "design_intent": "NOT to build the strongest agent, but to understand agent behaviour and risk: temperature/top-p sweeps, error rates, rabbit-hole behaviour.",
+        "eval_target": "PicoCTF 120 + OverTheWire 80; network reachability deliberately firewalled off",
+        "postex_measured": "no-target",
+        "model_stance": "model-as-subject",
+        "primary_model": "8 models run; best GPT-4o",
+        "param_count": "partial",
+        "bottleneck": "B1"
+      },
       "has_paper": true,
       "paper": {
         "title": "HackSynth: LLM Agent and Evaluation Framework for Autonomous Penetration Testing",
@@ -449,6 +563,17 @@
     {
       "id": "pentestagent",
       "name": "PentestAgent",
+      "classification": {
+        "group": "G1",
+        "group_label": "Academic-benchmark oriented",
+        "design_intent": "Multi-agent + RAG across recon/analysis/exploitation; stresses live expansion of pentest knowledge.",
+        "eval_target": "VulHub 99 + HTB",
+        "postex_measured": "no-target",
+        "model_stance": "capability-first",
+        "primary_model": "GPT-4",
+        "param_count": "unavailable",
+        "bottleneck": null
+      },
       "has_paper": true,
       "paper": {
         "title": "PentestAgent: Incorporating LLM Agents to Automated Penetration Testing",
@@ -509,6 +634,17 @@
     {
       "id": "red-mirror",
       "name": "Red-MIRROR",
+      "classification": {
+        "group": "G1",
+        "group_label": "Academic-benchmark oriented",
+        "design_intent": "Fix three pain points (parametric-knowledge reliance, fragmented session memory, weak payload validation); show mid-size open weights can approach commercial models.",
+        "eval_target": "XBOW + real Vulhub CVEs",
+        "postex_measured": "no-target",
+        "model_stance": "cost-first",
+        "primary_model": "DeepSeek-V3.2; Qwen2.5-14B + LoRA",
+        "param_count": "available",
+        "bottleneck": null
+      },
       "has_paper": true,
       "paper": {
         "title": "Red-MIRROR: Agentic LLM-based Autonomous Penetration Testing with Reflective Verification and Knowledge-augmented Interaction",
@@ -562,6 +698,17 @@
     {
       "id": "vulnbot",
       "name": "VulnBot",
+      "classification": {
+        "group": "G1",
+        "group_label": "Academic-benchmark oriented",
+        "design_intent": "Derive four open-LLM deficiencies from 220 exploratory runs, then solve them with a Penetration Task Graph and role separation; show open models can do this too.",
+        "eval_target": "AutoPenBench 33 + VulnHub 6",
+        "postex_measured": "no-target",
+        "model_stance": "cost-first",
+        "primary_model": "Llama3.3-70B / 405B / DeepSeek-V3",
+        "param_count": "available",
+        "bottleneck": "B1"
+      },
       "has_paper": true,
       "paper": {
         "title": "VulnBot: Autonomous Penetration Testing for A Multi-Agent Collaborative Framework",
@@ -634,6 +781,17 @@
     {
       "id": "mapta",
       "name": "MAPTA",
+      "classification": {
+        "group": "G1",
+        "group_label": "Academic-benchmark oriented",
+        "design_intent": "Answer the audit scalability crisis created by AI-generated code; every finding must carry a verifiable PoC.",
+        "eval_target": "XBOW 104 + real GitHub projects",
+        "postex_measured": "no-target",
+        "model_stance": "capability-first",
+        "primary_model": "GPT-5",
+        "param_count": "unavailable",
+        "bottleneck": null
+      },
       "has_paper": true,
       "paper": {
         "title": "Multi-Agent Penetration Testing AI for the Web",
@@ -688,6 +846,17 @@
     {
       "id": "pentest-r1",
       "name": "Pentest-R1",
+      "classification": {
+        "group": "G1",
+        "group_label": "Academic-benchmark oriented",
+        "design_intent": "Let an 8B open model match large closed models at pentest reasoning; explicitly for cost-effective deployment at scale.",
+        "eval_target": "Cybench 40 + AutoPenBench 33",
+        "postex_measured": "no-target",
+        "model_stance": "cost-first",
+        "primary_model": "DeepSeek-R1-0528-Qwen3-8B (LoRA, two-stage GRPO)",
+        "param_count": "available",
+        "bottleneck": "B1"
+      },
       "has_paper": true,
       "paper": {
         "title": "Pentest-R1: Towards Autonomous Penetration Testing Reasoning Optimized via Two-Stage Reinforcement Learning",
@@ -742,6 +911,17 @@
     {
       "id": "cochise",
       "name": "cochise (LLMs Hack Enterprise Networks)",
+      "classification": {
+        "group": "G2",
+        "group_label": "Real-environment validation",
+        "design_intent": "Explicitly NOT a state-of-the-art agent — reusable experimental infrastructure for comparing models, architectures and traces.",
+        "eval_target": "GOAD v3 real Active Directory range",
+        "postex_measured": "yes",
+        "model_stance": "model-as-subject",
+        "primary_model": "Gemini-3-Flash / Claude-4.7-Opus (harness); 5 models (TOSEM)",
+        "param_count": "mixed",
+        "bottleneck": "measured"
+      },
       "has_paper": true,
       "paper": {
         "title": "Can LLMs Hack Enterprise Networks? Autonomous Assumed Breach Penetration-Testing Active Directory Networks",
@@ -839,6 +1019,17 @@
     {
       "id": "autopen",
       "name": "AutoPen",
+      "classification": {
+        "group": "G1",
+        "group_label": "Academic-benchmark oriented",
+        "design_intent": "Fully unattended autonomous pentesting; lower the time, labour and expertise barrier.",
+        "eval_target": "VulnHub",
+        "postex_measured": "no-target",
+        "model_stance": "not-disclosed",
+        "primary_model": "not disclosed (paywalled)",
+        "param_count": "unknown",
+        "bottleneck": null
+      },
       "has_paper": true,
       "paper": {
         "title": "AutoPen: Towards Autonomous Penetration Testing Using LLM-Powered Agents",
@@ -880,6 +1071,17 @@
     {
       "id": "pentagi",
       "name": "PentAGI",
+      "classification": {
+        "group": "G3",
+        "group_label": "Production tooling",
+        "design_intent": "An autonomous operating platform for professional red teams.",
+        "eval_target": "product-driven",
+        "postex_measured": "claimed-unmeasured",
+        "model_stance": "byo-llm",
+        "primary_model": "per-provider hardcoded: o4-mini / claude-sonnet-4",
+        "param_count": "n/a",
+        "bottleneck": null
+      },
       "has_paper": false,
       "paper": {
         "title": "PentAGI — Fully Autonomous AI Agents System for Penetration Testing",
@@ -934,6 +1136,17 @@
     {
       "id": "shannon",
       "name": "Shannon",
+      "classification": {
+        "group": "G3",
+        "group_label": "Production tooling",
+        "design_intent": "Turn the annual penetration test into something that runs on every build.",
+        "eval_target": "product-driven",
+        "postex_measured": "claimed-unmeasured",
+        "model_stance": "byo-llm",
+        "primary_model": "three tiers: haiku / sonnet / opus",
+        "param_count": "n/a",
+        "bottleneck": null
+      },
       "has_paper": false,
       "paper": {
         "title": "Shannon — Autonomous White-Box AI Pentester for Web Applications",
@@ -989,6 +1202,17 @@
     {
       "id": "cairn",
       "name": "Cairn",
+      "classification": {
+        "group": "G4",
+        "group_label": "Single-vulnerability proof",
+        "design_intent": "A general state-space search engine; penetration testing is merely its first validation domain.",
+        "eval_target": "codebase / scan surface",
+        "postex_measured": "out-of-scope-by-definition",
+        "model_stance": "byo-llm",
+        "primary_model": "none — delegates to a coding-agent CLI",
+        "param_count": "n/a",
+        "bottleneck": null
+      },
       "has_paper": false,
       "paper": {
         "title": "Cairn — General-Purpose State-Space Search Engine for Autonomous Penetration Testing",
@@ -1031,6 +1255,17 @@
     {
       "id": "dark-moon",
       "name": "Dark-Moon",
+      "classification": {
+        "group": "G3",
+        "group_label": "Production tooling",
+        "design_intent": "Data-sovereignty-first continuous attack-surface testing.",
+        "eval_target": "product-driven",
+        "postex_measured": "claimed-unmeasured",
+        "model_stance": "byo-llm",
+        "primary_model": "no hardcoded default; asked at install",
+        "param_count": "n/a",
+        "bottleneck": null
+      },
       "has_paper": false,
       "paper": {
         "title": "Dark-Moon — Autonomous AI Pentesting Engine (Web/Cloud/AD/Kubernetes)",
@@ -1120,6 +1355,17 @@
     {
       "id": "xalgorix",
       "name": "Xalgorix",
+      "classification": {
+        "group": "G4",
+        "group_label": "Single-vulnerability proof",
+        "design_intent": "'Scanners only detect. We prove.'",
+        "eval_target": "scan surface",
+        "postex_measured": "out-of-scope-by-definition",
+        "model_stance": "byo-llm",
+        "primary_model": "no default (example: minimax/MiniMax-M3)",
+        "param_count": "n/a",
+        "bottleneck": null
+      },
       "has_paper": false,
       "paper": {
         "title": "Xalgorix — The Most Powerful Open-Source AI Pentesting Agent",
@@ -1168,6 +1414,17 @@
     {
       "id": "pentest-copilot",
       "name": "Pentest Copilot",
+      "classification": {
+        "group": "G3",
+        "group_label": "Production tooling",
+        "design_intent": "The only project stating CTF outright in its README.",
+        "eval_target": "product-driven",
+        "postex_measured": "claimed-unmeasured",
+        "model_stance": "byo-llm",
+        "primary_model": "no single default; asked on first run",
+        "param_count": "n/a",
+        "bottleneck": null
+      },
       "has_paper": false,
       "paper": {
         "title": "Pentest Copilot — AI-Powered Browser-Based Ethical Hacking Agent",
@@ -1228,6 +1485,17 @@
     {
       "id": "pentest-ai-agents",
       "name": "pentest-ai-agents",
+      "classification": {
+        "group": "G3",
+        "group_label": "Production tooling",
+        "design_intent": "Turn Claude Code into an offensive-research assistant.",
+        "eval_target": "product-driven",
+        "postex_measured": "claimed-unmeasured",
+        "model_stance": "byo-llm",
+        "primary_model": "n/a — agents are pure markdown system prompts",
+        "param_count": "n/a",
+        "bottleneck": null
+      },
       "has_paper": false,
       "paper": {
         "title": "pentest-ai-agents — 35 Specialized Claude Code Subagents for Offensive Security",
@@ -1288,6 +1556,17 @@
     {
       "id": "pentest-swarm-ai",
       "name": "Pentest Swarm AI",
+      "classification": {
+        "group": "G3",
+        "group_label": "Production tooling",
+        "design_intent": "Replace the pipeline with swarm intelligence.",
+        "eval_target": "product-driven",
+        "postex_measured": "claimed-unmeasured",
+        "model_stance": "byo-llm",
+        "primary_model": "claude-sonnet-4-6 (only project whose config and code fallback agree)",
+        "param_count": "n/a",
+        "bottleneck": null
+      },
       "has_paper": false,
       "paper": {
         "title": "Pentest Swarm AI — Autonomous Penetration Testing via Swarm Agents",
@@ -1349,6 +1628,17 @@
     {
       "id": "vigolium",
       "name": "Vigolium",
+      "classification": {
+        "group": "G4",
+        "group_label": "Single-vulnerability proof",
+        "design_intent": "Fundamentally a scanner; the agentic mode is an add-on.",
+        "eval_target": "scan surface",
+        "postex_measured": "out-of-scope-by-definition",
+        "model_stance": "byo-llm",
+        "primary_model": "gemma4:latest — ships pointing at a local Ollama",
+        "param_count": "n/a",
+        "bottleneck": null
+      },
       "has_paper": false,
       "paper": {
         "title": "Vigolium — High-fidelity Vulnerability Scanner Fusing Agentic AI with Native Speed",
@@ -1403,6 +1693,17 @@
     {
       "id": "openhack",
       "name": "OpenHack",
+      "classification": {
+        "group": "G4",
+        "group_label": "Single-vulnerability proof",
+        "design_intent": "An open-source answer to Claude Code Security.",
+        "eval_target": "codebase",
+        "postex_measured": "out-of-scope-by-definition",
+        "model_stance": "byo-llm",
+        "primary_model": "grok-4.5 in code (docstring contradicts it with Kimi-K2.5)",
+        "param_count": "n/a",
+        "bottleneck": null
+      },
       "has_paper": false,
       "paper": {
         "title": "OpenHack — File-based Workspace for Source-guided Whitebox Security Review",

@@ -10,7 +10,8 @@ Visual reference mapping red-team AI agent research papers to MITRE ATT&CK Enter
 |------|---------|
 | `app/` | Static SPA → Cloudflare Pages |
 | `editor/` | Local admin editor (React + Express) |
-| `app/public/papers.json` | All agent + paper + technique data |
+| `app/public/papers.json` | All agent + paper + technique data, plus the two-axis taxonomy |
+| `docs/taxonomy.md` | How the 22 agents are classified, and why not by agent architecture |
 | `app/src/data/attack-enterprise.json` | Trimmed MITRE ATT&CK Enterprise v16.1 |
 
 ## Cloudflare Pages Setup
